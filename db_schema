@@ -1,0 +1,29 @@
+### FIRESTORE ###
+
+user {
+    id: string
+    createdAt: date
+    os: android | ios
+    phone?: string
+}
+
+canvas {
+    id: string
+    createdAt: string;
+    expiresAt: string;
+    author: [uid]
+}
+
+
+## RTD ###
+
+canvas_id {
+    0: {
+        cell_update: {
+            id: string
+            time: date
+            author: uid
+            color: string
+        }
+    }
+}
