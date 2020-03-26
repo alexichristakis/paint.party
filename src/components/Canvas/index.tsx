@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, useCallback } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import {
   PanGestureHandler,
   PinchGestureHandler,
@@ -76,9 +76,6 @@ export const Canvas: React.FC<CanvasProps> = ({ loading, onDraw, enabled }) => {
 
   const gestureBegan = or(eq(panState, ACTIVE), eq(pinchState, ACTIVE));
 
-  const handleOnChooseColor = (cell: number, color: string) =>
-    onDraw(cell, color);
-
   const handleOnPressCell = useCallback(
     (x: number, y: number) => setSelectedCell(coordinatesToIndex(x, y)),
     []
@@ -145,7 +142,7 @@ export const Canvas: React.FC<CanvasProps> = ({ loading, onDraw, enabled }) => {
         enabled={enabled}
         visible={pickerVisible}
         cell={selectedCell}
-        onChoose={handleOnChooseColor}
+        onChoose={onDraw}
       />
 
       <Animated.View

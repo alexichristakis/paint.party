@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import { StatusBar } from "react-native";
 
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useLinking } from "@react-navigation/native";
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { Provider, useSelector } from "react-redux";
@@ -24,6 +24,12 @@ export type StackParamList = {
 const Stack = createNativeStackNavigator<StackParamList>();
 
 const Root = () => {
+  const ref = useRef(null);
+
+  const { getInitialState } = useLinking(ref, {
+    prefixes: ["https://mychat.com", "mychat://"]
+  });
+
   const isAuthenticated = useSelector(selectors.isAuthenticated);
   const activeCanvas = useSelector(selectors.activeCanvas);
 
