@@ -14,12 +14,16 @@ import {
 } from "react-native-redash";
 import times from "lodash/times";
 import { useMemoOne } from "use-memo-one";
+import moment from "moment";
+import { useSelector } from "react-redux";
 
+import * as selectors from "@redux/selectors";
 import { CANVAS_DIMENSIONS, coordinatesToIndex } from "@lib";
 
 import { Row } from "./Row";
 import { CellHighlight } from "./CellHighlight";
 import { ColorPicker } from "./ColorPicker";
+import { Countdown } from "./Countdown";
 
 const {
   add,
@@ -40,7 +44,7 @@ const {
   cond,
   call
 } = Animated;
-const { UNDETERMINED, END } = State;
+const { ACTIVE, BEGAN, UNDETERMINED, END } = State;
 
 export interface CanvasProps {
   onPressCell: (cell: number, color: string) => void;
@@ -48,6 +52,8 @@ export interface CanvasProps {
 
 export const Canvas: React.FC<CanvasProps> = ({ onPressCell }) => {
   const [selectedCell, setSelectedCell] = useState(-1);
+
+  const canvasActiveAt = useSelector(selectors.canvasActiveAt);
 
   const pinchRef = useRef<PinchGestureHandler>(null);
   const panRef = useRef<PanGestureHandler>(null);
@@ -58,6 +64,7 @@ export const Canvas: React.FC<CanvasProps> = ({ onPressCell }) => {
     []
   );
 
+  const [pickerVisible] = useValues<0 | 1>([0], []);
   const [dragX, dragY, tapX, tapY, pinch] = useValues<number>(
     [0, 0, 0, 0, 1],
     []
@@ -88,6 +95,8 @@ export const Canvas: React.FC<CanvasProps> = ({ onPressCell }) => {
     []
   );
 
+  const gestureBegan = or(eq(panState, ACTIVE), eq(pinchState, ACTIVE));
+
   const handleOnChooseColor = useCallback(
     (color: string) => onPressCell(selectedCell, color),
     [selectedCell]
@@ -100,21 +109,25 @@ export const Canvas: React.FC<CanvasProps> = ({ onPressCell }) => {
 
   useCode(
     () => [
+      onChange(gestureBegan, cond(gestureBegan, set(pickerVisible, 0))),
       onChange(
         tapState,
-        cond(
-          eq(tapState, END),
+        cond(eq(tapState, END), [
+          set(pickerVisible, 1),
           call([tapX, tapY], numbers =>
             handleOnPressCell(...(numbers as [number, number]))
           )
-        )
+        ])
       )
     ],
     []
   );
 
+  const enabled = canvasActiveAt < moment().unix();
+
   return (
     <>
+      <Countdown enabled={enabled} toDate={canvasActiveAt} />
       <PanGestureHandler
         avgTouches={true}
         ref={panRef}
@@ -141,14 +154,18 @@ export const Canvas: React.FC<CanvasProps> = ({ onPressCell }) => {
                   {times(CANVAS_DIMENSIONS, i => (
                     <Row key={i} index={i} />
                   ))}
-                  <CellHighlight cell={selectedCell} />
+                  <CellHighlight visible={pickerVisible} cell={selectedCell} />
                 </Animated.View>
               </TapGestureHandler>
             </Animated.View>
           </PinchGestureHandler>
         </Animated.View>
       </PanGestureHandler>
-      <ColorPicker cell={selectedCell} onChooseColor={handleOnChooseColor} />
+      <ColorPicker
+        enabled={enabled}
+        visible={pickerVisible}
+        onChoose={handleOnChooseColor}
+      />
     </>
   );
 };

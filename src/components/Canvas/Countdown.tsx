@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Text, View, StyleSheet } from "react-native";
 
-import { useInterval } from "@hooks";
-import { TextStyles } from "@lib";
+import { TextStyles, SB_HEIGHT } from "@lib";
 
 export interface Countdown {
+  enabled: boolean;
   toDate: number;
 }
 
-export const Countdown: React.FC<Countdown> = ({ toDate }) => {
+export const Countdown: React.FC<Countdown> = ({ enabled, toDate }) => {
   const [count, setCount] = useState("");
 
   useEffect(() => {
@@ -26,6 +26,8 @@ export const Countdown: React.FC<Countdown> = ({ toDate }) => {
     return () => clearInterval(interval);
   }, []);
 
+  if (enabled) return null;
+
   return (
     <View style={styles.container}>
       <Text style={styles.count}>{count}</Text>
@@ -35,6 +37,8 @@ export const Countdown: React.FC<Countdown> = ({ toDate }) => {
 
 const styles = StyleSheet.create({
   container: {
+    position: "absolute",
+    top: SB_HEIGHT + 10,
     alignItems: "flex-end",
     marginBottom: 10
   },

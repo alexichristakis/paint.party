@@ -1,75 +1,222 @@
 import React from "react";
-import Animated, { divide, useCode, max, debug } from "react-native-reanimated";
+import Animated, {
+  interpolate,
+  concat,
+  onChange,
+  useCode,
+  debug
+} from "react-native-reanimated";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import {} from "react-native-gesture-handler";
+import {
+  PanGestureHandler,
+  State,
+  BaseButton,
+  TapGestureHandler
+} from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
+import {
+  useValues,
+  onGestureEvent,
+  decay,
+  bInterpolate,
+  useClocks,
+  withDecay,
+  withSpringTransition,
+  bin,
+  useSpringTransition
+} from "react-native-redash";
+import { useMemoOne } from "use-memo-one";
 import moment from "moment";
 
 import * as selectors from "@redux/selectors";
 
 import { Countdown } from "./Countdown";
 
+import CloseIcon from "@assets/svg/close.svg";
+import CircularProgress from "./CircularProgress";
+
+const { sqrt, set, or, eq, abs, sub, cond, pow, multiply, add } = Animated;
+
+const config = {
+  damping: 40,
+  mass: 1,
+  stiffness: 300,
+  overshootClamping: false,
+  restSpeedThreshold: 0.1,
+  restDisplacementThreshold: 0.1
+};
+
+const COLORS = [
+  "red",
+  "red",
+  "red",
+  "red",
+  "red",
+  "red",
+  "red",
+  "red",
+  "red",
+  "red"
+];
+
 export interface ColorPickerProps {
-  cell: number;
-  onChooseColor: (color: string) => void;
+  enabled: boolean;
+  visible: Animated.Value<0 | 1>;
+  onChoose: (color: string) => void;
 }
 
 interface ColorProps {
+  rotateZ: Animated.Node<string>;
   enabled: boolean;
+  openTransition: Animated.Node<number>;
+  enabledTransition: Animated.Node<number>;
   color: string;
-  onPress: (color: string) => void;
+  onChoose: (color: string) => void;
 }
 
-const Color: React.FC<ColorProps> = ({ color, enabled, onPress }) => {
+const Color: React.FC<ColorProps> = ({
+  color,
+  rotateZ,
+  openTransition,
+  enabledTransition,
+  enabled,
+  onChoose
+}) => {
+  const handleOnChoose = () => onChoose(color);
+
   return (
-    <TouchableOpacity
-      disabled={!enabled}
-      style={{ opacity: enabled ? 1 : 0.5 }}
-      onPress={() => onPress(color)}
+    <Animated.View
+      style={{
+        opacity: bInterpolate(enabledTransition, 0.5, 1),
+        transform: [{ rotateZ }]
+      }}
     >
-      <View
-        style={{
-          marginHorizontal: 10,
-          height: 50,
-          width: 50,
-          backgroundColor: color
-        }}
-      />
-    </TouchableOpacity>
+      <TouchableOpacity disabled={!enabled} onPress={handleOnChoose}>
+        <Animated.View
+          style={[
+            styles.color,
+            {
+              marginTop: bInterpolate(openTransition, 0, 150),
+              backgroundColor: color
+            }
+          ]}
+        />
+      </TouchableOpacity>
+    </Animated.View>
   );
 };
 
 export const ColorPicker: React.FC<ColorPickerProps> = ({
-  cell,
-  onChooseColor
+  onChoose,
+  enabled,
+  visible
 }) => {
-  const canvasActiveAt = useSelector(selectors.canvasActiveAt);
+  const [dragX, dragY, velocityX, velocityY] = useValues<number>(
+    [0, 0, 0, 0],
+    []
+  );
+  const [panState, tapState] = useValues<State>(
+    [State.UNDETERMINED, State.UNDETERMINED],
+    []
+  );
 
-  const enabled = moment().unix() > canvasActiveAt;
+  const openTransition = useMemoOne(
+    () => withSpringTransition(visible, config),
+    []
+  );
 
-  if (cell > -1)
-    return (
-      <Animated.View style={styles.container}>
-        <Countdown toDate={canvasActiveAt} />
-        <Animated.View
-          style={{
-            flexDirection: "row"
-            // transform: [{ scale: divide(1, scale) }]
-          }}
-        >
-          <Color enabled={enabled} color="red" onPress={onChooseColor} />
-          <Color enabled={enabled} color="blue" onPress={onChooseColor} />
-          <Color enabled={enabled} color="green" onPress={onChooseColor} />
-        </Animated.View>
-      </Animated.View>
+  const enabledTransition = useSpringTransition(enabled, config);
+
+  const [panHandler, tapHandler] = useMemoOne(
+    () => [
+      onGestureEvent({
+        translationX: dragX,
+        translationY: dragY,
+        state: panState,
+        velocityX,
+        velocityY
+      }),
+      onGestureEvent({ state: tapState })
+    ],
+    []
+  );
+
+  useCode(
+    () => [
+      onChange(tapState, cond(eq(tapState, State.END), [set(visible, 0)]))
+    ],
+    []
+  );
+
+  const scroll = useMemoOne(
+    () =>
+      withDecay({
+        state: panState,
+        value: sub(dragX, dragY),
+        velocity: sub(velocityX, velocityY)
+      }),
+    []
+  );
+
+  const rotateZ = (index: number) =>
+    concat(
+      interpolate(scroll, {
+        inputRange: [0, 100],
+        outputRange: [index * 36, (index + 1) * 36]
+      }),
+      "deg"
     );
 
-  return null;
+  return (
+    <PanGestureHandler {...panHandler}>
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            transform: [{ translateY: bInterpolate(openTransition, 70, 0) }]
+          }
+        ]}
+      >
+        {COLORS.map((color, index) => (
+          <Color
+            key={index}
+            {...{
+              rotateZ: rotateZ(index),
+              openTransition,
+              enabledTransition,
+              enabled,
+              color,
+              onChoose
+            }}
+          />
+        ))}
+        <TapGestureHandler {...tapHandler}>
+          <Animated.View
+            style={{
+              position: "absolute",
+              bottom: 30,
+              transform: [{ scale: bInterpolate(openTransition, 0, 1) }]
+            }}
+          >
+            <CloseIcon width={70} height={70} />
+          </Animated.View>
+        </TapGestureHandler>
+      </Animated.View>
+    </PanGestureHandler>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
-    bottom: 50,
-    position: "absolute"
+    position: "absolute",
+    alignItems: "center",
+    bottom: 0
+  },
+  color: {
+    borderWidth: 2,
+    position: "absolute",
+    height: 60,
+    width: 60,
+    borderRadius: 30
   }
 });

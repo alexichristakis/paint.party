@@ -41,7 +41,6 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
 
   return (
     <View style={styles.container}>
-      <Button title="goBack" onPress={close} />
       <CanvasVisualization onPressCell={handleOnPressCell} />
     </View>
   );
