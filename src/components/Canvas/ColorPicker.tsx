@@ -10,19 +10,14 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import {
   PanGestureHandler,
   State,
-  BaseButton,
   TapGestureHandler
 } from "react-native-gesture-handler";
-import { useSelector } from "react-redux";
 import {
   useValues,
   onGestureEvent,
-  decay,
   bInterpolate,
-  useClocks,
   withDecay,
   withSpringTransition,
-  bin,
   useSpringTransition
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
@@ -77,7 +72,10 @@ const Color: React.FC<ColorProps> = ({
   enabled,
   onChoose
 }) => {
-  const handleOnChoose = () => onChoose(color);
+  const handleOnChoose = () => {
+    console.log(color);
+    onChoose(color);
+  };
 
   return (
     <Animated.View
@@ -101,105 +99,104 @@ const Color: React.FC<ColorProps> = ({
   );
 };
 
-export const ColorPicker: React.FC<ColorPickerProps> = ({
-  onChoose,
-  enabled,
-  visible
-}) => {
-  const [dragX, dragY, velocityX, velocityY] = useValues<number>(
-    [0, 0, 0, 0],
-    []
-  );
-  const [panState, tapState] = useValues<State>(
-    [State.UNDETERMINED, State.UNDETERMINED],
-    []
-  );
-
-  const openTransition = useMemoOne(
-    () => withSpringTransition(visible, config),
-    []
-  );
-
-  const enabledTransition = useSpringTransition(enabled, config);
-
-  const [panHandler, tapHandler] = useMemoOne(
-    () => [
-      onGestureEvent({
-        translationX: dragX,
-        translationY: dragY,
-        state: panState,
-        velocityX,
-        velocityY
-      }),
-      onGestureEvent({ state: tapState })
-    ],
-    []
-  );
-
-  useCode(
-    () => [
-      onChange(tapState, cond(eq(tapState, State.END), [set(visible, 0)]))
-    ],
-    []
-  );
-
-  const scroll = useMemoOne(
-    () =>
-      withDecay({
-        state: panState,
-        value: sub(dragX, dragY),
-        velocity: sub(velocityX, velocityY)
-      }),
-    []
-  );
-
-  const rotateZ = (index: number) =>
-    concat(
-      interpolate(scroll, {
-        inputRange: [0, 100],
-        outputRange: [index * 36, (index + 1) * 36]
-      }),
-      "deg"
+export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
+  ({ onChoose, enabled, visible }) => {
+    const [dragX, dragY, velocityX, velocityY] = useValues<number>(
+      [0, 0, 0, 0],
+      []
+    );
+    const [panState, tapState] = useValues<State>(
+      [State.UNDETERMINED, State.UNDETERMINED],
+      []
     );
 
-  return (
-    <PanGestureHandler {...panHandler}>
-      <Animated.View
-        style={[
-          styles.container,
-          {
-            transform: [{ translateY: bInterpolate(openTransition, 70, 0) }]
-          }
-        ]}
-      >
-        {COLORS.map((color, index) => (
-          <Color
-            key={index}
-            {...{
-              rotateZ: rotateZ(index),
-              openTransition,
-              enabledTransition,
-              enabled,
-              color,
-              onChoose
-            }}
-          />
-        ))}
-        <TapGestureHandler {...tapHandler}>
-          <Animated.View
-            style={{
-              position: "absolute",
-              bottom: 30,
-              transform: [{ scale: bInterpolate(openTransition, 0, 1) }]
-            }}
-          >
-            <CloseIcon width={70} height={70} />
-          </Animated.View>
-        </TapGestureHandler>
-      </Animated.View>
-    </PanGestureHandler>
-  );
-};
+    const openTransition = useMemoOne(
+      () => withSpringTransition(visible, config),
+      []
+    );
+
+    const enabledTransition = useSpringTransition(enabled, config);
+
+    const [panHandler, tapHandler] = useMemoOne(
+      () => [
+        onGestureEvent({
+          translationX: dragX,
+          translationY: dragY,
+          state: panState,
+          velocityX,
+          velocityY
+        }),
+        onGestureEvent({ state: tapState })
+      ],
+      []
+    );
+
+    useCode(
+      () => [
+        onChange(tapState, cond(eq(tapState, State.END), [set(visible, 0)]))
+      ],
+      []
+    );
+
+    const scroll = useMemoOne(
+      () =>
+        withDecay({
+          state: panState,
+          value: sub(dragX, dragY),
+          velocity: sub(velocityX, velocityY)
+        }),
+      []
+    );
+
+    const rotateZ = (index: number) =>
+      concat(
+        interpolate(scroll, {
+          inputRange: [0, 100],
+          outputRange: [index * 36, (index + 1) * 36]
+        }),
+        "deg"
+      );
+
+    return (
+      <PanGestureHandler {...panHandler}>
+        <Animated.View
+          style={[
+            styles.container,
+            {
+              transform: [{ translateY: bInterpolate(openTransition, 70, 0) }]
+            }
+          ]}
+        >
+          {COLORS.map((color, index) => (
+            <Color
+              key={index}
+              {...{
+                rotateZ: rotateZ(index),
+                openTransition,
+                enabledTransition,
+                enabled,
+                color,
+                onChoose
+              }}
+            />
+          ))}
+          <TapGestureHandler {...tapHandler}>
+            <Animated.View
+              style={{
+                position: "absolute",
+                bottom: 30,
+                transform: [{ scale: bInterpolate(openTransition, 0, 1) }]
+              }}
+            >
+              <CloseIcon width={70} height={70} />
+            </Animated.View>
+          </TapGestureHandler>
+        </Animated.View>
+      </PanGestureHandler>
+    );
+  },
+  (p, n) => p.enabled === n.enabled
+);
 
 const styles = StyleSheet.create({
   container: {

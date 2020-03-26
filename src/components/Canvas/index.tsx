@@ -25,10 +25,10 @@ const { ACTIVE, UNDETERMINED, END } = State;
 
 export interface CanvasProps {
   enabled: boolean;
-  onPressCell: (cell: number, color: string) => void;
+  onDraw: (cell: number, color: string) => void;
 }
 
-export const Canvas: React.FC<CanvasProps> = ({ onPressCell, enabled }) => {
+export const Canvas: React.FC<CanvasProps> = ({ onDraw, enabled }) => {
   const [selectedCell, setSelectedCell] = useState(-1);
 
   const pinchRef = useRef<PinchGestureHandler>(null);
@@ -74,7 +74,10 @@ export const Canvas: React.FC<CanvasProps> = ({ onPressCell, enabled }) => {
   const gestureBegan = or(eq(panState, ACTIVE), eq(pinchState, ACTIVE));
 
   const handleOnChooseColor = useCallback(
-    (color: string) => onPressCell(selectedCell, color),
+    (color: string) => {
+      console.log(selectedCell, color);
+      onDraw(selectedCell, color);
+    },
     [selectedCell]
   );
 

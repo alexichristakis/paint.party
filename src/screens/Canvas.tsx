@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import { StyleSheet, View, ActionSheetIOS, Share } from "react-native";
 import { connect, ConnectedProps, useSelector } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
@@ -25,7 +25,7 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = {
   close: CanvasActions.close,
   draw: CanvasActions.draw,
-  openCanvas: CanvasActions.open
+  open: CanvasActions.open
 };
 
 export type CanvasReduxProps = ConnectedProps<typeof connector>;
@@ -36,31 +36,43 @@ export interface CanvasProps {
 
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
-  openCanvas,
+  open,
+  close,
   draw
 }) => {
   const canvasActiveAt = useSelector(selectors.canvasActiveAt);
+  const [enabled, setEnabled] = useState(canvasActiveAt < moment().unix());
 
   useFocusEffect(
     useCallback(() => {
-      openCanvas(activeCanvas);
+      open(activeCanvas);
     }, [])
   );
 
-  const enabled = canvasActiveAt < moment().unix();
+  const onPressShare = async () => {
+    const result = await Share.share({
+      title: "share unexpected",
+      message: "https://expect.photos"
+    });
+  };
+
+  console.log("enabled", enabled);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={close}>
           <X width={20} height={20} />
         </TouchableOpacity>
-        <Countdown enabled={enabled} toDate={canvasActiveAt} />
-        <TouchableOpacity>
+        <Countdown
+          enabled={enabled}
+          enable={setEnabled}
+          toDate={canvasActiveAt}
+        />
+        <TouchableOpacity onPress={onPressShare}>
           <Hamburger width={20} height={20} />
         </TouchableOpacity>
       </View>
-
-      <CanvasVisualization enabled={enabled} onPressCell={draw} />
+      <CanvasVisualization enabled={enabled} onDraw={draw} />
     </View>
   );
 };

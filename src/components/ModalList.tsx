@@ -1,6 +1,5 @@
 import React, { useImperativeHandle, useRef, useState } from "react";
 import {
-  ScrollView,
   StyleProp,
   StyleSheet,
   Text,
@@ -17,15 +16,11 @@ import {
 import Animated, { Extrapolate } from "react-native-reanimated";
 import {
   bin,
-  bInterpolate,
   clamp,
   onGestureEvent,
   onScroll,
   spring,
-  timing,
-  useDiff,
   useValues,
-  withOffset,
   withSpring
 } from "react-native-redash";
 
