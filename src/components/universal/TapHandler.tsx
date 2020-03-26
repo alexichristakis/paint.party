@@ -3,11 +3,11 @@ import { StyleProp, ViewStyle } from "react-native";
 import { useMemoOne } from "use-memo-one";
 
 import { TapGestureHandler, State } from "react-native-gesture-handler";
-import Animated, { useCode } from "react-native-reanimated";
+import Animated, { useCode, Easing } from "react-native-reanimated";
 import { onGestureEvent, withTransition, useValues } from "react-native-redash";
 import isEqual from "lodash/isEqual";
 
-const { set, neq, or, eq, cond, onChange, call, debug } = Animated;
+const { set, neq, or, eq, cond, call } = Animated;
 
 interface TapHandlerProps {
   value: Animated.Value<number>;
@@ -28,24 +28,19 @@ export const TapHandler: React.FC<TapHandlerProps> = React.memo(
 
     useCode(
       () => [
-        onChange(state, debug("state", state)),
         set(
           value,
-          withTransition(
-            or(eq(state, State.ACTIVE), eq(state, State.BEGAN)),
-            {},
-            state
-          )
+          withTransition(or(eq(state, State.BEGAN), eq(state, State.ACTIVE)), {
+            duration: 200,
+            easing: Easing.inOut(Easing.ease)
+          })
         ),
         cond(eq(prevState, State.UNDETERMINED), set(prevState, state)),
         cond(neq(state, prevState), [
           set(prevState, state),
           cond(
             eq(state, State.END),
-            call([], () => {
-              if (dependencies.length) console.log(dependencies);
-              onPress();
-            })
+            call([], () => onPress())
           )
         ])
       ],

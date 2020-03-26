@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import Animated, {
+  Easing,
   interpolate,
-  concat,
   onChange,
   useCode
 } from "react-native-reanimated";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 import {
   State,
   PanGestureHandler,
@@ -17,14 +17,19 @@ import {
   bInterpolate,
   withDecay,
   withSpringTransition,
-  useSpringTransition
+  useSpringTransition,
+  withTransition
 } from "react-native-redash";
+import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
 
-import { FillColors } from "@lib";
+import { FillColors, onGestureChange } from "@lib";
 import CloseIcon from "@assets/svg/close.svg";
 
-const { set, eq, sub, cond } = Animated;
+const { set, or, eq, neq, sub, cond, call } = Animated;
+
+const COLOR_SIZE = 60;
+const ANGLE_INCREMENT = 360 / FillColors.length;
 
 const config = {
   damping: 40,
@@ -43,7 +48,8 @@ export interface ColorPickerProps {
 }
 
 interface ColorProps {
-  rotateZ: Animated.Node<string>;
+  index: number;
+  panRef: any;
   enabled: boolean;
   openTransition: Animated.Node<number>;
   enabledTransition: Animated.Node<number>;
@@ -52,39 +58,97 @@ interface ColorProps {
 }
 
 const Color: React.FC<ColorProps> = ({
-  color,
-  rotateZ,
+  index,
+  color: backgroundColor,
+  panRef,
   openTransition,
   enabledTransition,
   enabled,
   onChoose
 }) => {
-  const handleOnChoose = () => onChoose(color);
+  const [state, prevState] = useValues(
+    [State.UNDETERMINED, State.UNDETERMINED],
+    []
+  );
+
+  const activeTransition = useMemoOne(
+    () =>
+      withTransition(or(eq(state, State.BEGAN), eq(state, State.ACTIVE)), {
+        duration: 200,
+        easing: Easing.inOut(Easing.ease)
+      }),
+    []
+  );
+
+  const handleOnChoose = () => {
+    Haptics.trigger("impactMedium");
+    onChoose(backgroundColor);
+  };
+
+  useCode(
+    () => [
+      onGestureChange(state, prevState, [
+        cond(eq(state, State.END), call([], handleOnChoose)),
+        cond(
+          eq(state, State.BEGAN),
+          call([], () => Haptics.trigger("impactLight"))
+        )
+      ])
+    ],
+    []
+  );
+
+  const tapHandler = onGestureEvent({
+    state
+  });
+
+  const [scale, borderRadius, opacity, translateY] = useMemoOne(
+    () => [
+      bInterpolate(activeTransition, 1, 1.45),
+      bInterpolate(activeTransition, COLOR_SIZE / 2, COLOR_SIZE / 4),
+      bInterpolate(enabledTransition, 0.5, 1),
+      bInterpolate(openTransition, 0, 150)
+    ],
+    []
+  );
 
   return (
-    <Animated.View
-      style={{
-        opacity: bInterpolate(enabledTransition, 0.5, 1),
-        transform: [{ rotateZ }]
-      }}
+    <TapGestureHandler
+      {...tapHandler}
+      simultaneousHandlers={panRef}
+      maxDeltaX={10}
+      maxDeltaY={10}
+      enabled={enabled}
     >
-      <TouchableOpacity disabled={!enabled} onPress={handleOnChoose}>
+      <Animated.View
+        style={{
+          opacity,
+          alignItems: "center",
+          transform: [
+            { rotate: `${index * ANGLE_INCREMENT}deg` },
+            { translateY }
+          ]
+        }}
+      >
         <Animated.View
           style={[
             styles.color,
             {
-              marginTop: bInterpolate(openTransition, 0, 150),
-              backgroundColor: color
+              // borderWidth,
+              borderRadius,
+              backgroundColor,
+              transform: [{ scale }]
             }
           ]}
         />
-      </TouchableOpacity>
-    </Animated.View>
+      </Animated.View>
+    </TapGestureHandler>
   );
 };
 
 export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
   ({ onChoose, cell, enabled, visible }) => {
+    const panRef = useRef<PanGestureHandler>(null);
     const [dragX, dragY, velocityX, velocityY] = useValues<number>(
       [0, 0, 0, 0],
       []
@@ -115,13 +179,6 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
       []
     );
 
-    useCode(
-      () => [
-        onChange(tapState, cond(eq(tapState, State.END), [set(visible, 0)]))
-      ],
-      []
-    );
-
     const scroll = useMemoOne(
       () =>
         withDecay({
@@ -132,48 +189,49 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
       []
     );
 
-    const rotateZ = (index: number) =>
-      concat(
-        interpolate(scroll, {
-          inputRange: [0, 100],
-          outputRange: [
-            (index * 360) / FillColors.length,
-            ((index + 1) * 360) / FillColors.length
-          ]
-        }),
-        "deg"
-      );
+    const angle = (index: number) =>
+      interpolate(scroll, {
+        inputRange: [0, 100],
+        outputRange: [index * ANGLE_INCREMENT, (index + 1) * ANGLE_INCREMENT]
+      });
 
+    useCode(
+      () => [
+        onChange(tapState, cond(eq(tapState, State.END), [set(visible, 0)]))
+      ],
+      []
+    );
+
+    const translateY = bInterpolate(openTransition, 75, -10);
+    const rotate = interpolate(scroll, {
+      inputRange: [0, 100],
+      outputRange: [1, 2]
+    });
+    const scale = bInterpolate(openTransition, 0, 1);
     return (
-      <PanGestureHandler {...panHandler}>
+      <PanGestureHandler ref={panRef} {...panHandler}>
         <Animated.View
-          style={[
-            styles.container,
-            {
-              transform: [{ translateY: bInterpolate(openTransition, 70, 0) }]
-            }
-          ]}
+          style={[styles.container, { transform: [{ translateY }] }]}
         >
-          {FillColors.map((color, index) => (
-            <Color
-              key={index}
-              {...{
-                onChoose: color => onChoose(cell, color),
-                rotateZ: rotateZ(index),
-                openTransition,
-                enabledTransition,
-                enabled,
-                color
-              }}
-            />
-          ))}
+          <Animated.View style={{ transform: [{ rotate }] }}>
+            {FillColors.map((color, index) => (
+              <Color
+                key={index}
+                {...{
+                  index,
+                  panRef,
+                  onChoose: color => onChoose(cell, color),
+                  openTransition,
+                  enabledTransition,
+                  enabled,
+                  color
+                }}
+              />
+            ))}
+          </Animated.View>
           <TapGestureHandler {...tapHandler}>
             <Animated.View
-              style={{
-                position: "absolute",
-                bottom: 30,
-                transform: [{ scale: bInterpolate(openTransition, 0, 1) }]
-              }}
+              style={[styles.closeButton, { transform: [{ scale }] }]}
             >
               <CloseIcon width={70} height={70} />
             </Animated.View>
@@ -192,10 +250,13 @@ const styles = StyleSheet.create({
     bottom: 0
   },
   color: {
-    borderWidth: 3,
     position: "absolute",
-    height: 60,
-    width: 60,
-    borderRadius: 30
+    borderWidth: 3,
+    height: COLOR_SIZE,
+    width: COLOR_SIZE
+  },
+  closeButton: {
+    position: "absolute",
+    bottom: 35
   }
 });

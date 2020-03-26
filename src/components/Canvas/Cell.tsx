@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, PixelRatio } from "react-native";
 import { useSelector } from "react-redux";
 
 import { CELL_SIZE, Colors } from "@lib";
@@ -11,19 +11,16 @@ export interface CellProps {
 }
 
 export const Cell: React.FC<CellProps> = React.memo(({ index }) => {
-  const color = useSelector((state: RootState) =>
+  const backgroundColor = useSelector((state: RootState) =>
     selectors.cellColor(state, index)
   );
 
-  return (
-    <View
-      style={{
-        width: CELL_SIZE,
-        height: CELL_SIZE,
-        backgroundColor: color
-        // borderColor: Colors.lightGray,
-        // borderWidth: StyleSheet.hairlineWidth
-      }}
-    ></View>
-  );
+  return <View style={{ ...styles.cell, backgroundColor }}></View>;
+});
+
+const styles = StyleSheet.create({
+  cell: {
+    width: CELL_SIZE,
+    height: CELL_SIZE
+  }
 });

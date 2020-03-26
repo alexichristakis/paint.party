@@ -1,4 +1,4 @@
-import { Dimensions, Platform, StatusBar } from "react-native";
+import { Dimensions, Platform, StatusBar, PixelRatio } from "react-native";
 
 export const CANVAS_DIMENSIONS = 20;
 
@@ -33,4 +33,6 @@ export const MODAL_TOP_PADDING = Platform.select({
   default: SB_HEIGHT
 });
 
-export const CELL_SIZE = SCREEN_WIDTH / CANVAS_DIMENSIONS;
+export const CELL_SIZE = PixelRatio.roundToNearestPixel(
+  SCREEN_WIDTH / CANVAS_DIMENSIONS
+);
