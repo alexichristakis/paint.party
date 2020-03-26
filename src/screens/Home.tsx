@@ -1,20 +1,19 @@
-import React, { useEffect, useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
 import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
 import { connect, ConnectedProps } from "react-redux";
-import moment from "moment";
 
 import { RootState } from "@redux/types";
 import * as selectors from "@redux/selectors";
 import { AppActions, CanvasActions } from "@redux/modules";
 import { CreateCanvas } from "@components/CreateCanvas";
-import { ModalListRef } from "@components/ModalList";
 
 import { StackParamList } from "../App";
 
 const mapStateToProps = (state: RootState) => ({
-  activeCanvas: selectors.activeCanvas(state)
+  activeCanvas: selectors.activeCanvas(state),
+  isCreatingCanvas: selectors.isCreatingCanvas(state)
 });
 const mapDispatchToProps = {
   logout: AppActions.logout,
@@ -32,8 +31,8 @@ export interface HomeProps {
 }
 
 const Home: React.FC<HomeProps & HomeReduxProps> = ({
+  isCreatingCanvas,
   fetchCanvases,
-  navigation,
   activeCanvas,
   createCanvas,
   logout,
@@ -70,6 +69,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
 
       <CreateCanvas
         visible={modalVisible}
+        loading={isCreatingCanvas}
         onClose={() => setModalVisible(false)}
         onCreate={createCanvas}
       />

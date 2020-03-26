@@ -16,7 +16,7 @@ export type Cell = { [cellUpdateId: string]: CellUpdate };
 
 export type CanvasViz = {
   id: string;
-  cells: Cell[];
+  cells: { [id: string]: Cell } | null;
 };
 
 export type Canvas = {
@@ -36,6 +36,7 @@ export type CanvasState = Readonly<{
   activeCanvas: string;
   canvas: CanvasViz;
   canvases: { [canvasId: string]: Canvas };
+  creatingCanvas: boolean;
   fetchingCanvases: boolean;
   joiningCanvas: boolean;
   loadingCell: boolean;
@@ -44,6 +45,7 @@ export type CanvasState = Readonly<{
 
 const initialState: CanvasState = {
   activeCanvas: "",
+  creatingCanvas: false,
   fetchingCanvases: false,
   loadingCanvas: false,
   joiningCanvas: false,
@@ -51,7 +53,7 @@ const initialState: CanvasState = {
   canvases: {},
   canvas: {
     id: "",
-    cells: []
+    cells: null
   }
 };
 
@@ -93,7 +95,7 @@ export default (
     case ActionTypes.CREATE_CANVAS: {
       return {
         ...state,
-        loadingCanvas: true
+        creatingCanvas: true
       };
     }
 
@@ -105,6 +107,7 @@ export default (
         draft.activeCanvas = canvas.id;
         draft.canvases[canvas.id] = canvas;
         draft.loadingCanvas = false;
+        draft.creatingCanvas = false;
         draft.joiningCanvas = false;
 
         return draft;
@@ -137,7 +140,8 @@ export default (
       const { cellId, update } = action.payload;
 
       return immer(state, draft => {
-        draft.canvas.cells[cellId] = update;
+        if (draft.canvas.cells) draft.canvas.cells[cellId] = update;
+        else draft.canvas.cells = { [cellId]: update };
         draft.loadingCell = false;
 
         return draft;

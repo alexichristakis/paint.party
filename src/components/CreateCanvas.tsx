@@ -4,7 +4,8 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ActivityIndicator
 } from "react-native";
 
 import moment from "moment";
@@ -21,12 +22,14 @@ import Send from "@assets/svg/send.svg";
 
 export interface CreateCanvasProps {
   visible: boolean;
+  loading: boolean;
   onClose: () => void;
   onCreate: (canvas: NewCanvas) => void;
 }
 
 export const CreateCanvas: React.FC<CreateCanvasProps> = ({
   visible,
+  loading,
   onClose,
   onCreate
 }) => {
@@ -61,9 +64,11 @@ export const CreateCanvas: React.FC<CreateCanvasProps> = ({
   const isValidCanvas = () => !!name.length;
 
   const handleOnPressCreateCanvas = () =>
-    console.log("create canvas", name, expiry, backgroundColor);
+    onCreate({ name, expiresAt: expiry.unix(), backgroundColor });
 
-  const createCanvasButtonTransition = useSpringTransition(isValidCanvas());
+  const createCanvasButtonTransition = useSpringTransition(
+    isValidCanvas() && !loading
+  );
 
   const range = [1, 5] as [number, number];
   return (
@@ -99,20 +104,24 @@ export const CreateCanvas: React.FC<CreateCanvasProps> = ({
           onChoose={setBackgroundColor}
         />
 
-        <TouchableScale
-          onPress={handleOnPressCreateCanvas}
-          dependencies={[name, expiry.fromNow(), backgroundColor]}
-          style={styles.sendButton}
-        >
-          <Animated.View
-            style={{
-              transform: [{ scale: createCanvasButtonTransition }],
-              opacity: createCanvasButtonTransition
-            }}
+        {loading ? (
+          <ActivityIndicator style={styles.sendButton} />
+        ) : (
+          <TouchableScale
+            onPress={handleOnPressCreateCanvas}
+            dependencies={[name, expiry.fromNow(), backgroundColor]}
+            style={styles.sendButton}
           >
-            <Send height={50} width={50} />
-          </Animated.View>
-        </TouchableScale>
+            <Animated.View
+              style={{
+                transform: [{ scale: createCanvasButtonTransition }],
+                opacity: createCanvasButtonTransition
+              }}
+            >
+              <Send height={50} width={50} />
+            </Animated.View>
+          </TouchableScale>
+        )}
       </ModalList>
     </>
   );

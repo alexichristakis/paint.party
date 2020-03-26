@@ -30,7 +30,8 @@ export const canvas = createSelector(s, state => state.canvas);
 export const cellColor = createSelector(
   [canvas, activeCanvasEntity, (_: RootState, i: number) => i],
   (canvas, activeCanvasMetadata, index) => {
-    const updates = values(canvas.cells[index]) ?? [];
+    const cells = canvas.cells ?? {};
+    const updates = values(cells[index]) ?? [];
 
     if (updates.length) {
       const sorted = sortBy(updates, o => o.time);
@@ -40,4 +41,9 @@ export const cellColor = createSelector(
 
     return activeCanvasMetadata.backgroundColor ?? "#FFFFFF";
   }
+);
+
+export const isCreatingCanvas = createSelector(
+  s,
+  state => state.creatingCanvas
 );
