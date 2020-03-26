@@ -26,14 +26,9 @@ import {
   useSpringTransition
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
-import moment from "moment";
 
-import * as selectors from "@redux/selectors";
-
-import { Countdown } from "../universal/Countdown";
-
+import { Colors } from "@lib";
 import CloseIcon from "@assets/svg/close.svg";
-import CircularProgress from "./CircularProgress";
 
 const { sqrt, set, or, eq, abs, sub, cond, pow, multiply, add } = Animated;
 
@@ -47,16 +42,16 @@ const config = {
 };
 
 const COLORS = [
-  "red",
-  "red",
-  "red",
-  "red",
-  "red",
-  "red",
-  "red",
-  "red",
-  "red",
-  "red"
+  Colors.red,
+  Colors.orange,
+  Colors.yellow,
+  Colors.green,
+  Colors.blue,
+  Colors.purple,
+  Colors.pink,
+  Colors.grayBlue,
+  Colors.gray,
+  Colors.nearBlack
 ];
 
 export interface ColorPickerProps {

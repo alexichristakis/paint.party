@@ -2,6 +2,8 @@ import { Dimensions, Platform, StatusBar } from "react-native";
 
 export const CANVAS_DIMENSIONS = 20;
 
+export const DRAW_INTERVAL = 1;
+
 export const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get(
   "window"
 );

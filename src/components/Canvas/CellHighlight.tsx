@@ -1,5 +1,5 @@
 import React from "react";
-import Animated, { useCode, debug, onChange } from "react-native-reanimated";
+import Animated, { useCode, onChange } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import { useMemoOne } from "use-memo-one";
 import { withTimingTransition, delay } from "react-native-redash";

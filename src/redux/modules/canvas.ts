@@ -2,12 +2,8 @@ import immer from "immer";
 import moment from "moment";
 import keyBy from "lodash/keyBy";
 
-import {
-  createAction,
-  ActionsUnion,
-  ExtractActionFromActionCreator,
-  RootState
-} from "../types";
+import { DRAW_INTERVAL } from "@lib";
+import { createAction, ActionsUnion } from "../types";
 
 export type CellUpdate = {
   id: string;
@@ -125,7 +121,7 @@ export default (
       const { activeCanvas } = state;
       return immer(state, draft => {
         draft.canvases[activeCanvas].nextDrawAt = moment()
-          .add(30, "minutes")
+          .add(DRAW_INTERVAL, "minutes")
           .unix();
 
         return draft;

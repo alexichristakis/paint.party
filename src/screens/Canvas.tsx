@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { StyleSheet, View, Text, Platform, Button } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { connect, ConnectedProps, useSelector } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
@@ -11,7 +11,7 @@ import { Canvas as CanvasVisualization } from "@components/Canvas";
 import { Countdown } from "@components/universal";
 import moment from "moment";
 
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "@lib";
+import { SCREEN_HEIGHT, SCREEN_WIDTH, Colors } from "@lib";
 import { StackParamList } from "../App";
 
 const mapStateToProps = (state: RootState) => ({
@@ -43,15 +43,11 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     }, [])
   );
 
-  const handleOnPressCell = (cell: number, color: string) => {
-    draw(cell, color);
-  };
-
   const enabled = canvasActiveAt < moment().unix();
   return (
     <View style={styles.container}>
       <Countdown enabled={enabled} toDate={canvasActiveAt} />
-      <CanvasVisualization enabled={enabled} onPressCell={handleOnPressCell} />
+      <CanvasVisualization enabled={enabled} onPressCell={draw} />
     </View>
   );
 };
@@ -61,6 +57,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: SCREEN_HEIGHT,
     width: SCREEN_WIDTH,
+    backgroundColor: Colors.lightGray,
     alignItems: "center",
     justifyContent: "center"
   }

@@ -5,13 +5,17 @@ export const Colors = {
   gray: "rgb(120,120,120)",
   lightGray: "rgb(230, 230, 230)",
   background: "rgb(242, 242, 242)",
-  purple: "#4904FF",
-  pink: "#D31EB6",
-  red: "rgb(255, 0, 0)",
+  blue: "#007FFF",
+  orange: "#FA6400",
+  lightblue: "#64D2FF",
+  darkblue: "#007FFF",
+  magenta: "#FB00FF",
+  green: "#49E020",
+  purple: "#5E5CE6",
   yellow: "#FFD60A",
-  orange: "orange",
-  green: "#96D863",
-  blue: "#597EDB"
+  red: "#E02020",
+  grayBlue: "#C6E2FF",
+  pink: "#FF6FA6"
 };
 
 const baseText: TextStyle = {};

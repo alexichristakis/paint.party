@@ -20,26 +20,8 @@ import { Row } from "./Row";
 import { CellHighlight } from "./CellHighlight";
 import { ColorPicker } from "./ColorPicker";
 
-const {
-  add,
-  onChange,
-  multiply,
-  sub,
-  clockRunning,
-  max,
-  useCode,
-  and,
-  not,
-  or,
-  eq,
-  debug,
-  set,
-  divide,
-  block,
-  cond,
-  call
-} = Animated;
-const { ACTIVE, BEGAN, UNDETERMINED, END } = State;
+const { onChange, useCode, or, eq, set, cond, call } = Animated;
+const { ACTIVE, UNDETERMINED, END } = State;
 
 export interface CanvasProps {
   enabled: boolean;
