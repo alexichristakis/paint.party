@@ -1,6 +1,7 @@
 import { StyleSheet, TextStyle } from "react-native";
 
 export const Colors = {
+  transGray: "rgba(0, 0, 0, 0.7)",
   nearBlack: "rgb(10, 10, 10)",
   gray: "rgb(120,120,120)",
   lightGray: "rgb(230, 230, 230)",

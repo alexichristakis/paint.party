@@ -10,25 +10,28 @@ import {
   onGestureEvent,
   useValues,
   withOffset,
-  withScaleOffset
+  withScaleOffset,
+  useTransition
 } from "react-native-redash";
 import times from "lodash/times";
 import { useMemoOne } from "use-memo-one";
 
-import { CANVAS_DIMENSIONS, coordinatesToIndex } from "@lib";
+import { Colors, CANVAS_DIMENSIONS, coordinatesToIndex } from "@lib";
 import { Row } from "./Row";
 import { CellHighlight } from "./CellHighlight";
 import { ColorPicker } from "./ColorPicker";
+import { StyleSheet, ActivityIndicator } from "react-native";
 
 const { onChange, useCode, or, eq, set, cond, call } = Animated;
 const { ACTIVE, UNDETERMINED, END } = State;
 
 export interface CanvasProps {
   enabled: boolean;
+  loading: boolean;
   onDraw: (cell: number, color: string) => void;
 }
 
-export const Canvas: React.FC<CanvasProps> = ({ onDraw, enabled }) => {
+export const Canvas: React.FC<CanvasProps> = ({ loading, onDraw, enabled }) => {
   const [selectedCell, setSelectedCell] = useState(-1);
 
   const pinchRef = useRef<PinchGestureHandler>(null);
@@ -97,6 +100,8 @@ export const Canvas: React.FC<CanvasProps> = ({ onDraw, enabled }) => {
     []
   );
 
+  const loadingOverlayOpacity = useTransition(loading);
+
   return (
     <>
       <PanGestureHandler
@@ -142,6 +147,28 @@ export const Canvas: React.FC<CanvasProps> = ({ onDraw, enabled }) => {
         cell={selectedCell}
         onChoose={handleOnChooseColor}
       />
+
+      <Animated.View
+        pointerEvents={loading ? "auto" : "none"}
+        style={[styles.loadingOverlay, { opacity: loadingOverlayOpacity }]}
+      >
+        <ActivityIndicator style={styles.loadingIndicator} size={"large"} />
+      </Animated.View>
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  loadingIndicator: {
+    width: 80,
+    height: 80,
+    backgroundColor: Colors.transGray,
+    transform: [{ scale: 1.5 }],
+    borderRadius: 15
+  }
+});

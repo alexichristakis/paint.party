@@ -20,6 +20,7 @@ import { StackParamList } from "../App";
 
 const mapStateToProps = (state: RootState) => ({
   activeCanvas: selectors.activeCanvas(state),
+  loadingCanvas: selectors.isLoadingCanvas(state),
   canvas: selectors.canvas(state)
 });
 const mapDispatchToProps = {
@@ -36,6 +37,7 @@ export interface CanvasProps {
 
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
+  loadingCanvas,
   open,
   close,
   draw
@@ -68,7 +70,11 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
           <Hamburger width={20} height={20} />
         </TouchableOpacity>
       </View>
-      <CanvasVisualization enabled={enabled} onDraw={draw} />
+      <CanvasVisualization
+        loading={loadingCanvas}
+        enabled={enabled}
+        onDraw={draw}
+      />
     </View>
   );
 };

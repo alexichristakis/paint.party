@@ -40,6 +40,7 @@ export const Countdown: React.FC<Countdown> = React.memo(
           );
         }
       }, 1000);
+
       return () => clearInterval(interval);
     }, [toDate, enable]);
 
