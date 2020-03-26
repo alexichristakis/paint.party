@@ -28,20 +28,10 @@ export const Countdown: React.FC<Countdown> = ({ enabled, toDate }) => {
 
   if (enabled) return null;
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.count}>{count}</Text>
-    </View>
-  );
+  return <Text style={styles.count}>{count}</Text>;
 };
 
 const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    top: SB_HEIGHT + 10,
-    alignItems: "flex-end",
-    marginBottom: 10
-  },
   count: {
     ...TextStyles.title
   }
