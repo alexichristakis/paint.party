@@ -17,7 +17,7 @@ import { Landing, Home, Canvas } from "./screens";
 
 export type StackParamList = {
   HOME: undefined;
-  CANVAS: { canvasId: string };
+  CANVAS: undefined;
   LANDING: undefined;
 };
 
@@ -25,6 +25,7 @@ const Stack = createNativeStackNavigator<StackParamList>();
 
 const Root = () => {
   const isAuthenticated = useSelector(selectors.isAuthenticated);
+  const activeCanvas = useSelector(selectors.activeCanvas);
 
   return (
     <NavigationContainer>
@@ -38,9 +39,14 @@ const Root = () => {
         {isAuthenticated ? (
           <Stack.Screen name="HOME">
             {() => (
-              <Stack.Navigator screenOptions={{ stackPresentation: "push" }}>
-                <Stack.Screen name="HOME" component={Home} />
-                <Stack.Screen name="CANVAS" component={Canvas} />
+              <Stack.Navigator
+                screenOptions={{ headerShown: false, stackAnimation: "fade" }}
+              >
+                {activeCanvas.length ? (
+                  <Stack.Screen name="CANVAS" component={Canvas} />
+                ) : (
+                  <Stack.Screen name="HOME" component={Home} />
+                )}
               </Stack.Navigator>
             )}
           </Stack.Screen>

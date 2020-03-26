@@ -1,18 +1,23 @@
 import React, { useCallback } from "react";
-import { StyleSheet, View, Text, Platform } from "react-native";
-import { NativeStackNavigationProp } from "react-native-screens/native-stack";
+import { StyleSheet, View, Text, Platform, Button } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
+import { useFocusEffect, RouteProp } from "@react-navigation/core";
+import { NativeStackNavigationProp } from "react-native-screens/native-stack";
 
 import * as selectors from "@redux/selectors";
 import { CanvasActions } from "@redux/modules";
 import { RootState } from "@redux/types";
+import { Canvas as CanvasVisualization } from "@components/Canvas";
+
 import { StackParamList } from "../App";
-import { useFocusEffect, RouteProp } from "@react-navigation/core";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "@lib";
 
 const mapStateToProps = (state: RootState) => ({
   canvas: selectors.canvas(state)
 });
 const mapDispatchToProps = {
+  close: CanvasActions.close,
+  draw: CanvasActions.draw,
   openCanvas: CanvasActions.open
 };
 
@@ -24,23 +29,29 @@ export interface CanvasProps {
 
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   navigation,
+  draw,
+  close,
+  canvas,
   route,
   openCanvas
 }) => {
-  const { canvasId } = route.params;
+  const handleOnPressCell = (cell: number, color: string) => {
+    draw(cell, color);
+  };
 
-  useFocusEffect(
-    useCallback(() => {
-      openCanvas(canvasId);
-    }, [canvasId])
+  return (
+    <View style={styles.container}>
+      <Button title="goBack" onPress={close} />
+      <CanvasVisualization onPressCell={handleOnPressCell} />
+    </View>
   );
-
-  return <View></View>;
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: SCREEN_HEIGHT,
+    width: SCREEN_WIDTH,
     alignItems: "center",
     justifyContent: "center"
   }

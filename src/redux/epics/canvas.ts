@@ -31,16 +31,6 @@ import { Actions, ActionTypes, AppActions, CanvasActions } from "../modules";
 import canvas, { CellUpdate, Canvas, CanvasViz } from "../modules/canvas";
 import { RootState, ExtractActionFromActionCreator } from "../types";
 
-export type CanvasPayload =
-  | {
-      type: "load";
-      payload: CanvasViz;
-    }
-  | {
-      type: "update";
-      payload: CellUpdate;
-    };
-
 const openCanvas: Epic<Actions> = action$ =>
   action$.pipe(
     filter(isOfType(ActionTypes.OPEN_CANVAS)),
@@ -50,20 +40,34 @@ const openCanvas: Epic<Actions> = action$ =>
       const ref = database().ref(id);
 
       const obs = new Observable<Actions>(subscriber => {
-        ref
-          .once("value")
-          .then(val =>
-            subscriber.next(CanvasActions.openSuccess({ id, cells: val.val() }))
-          );
+        let initialLoadComplete = false;
+        ref.once("value").then(val => {
+          initialLoadComplete = true;
+          subscriber.next(CanvasActions.openSuccess({ id, cells: val.val() }));
+        });
 
         ref.on(
           "child_changed",
-          (change: FirebaseDatabaseTypes.DataSnapshot) =>
-            subscriber.next(CanvasActions.update(+change.key!, change.val()))
+          (change: FirebaseDatabaseTypes.DataSnapshot) => {
+            subscriber.next(CanvasActions.update(+change.key!, change.val()));
+          }
           //   error => console.log("ERROR", error)
         );
 
-        return () => ref.off("child_changed");
+        ref.on(
+          "child_added",
+          (change: FirebaseDatabaseTypes.DataSnapshot) => {
+            if (initialLoadComplete) {
+              subscriber.next(CanvasActions.update(+change.key!, change.val()));
+            }
+          }
+          //   error => console.log("ERROR", error)
+        );
+
+        return () => {
+          ref.off("child_added");
+          ref.off("child_changed");
+        };
       });
 
       return obs.pipe(
@@ -146,4 +150,30 @@ const joinCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
     })
   );
 
-export default [openCanvas, drawOnCanvas, createCanvas, joinCanvas];
+const fetchCanvases: Epic<Actions, Actions, RootState> = (action$, state$) =>
+  action$.pipe(
+    filter(isOfType(ActionTypes.FETCH_CANVASES)),
+    switchMap(async () => {
+      const uid = selectors.uid(state$.value);
+
+      const res = await firestore()
+        .collection("canvases")
+        .where("authors", "array-contains", uid)
+        .get();
+
+      const canvases = res.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Canvas[];
+
+      return CanvasActions.fetchSuccess(canvases);
+    })
+  );
+
+export default [
+  openCanvas,
+  drawOnCanvas,
+  createCanvas,
+  joinCanvas,
+  fetchCanvases
+];

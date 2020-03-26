@@ -20,6 +20,7 @@ const mapDispatchToProps = {
   joinCanvas: CanvasActions.join,
   unsubscribe: CanvasActions.close,
   createCanvas: CanvasActions.create,
+  fetchCanvases: CanvasActions.fetch,
   draw: CanvasActions.draw
 };
 
@@ -29,6 +30,8 @@ export interface HomeProps {
 }
 
 const Home: React.FC<HomeProps & HomeReduxProps> = ({
+  fetchCanvases,
+  navigation,
   activeCanvas,
   createCanvas,
   logout,
@@ -41,6 +44,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
   useFocusEffect(
     useCallback(() => {
       if (activeCanvas.length) unsubscribe();
+      fetchCanvases();
     }, [activeCanvas])
   );
 
@@ -64,6 +68,10 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
         onPress={() => joinCanvas("tHEpTuC5kxtAf5dYqyar")}
       />
       <Button title="unsubscribe" onPress={unsubscribe} />
+      <Button
+        title="go to canvas"
+        onPress={() => subscribe("tHEpTuC5kxtAf5dYqyar")}
+      />
     </View>
   );
 };

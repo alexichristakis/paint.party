@@ -30,3 +30,5 @@ export const MODAL_TOP_PADDING = Platform.select({
   android: 10,
   default: SB_HEIGHT
 });
+
+export const CELL_SIZE = SCREEN_WIDTH / CANVAS_DIMENSIONS;

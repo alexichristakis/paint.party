@@ -1,5 +1,6 @@
 import immer from "immer";
 import moment from "moment";
+import keyBy from "lodash/keyBy";
 
 import {
   createAction,
@@ -39,6 +40,7 @@ export type CanvasState = Readonly<{
   activeCanvas: string;
   canvas: CanvasViz;
   canvases: { [canvasId: string]: Canvas };
+  fetchingCanvases: boolean;
   joiningCanvas: boolean;
   loadingCell: boolean;
   loadingCanvas: boolean;
@@ -46,6 +48,7 @@ export type CanvasState = Readonly<{
 
 const initialState: CanvasState = {
   activeCanvas: "",
+  fetchingCanvases: false,
   loadingCanvas: false,
   joiningCanvas: false,
   loadingCell: false,
@@ -61,6 +64,16 @@ export default (
   action: ActionsUnion<typeof Actions>
 ): CanvasState => {
   switch (action.type) {
+    case ActionTypes.FETCH_CANVASES: {
+      return { ...state, fetchingCanvases: true };
+    }
+
+    case ActionTypes.FETCH_CANVASES_SUCCESS: {
+      const { canvases } = action.payload;
+
+      return { ...state, canvases: keyBy(canvases, o => o.id) };
+    }
+
     case ActionTypes.OPEN_CANVAS: {
       const { id } = action.payload;
 
@@ -140,6 +153,8 @@ export default (
 };
 
 export enum ActionTypes {
+  FETCH_CANVASES = "canvas/FETCH",
+  FETCH_CANVASES_SUCCESS = "canvas/FETCH_SUCCESS",
   OPEN_CANVAS = "canvas/OPEN",
   OPEN_CANVAS_SUCCESS = "canvas/OPEN_SUCCESS",
   CREATE_CANVAS = "canvas/CREATE",
@@ -156,6 +171,9 @@ export enum ActionTypes {
 }
 
 export const Actions = {
+  fetch: () => createAction(ActionTypes.FETCH_CANVASES),
+  fetchSuccess: (canvases: Canvas[]) =>
+    createAction(ActionTypes.FETCH_CANVASES_SUCCESS, { canvases }),
   open: (id: string) => createAction(ActionTypes.OPEN_CANVAS, { id }),
   openSuccess: (canvas: CanvasViz) =>
     createAction(ActionTypes.OPEN_CANVAS_SUCCESS, { canvas }),
