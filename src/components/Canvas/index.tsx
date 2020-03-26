@@ -14,16 +14,11 @@ import {
 } from "react-native-redash";
 import times from "lodash/times";
 import { useMemoOne } from "use-memo-one";
-import moment from "moment";
-import { useSelector } from "react-redux";
 
-import * as selectors from "@redux/selectors";
 import { CANVAS_DIMENSIONS, coordinatesToIndex } from "@lib";
-
 import { Row } from "./Row";
 import { CellHighlight } from "./CellHighlight";
 import { ColorPicker } from "./ColorPicker";
-import { Countdown } from "./Countdown";
 
 const {
   add,
@@ -47,13 +42,12 @@ const {
 const { ACTIVE, BEGAN, UNDETERMINED, END } = State;
 
 export interface CanvasProps {
+  enabled: boolean;
   onPressCell: (cell: number, color: string) => void;
 }
 
-export const Canvas: React.FC<CanvasProps> = ({ onPressCell }) => {
+export const Canvas: React.FC<CanvasProps> = ({ onPressCell, enabled }) => {
   const [selectedCell, setSelectedCell] = useState(-1);
-
-  const canvasActiveAt = useSelector(selectors.canvasActiveAt);
 
   const pinchRef = useRef<PinchGestureHandler>(null);
   const panRef = useRef<PanGestureHandler>(null);
@@ -113,21 +107,18 @@ export const Canvas: React.FC<CanvasProps> = ({ onPressCell }) => {
       onChange(
         tapState,
         cond(eq(tapState, END), [
-          set(pickerVisible, 1),
           call([tapX, tapY], numbers =>
             handleOnPressCell(...(numbers as [number, number]))
-          )
+          ),
+          set(pickerVisible, 1)
         ])
       )
     ],
     []
   );
 
-  const enabled = canvasActiveAt < moment().unix();
-
   return (
     <>
-      <Countdown enabled={enabled} toDate={canvasActiveAt} />
       <PanGestureHandler
         avgTouches={true}
         ref={panRef}
@@ -154,7 +145,11 @@ export const Canvas: React.FC<CanvasProps> = ({ onPressCell }) => {
                   {times(CANVAS_DIMENSIONS, i => (
                     <Row key={i} index={i} />
                   ))}
-                  <CellHighlight visible={pickerVisible} cell={selectedCell} />
+                  <CellHighlight
+                    visible={pickerVisible}
+                    cell={selectedCell}
+                    reset={() => setSelectedCell(-1)}
+                  />
                 </Animated.View>
               </TapGestureHandler>
             </Animated.View>

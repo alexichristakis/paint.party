@@ -30,7 +30,7 @@ import moment from "moment";
 
 import * as selectors from "@redux/selectors";
 
-import { Countdown } from "./Countdown";
+import { Countdown } from "../universal/Countdown";
 
 import CloseIcon from "@assets/svg/close.svg";
 import CircularProgress from "./CircularProgress";
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     bottom: 0
   },
   color: {
-    borderWidth: 2,
+    borderWidth: 3,
     position: "absolute",
     height: 60,
     width: 60,

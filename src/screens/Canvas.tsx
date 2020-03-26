@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { StyleSheet, View, Text, Platform, Button } from "react-native";
-import { connect, ConnectedProps } from "react-redux";
+import { connect, ConnectedProps, useSelector } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
 
@@ -8,11 +8,14 @@ import * as selectors from "@redux/selectors";
 import { CanvasActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { Canvas as CanvasVisualization } from "@components/Canvas";
+import { Countdown } from "@components/universal";
+import moment from "moment";
 
-import { StackParamList } from "../App";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "@lib";
+import { StackParamList } from "../App";
 
 const mapStateToProps = (state: RootState) => ({
+  activeCanvas: selectors.activeCanvas(state),
   canvas: selectors.canvas(state)
 });
 const mapDispatchToProps = {
@@ -28,20 +31,27 @@ export interface CanvasProps {
 }
 
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
-  navigation,
-  draw,
-  close,
-  canvas,
-  route,
-  openCanvas
+  activeCanvas,
+  openCanvas,
+  draw
 }) => {
+  const canvasActiveAt = useSelector(selectors.canvasActiveAt);
+
+  useFocusEffect(
+    useCallback(() => {
+      openCanvas(activeCanvas);
+    }, [])
+  );
+
   const handleOnPressCell = (cell: number, color: string) => {
     draw(cell, color);
   };
 
+  const enabled = canvasActiveAt < moment().unix();
   return (
     <View style={styles.container}>
-      <CanvasVisualization onPressCell={handleOnPressCell} />
+      <Countdown enabled={enabled} toDate={canvasActiveAt} />
+      <CanvasVisualization enabled={enabled} onPressCell={handleOnPressCell} />
     </View>
   );
 };
