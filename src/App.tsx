@@ -26,9 +26,9 @@ const Stack = createNativeStackNavigator<StackParamList>();
 const Root = () => {
   const ref = useRef(null);
 
-  const { getInitialState } = useLinking(ref, {
-    prefixes: ["https://mychat.com", "mychat://"]
-  });
+  // const { getInitialState } = useLinking(ref, {
+  //   prefixes: ["https://mychat.com", "mychat://"]
+  // });
 
   const isAuthenticated = useSelector(selectors.isAuthenticated);
   const activeCanvas = useSelector(selectors.activeCanvas);
