@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useRef, useState } from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
 import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
@@ -8,6 +8,8 @@ import moment from "moment";
 import { RootState } from "@redux/types";
 import * as selectors from "@redux/selectors";
 import { AppActions, CanvasActions } from "@redux/modules";
+import { CreateCanvas } from "@components/CreateCanvas";
+import { ModalListRef } from "@components/ModalList";
 
 import { StackParamList } from "../App";
 
@@ -40,6 +42,8 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
   unsubscribe,
   draw
 }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+
   //
   useFocusEffect(
     useCallback(() => {
@@ -48,29 +52,26 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
     }, [activeCanvas])
   );
 
-  const TEST_CANVAS: any = {
-    name: "test",
-    backgroundColor: "#FFFFFF",
-    expiresAt: moment()
-      .add(3, "days")
-      .unix()
-  };
-
   return (
     <View style={styles.container}>
       <Text>Home page</Text>
       <Button title="logout" onPress={logout} />
       <Button title="subscribe" onPress={() => subscribe("canvas_1")} />
       <Button title="test draw" onPress={() => draw(2, "#555555")} />
-      <Button title="create canvas" onPress={() => createCanvas(TEST_CANVAS)} />
       <Button
         title="join canvas"
         onPress={() => joinCanvas("tHEpTuC5kxtAf5dYqyar")}
       />
-      <Button title="unsubscribe" onPress={unsubscribe} />
+      <Button title="create canvas" onPress={() => setModalVisible(true)} />
       <Button
         title="go to canvas"
         onPress={() => subscribe("tHEpTuC5kxtAf5dYqyar")}
+      />
+
+      <CreateCanvas
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onCreate={createCanvas}
       />
     </View>
   );

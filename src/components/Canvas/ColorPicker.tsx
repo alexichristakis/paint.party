@@ -21,7 +21,7 @@ import {
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 
-import { Colors } from "@lib";
+import { FillColors } from "@lib";
 import CloseIcon from "@assets/svg/close.svg";
 
 const { set, eq, sub, cond } = Animated;
@@ -34,19 +34,6 @@ const config = {
   restSpeedThreshold: 0.1,
   restDisplacementThreshold: 0.1
 };
-
-const COLORS = [
-  Colors.red,
-  Colors.orange,
-  Colors.yellow,
-  Colors.green,
-  Colors.blue,
-  Colors.purple,
-  Colors.pink,
-  Colors.grayBlue,
-  Colors.gray,
-  Colors.nearBlack
-];
 
 export interface ColorPickerProps {
   enabled: boolean;
@@ -149,7 +136,10 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
       concat(
         interpolate(scroll, {
           inputRange: [0, 100],
-          outputRange: [index * 36, (index + 1) * 36]
+          outputRange: [
+            (index * 360) / FillColors.length,
+            ((index + 1) * 360) / FillColors.length
+          ]
         }),
         "deg"
       );
@@ -164,7 +154,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
             }
           ]}
         >
-          {COLORS.map((color, index) => (
+          {FillColors.map((color, index) => (
             <Color
               key={index}
               {...{

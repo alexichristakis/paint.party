@@ -146,7 +146,7 @@ const joinCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
         .doc(id)
         .update({ authors: uniq([...canvasMetadata.authors, uid]) });
 
-      return CanvasActions.joinSuccess(canvasMetadata as Canvas);
+      return CanvasActions.joinSuccess({ ...canvasMetadata, id } as Canvas);
     })
   );
 

@@ -15,8 +15,24 @@ export const Colors = {
   yellow: "#FFD60A",
   red: "#E02020",
   grayBlue: "#C6E2FF",
+  white: "#FFFFFF",
   pink: "#FF6FA6"
 };
+
+export const FillColors = [
+  Colors.red,
+  Colors.orange,
+  Colors.yellow,
+  Colors.green,
+  Colors.blue,
+  Colors.purple,
+  Colors.pink,
+  Colors.grayBlue,
+  Colors.white,
+  Colors.lightGray,
+  Colors.gray,
+  Colors.nearBlack
+];
 
 const baseText: TextStyle = {};
 
@@ -50,7 +66,7 @@ export const TextStyles: { [key in TextSizes]: TextStyle } = StyleSheet.create({
   },
   title: {
     ...baseText,
-    fontSize: 26,
+    fontSize: 36,
     color: Colors.nearBlack
   },
   bold: {

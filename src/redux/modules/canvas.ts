@@ -87,7 +87,7 @@ export default (
     }
 
     case ActionTypes.JOIN_CANVAS: {
-      return { ...state, joiningCanvas: false };
+      return { ...state, joiningCanvas: true };
     }
 
     case ActionTypes.CREATE_CANVAS: {
@@ -100,6 +100,7 @@ export default (
     case ActionTypes.JOIN_CANVAS_SUCCESS:
     case ActionTypes.CREATE_CANVAS_SUCCESS: {
       const { canvas } = action.payload;
+
       return immer(state, draft => {
         draft.activeCanvas = canvas.id;
         draft.canvases[canvas.id] = canvas;

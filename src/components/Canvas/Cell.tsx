@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
 
-import { CELL_SIZE } from "@lib";
+import { CELL_SIZE, Colors } from "@lib";
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 
@@ -20,8 +20,9 @@ export const Cell: React.FC<CellProps> = React.memo(({ index }) => {
       style={{
         width: CELL_SIZE,
         height: CELL_SIZE,
-        backgroundColor: color,
-        borderWidth: StyleSheet.hairlineWidth
+        backgroundColor: color
+        // borderColor: Colors.lightGray,
+        // borderWidth: StyleSheet.hairlineWidth
       }}
     ></View>
   );

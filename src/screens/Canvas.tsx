@@ -40,7 +40,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   close,
   draw
 }) => {
-  const [key, setKey] = useState("");
+  const [, setKey] = useState("");
   const canvasActiveAt = useSelector(selectors.canvasActiveAt);
 
   useFocusEffect(
@@ -63,12 +63,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
         <TouchableOpacity onPress={close}>
           <X width={20} height={20} />
         </TouchableOpacity>
-        <Countdown
-          key={key}
-          enabled={enabled}
-          enable={setKey}
-          toDate={canvasActiveAt}
-        />
+        <Countdown enabled={enabled} enable={setKey} toDate={canvasActiveAt} />
         <TouchableOpacity onPress={onPressShare}>
           <Hamburger width={20} height={20} />
         </TouchableOpacity>

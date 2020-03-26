@@ -18,8 +18,6 @@ export const Countdown: React.FC<Countdown> = React.memo(
   ({ enable, enabled, toDate }) => {
     const [count, setCount] = useState(ZEROED);
 
-    console.log("render countdown");
-
     useEffect(() => {
       const interval = setInterval(() => {
         const seconds = moment.unix(toDate).diff(moment(), "seconds");

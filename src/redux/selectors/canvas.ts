@@ -6,7 +6,10 @@ import { RootState } from "../types";
 
 const s = (state: RootState) => state.canvas || {};
 
-export const activeCanvas = createSelector(s, state => state.activeCanvas);
+export const activeCanvas = createSelector(
+  s,
+  state => state.activeCanvas ?? ""
+);
 
 export const canvases = createSelector(s, state => state.canvases);
 

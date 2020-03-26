@@ -1,10 +1,6 @@
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import {
-  createAction,
-  ActionsUnion,
-  ExtractActionFromActionCreator,
-  RootState
-} from "../types";
+
+import { createAction, ActionsUnion } from "../types";
 
 export type AppState = Readonly<{
   isAuthenticated: boolean;

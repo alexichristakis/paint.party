@@ -64,10 +64,12 @@ const config = {
 
 export interface ModalListProps {
   scrollRef?: React.RefObject<Animated.ScrollView>;
+  showHeader?: boolean;
   children: React.ReactNode;
-  title: string;
+  title?: string;
   style?: StyleProp<ViewStyle>;
   offsetY?: Animated.Value<number>;
+  onSnap?: (index: number) => void;
   onClose?: () => void;
 }
 
@@ -87,9 +89,11 @@ export const ModalList = React.memo(
       {
         title,
         style,
+        showHeader = true,
         children,
         offsetY = new Animated.Value(0),
         scrollRef,
+        onSnap,
         onClose
       },
       ref
@@ -117,7 +121,10 @@ export const ModalList = React.memo(
       const openFully = () => {
         goUpFully.setValue(1);
       };
-      const close = () => goDown.setValue(1);
+      const close = () => {
+        if (onSnap) onSnap(0);
+        goDown.setValue(1);
+      };
       useImperativeHandle(ref, () => ({
         open,
         openFully,
@@ -138,6 +145,8 @@ export const ModalList = React.memo(
           } else {
             handleClose();
           }
+
+          if (onSnap) onSnap(value);
 
           // fix memory leak
           if (value !== SCREEN_HEIGHT || !onClose) {
@@ -264,15 +273,6 @@ export const ModalList = React.memo(
               <Animated.View
                 style={[styles.container, { transform: [{ translateY }] }]}
               >
-                <View style={styles.headerContainer}>
-                  <Text style={TextStyles.medium}>{title}</Text>
-                  <TouchableOpacity onPress={close}>
-                    <CloseIcon width={25} height={25} />
-                  </TouchableOpacity>
-                </View>
-                <Animated.View
-                  style={[styles.headerDivider, { opacity: dividerOpacity }]}
-                />
                 <NativeViewGestureHandler
                   ref={scrollHandlerRef}
                   waitFor={masterDrawerRef}
@@ -284,11 +284,33 @@ export const ModalList = React.memo(
                     scrollEventThrottle={16}
                     onScrollBeginDrag={onScroll({ y: lastScrollY })}
                     onScroll={onScroll({ y: scrollY })}
-                    contentContainerStyle={[{ paddingBottom: 110 }, style]}
+                    contentContainerStyle={[
+                      { paddingTop: showHeader ? 40 : 10, paddingBottom: 110 },
+                      style
+                    ]}
                   >
                     {children}
                   </Animated.ScrollView>
                 </NativeViewGestureHandler>
+                {showHeader && (
+                  <>
+                    <View style={styles.headerContainer}>
+                      <Text style={TextStyles.medium}>{title}</Text>
+                      <TouchableOpacity
+                        style={{ alignSelf: "flex-end" }}
+                        onPress={close}
+                      >
+                        <CloseIcon width={25} height={25} />
+                      </TouchableOpacity>
+                    </View>
+                    <Animated.View
+                      style={[
+                        styles.headerDivider,
+                        { opacity: dividerOpacity }
+                      ]}
+                    />
+                  </>
+                )}
               </Animated.View>
             </PanGestureHandler>
           </View>
@@ -301,13 +323,16 @@ export const ModalList = React.memo(
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
     backgroundColor: "white",
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT
   },
   headerContainer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
