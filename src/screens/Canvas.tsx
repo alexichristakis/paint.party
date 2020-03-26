@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { StyleSheet, View, ActionSheetIOS, Share } from "react-native";
+import { StyleSheet, View, Share } from "react-native";
 import { connect, ConnectedProps, useSelector } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
@@ -11,8 +11,8 @@ import { CanvasActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { Canvas as CanvasVisualization } from "@components/Canvas";
 import { Countdown } from "@components/universal";
-
 import { SCREEN_HEIGHT, SCREEN_WIDTH, Colors, SB_HEIGHT } from "@lib";
+
 import X from "@assets/svg/X.svg";
 import Hamburger from "@assets/svg/hamburger.svg";
 
@@ -40,8 +40,8 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   close,
   draw
 }) => {
+  const [key, setKey] = useState("");
   const canvasActiveAt = useSelector(selectors.canvasActiveAt);
-  const [enabled, setEnabled] = useState(canvasActiveAt < moment().unix());
 
   useFocusEffect(
     useCallback(() => {
@@ -56,7 +56,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     });
   };
 
-  console.log("enabled", enabled);
+  const enabled = canvasActiveAt < moment().unix();
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -64,8 +64,9 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
           <X width={20} height={20} />
         </TouchableOpacity>
         <Countdown
+          key={key}
           enabled={enabled}
-          enable={setEnabled}
+          enable={setKey}
           toDate={canvasActiveAt}
         />
         <TouchableOpacity onPress={onPressShare}>

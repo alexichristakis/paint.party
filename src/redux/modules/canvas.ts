@@ -186,6 +186,7 @@ export const Actions = {
   draw: (cellId: number, color: string) =>
     createAction(ActionTypes.DRAW_ON_CANVAS, { cellId, color }),
   drawSuccess: () => createAction(ActionTypes.DRAW_ON_CANVAS_SUCCESS),
+
   close: () => createAction(ActionTypes.CLOSE_CANVAS),
   update: (cellId: number, update: Cell) =>
     createAction(ActionTypes.UPDATE_CANVAS, { cellId, update }),

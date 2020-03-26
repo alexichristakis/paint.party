@@ -3,13 +3,12 @@ import Animated, {
   interpolate,
   concat,
   onChange,
-  useCode,
-  debug
+  useCode
 } from "react-native-reanimated";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import {
-  PanGestureHandler,
   State,
+  PanGestureHandler,
   TapGestureHandler
 } from "react-native-gesture-handler";
 import {
@@ -25,7 +24,7 @@ import { useMemoOne } from "use-memo-one";
 import { Colors } from "@lib";
 import CloseIcon from "@assets/svg/close.svg";
 
-const { sqrt, set, or, eq, abs, sub, cond, pow, multiply, add } = Animated;
+const { set, eq, sub, cond } = Animated;
 
 const config = {
   damping: 40,
@@ -52,7 +51,8 @@ const COLORS = [
 export interface ColorPickerProps {
   enabled: boolean;
   visible: Animated.Value<0 | 1>;
-  onChoose: (color: string) => void;
+  cell: number;
+  onChoose: (cell: number, color: string) => void;
 }
 
 interface ColorProps {
@@ -72,10 +72,7 @@ const Color: React.FC<ColorProps> = ({
   enabled,
   onChoose
 }) => {
-  const handleOnChoose = () => {
-    console.log(color);
-    onChoose(color);
-  };
+  const handleOnChoose = () => onChoose(color);
 
   return (
     <Animated.View
@@ -100,7 +97,7 @@ const Color: React.FC<ColorProps> = ({
 };
 
 export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
-  ({ onChoose, enabled, visible }) => {
+  ({ onChoose, cell, enabled, visible }) => {
     const [dragX, dragY, velocityX, velocityY] = useValues<number>(
       [0, 0, 0, 0],
       []
@@ -171,12 +168,12 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
             <Color
               key={index}
               {...{
+                onChoose: color => onChoose(cell, color),
                 rotateZ: rotateZ(index),
                 openTransition,
                 enabledTransition,
                 enabled,
-                color,
-                onChoose
+                color
               }}
             />
           ))}
@@ -195,7 +192,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
       </PanGestureHandler>
     );
   },
-  (p, n) => p.enabled === n.enabled
+  (p, n) => p.enabled === n.enabled && p.cell === n.cell
 );
 
 const styles = StyleSheet.create({

@@ -73,13 +73,8 @@ export const Canvas: React.FC<CanvasProps> = ({ onDraw, enabled }) => {
 
   const gestureBegan = or(eq(panState, ACTIVE), eq(pinchState, ACTIVE));
 
-  const handleOnChooseColor = useCallback(
-    (color: string) => {
-      console.log(selectedCell, color);
-      onDraw(selectedCell, color);
-    },
-    [selectedCell]
-  );
+  const handleOnChooseColor = (cell: number, color: string) =>
+    onDraw(cell, color);
 
   const handleOnPressCell = useCallback(
     (x: number, y: number) => setSelectedCell(coordinatesToIndex(x, y)),
@@ -144,6 +139,7 @@ export const Canvas: React.FC<CanvasProps> = ({ onDraw, enabled }) => {
       <ColorPicker
         enabled={enabled}
         visible={pickerVisible}
+        cell={selectedCell}
         onChoose={handleOnChooseColor}
       />
     </>
