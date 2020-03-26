@@ -1,6 +1,7 @@
 import immer from "immer";
 import moment from "moment";
 import keyBy from "lodash/keyBy";
+import merge from "lodash/merge";
 
 import { DRAW_INTERVAL } from "@lib";
 import { createAction, ActionsUnion } from "../types";
@@ -69,7 +70,13 @@ export default (
     case ActionTypes.FETCH_CANVASES_SUCCESS: {
       const { canvases } = action.payload;
 
-      return { ...state, canvases: keyBy(canvases, o => o.id) };
+      return immer(state, draft => {
+        const newCanvases = keyBy(canvases, o => o.id);
+
+        draft.canvases = merge(draft.canvases, newCanvases);
+
+        return draft;
+      });
     }
 
     case ActionTypes.OPEN_CANVAS: {

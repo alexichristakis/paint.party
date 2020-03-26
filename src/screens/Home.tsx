@@ -1,28 +1,30 @@
 import React, { useCallback, useState } from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
+import values from "lodash/values";
+import Animated from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
 import { connect, ConnectedProps } from "react-redux";
 
 import { RootState } from "@redux/types";
 import * as selectors from "@redux/selectors";
-import { AppActions, CanvasActions } from "@redux/modules";
+import { CanvasActions } from "@redux/modules";
 import { CreateCanvas } from "@components/CreateCanvas";
+import { Canvases } from "@components/Canvases";
 
 import { StackParamList } from "../App";
+import { SB_HEIGHT } from "@lib";
 
 const mapStateToProps = (state: RootState) => ({
   activeCanvas: selectors.activeCanvas(state),
-  isCreatingCanvas: selectors.isCreatingCanvas(state)
+  isCreatingCanvas: selectors.isCreatingCanvas(state),
+  canvases: selectors.canvases(state)
 });
 const mapDispatchToProps = {
-  logout: AppActions.logout,
-  subscribe: CanvasActions.open,
-  joinCanvas: CanvasActions.join,
+  openCanvas: CanvasActions.open,
   unsubscribe: CanvasActions.close,
   createCanvas: CanvasActions.create,
-  fetchCanvases: CanvasActions.fetch,
-  draw: CanvasActions.draw
+  fetchCanvases: CanvasActions.fetch
 };
 
 export type HomeReduxProps = ConnectedProps<typeof connector>;
@@ -32,14 +34,12 @@ export interface HomeProps {
 
 const Home: React.FC<HomeProps & HomeReduxProps> = ({
   isCreatingCanvas,
+  canvases,
+  openCanvas,
   fetchCanvases,
   activeCanvas,
   createCanvas,
-  logout,
-  subscribe,
-  joinCanvas,
-  unsubscribe,
-  draw
+  unsubscribe
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -52,36 +52,31 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
   );
 
   return (
-    <View style={styles.container}>
-      <Text>Home page</Text>
-      <Button title="logout" onPress={logout} />
-      <Button title="subscribe" onPress={() => subscribe("canvas_1")} />
-      <Button title="test draw" onPress={() => draw(2, "#555555")} />
-      <Button
-        title="join canvas"
-        onPress={() => joinCanvas("tHEpTuC5kxtAf5dYqyar")}
-      />
-      <Button title="create canvas" onPress={() => setModalVisible(true)} />
-      <Button
-        title="go to canvas"
-        onPress={() => subscribe("tHEpTuC5kxtAf5dYqyar")}
-      />
-
+    <>
+      <Animated.ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+      >
+        <Canvases onPressCanvas={openCanvas} canvases={values(canvases)} />
+        <Button title="create canvas" onPress={() => setModalVisible(true)} />
+      </Animated.ScrollView>
       <CreateCanvas
         visible={modalVisible}
         loading={isCreatingCanvas}
         onClose={() => setModalVisible(false)}
         onCreate={createCanvas}
       />
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+    paddingTop: SB_HEIGHT + 10
+  },
+  contentContainer: {
+    //
   }
 });
 

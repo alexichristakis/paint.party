@@ -1,30 +1,36 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
-import { Text, StyleSheet } from "react-native";
+import { Text, StyleSheet, StyleProp, TextStyle } from "react-native";
 
 // @ts-ignore
 import uuid from "uuid/v4";
+import isUndefined from "lodash/isUndefined";
 
 import { TextStyles } from "@lib";
 
 export interface Countdown {
-  enabled: boolean;
-  enable: (val: string) => void;
-  toDate: number;
+  enabled?: boolean;
+  enable?: (val: string) => void;
+  style?: StyleProp<TextStyle>;
+  toDate?: number;
 }
 
 const ZEROED = "0:00";
 export const Countdown: React.FC<Countdown> = React.memo(
-  ({ enable, enabled, toDate }) => {
+  ({ enable, enabled, style, toDate }) => {
     const [count, setCount] = useState(ZEROED);
 
     useEffect(() => {
       const interval = setInterval(() => {
+        if (isUndefined(toDate)) {
+          return;
+        }
+
         const seconds = moment.unix(toDate).diff(moment(), "seconds");
 
         if (seconds <= 0) {
           if (count !== ZEROED) setCount(ZEROED);
-          if (!enabled) enable(uuid());
+          if (!enabled && enable) enable(uuid());
         } else {
           const minutes = Math.floor(seconds / 60);
           const diffSeconds = seconds - minutes * 60;
@@ -37,7 +43,7 @@ export const Countdown: React.FC<Countdown> = React.memo(
       return () => clearInterval(interval);
     }, [toDate, enable]);
 
-    return <Text style={styles.count}>{count}</Text>;
+    return <Text style={[styles.count, style]}>{count}</Text>;
   }
 );
 

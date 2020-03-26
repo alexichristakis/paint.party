@@ -1,16 +1,13 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  KeyboardAvoidingView,
-  ActivityIndicator
-} from "react-native";
+import React, { useRef, useEffect, useState } from "react";
+import { TextInput, StyleSheet, ActivityIndicator } from "react-native";
 
 import moment from "moment";
-import Animated, { interpolate } from "react-native-reanimated";
-import { useValues, useSpringTransition } from "react-native-redash";
+import Animated from "react-native-reanimated";
+import {
+  useValues,
+  useSpringTransition,
+  bInterpolate
+} from "react-native-redash";
 
 import { NewCanvas } from "@redux/modules/canvas";
 import { ModalList, ModalListRef } from "./ModalList";
@@ -105,7 +102,19 @@ export const CreateCanvas: React.FC<CreateCanvasProps> = ({
         />
 
         {loading ? (
-          <ActivityIndicator style={styles.sendButton} />
+          <Animated.View
+            style={[
+              styles.sendButton,
+              {
+                transform: [
+                  { scale: bInterpolate(createCanvasButtonTransition, 1, 0) }
+                ],
+                opacity: bInterpolate(createCanvasButtonTransition, 1, 0)
+              }
+            ]}
+          >
+            <ActivityIndicator size="large" style={{ width: 50, height: 50 }} />
+          </Animated.View>
         ) : (
           <TouchableScale
             onPress={handleOnPressCreateCanvas}
