@@ -17,7 +17,7 @@ export const canvasList = createSelector(canvases, c => values(c));
 
 export const activeCanvasEntity = createSelector(
   [activeCanvas, canvases],
-  (id, canvases) => canvases[id]
+  (id, canvases) => canvases[id] ?? {}
 );
 
 export const canvasActiveAt = createSelector(
@@ -26,6 +26,8 @@ export const canvasActiveAt = createSelector(
 );
 
 export const canvas = createSelector(s, state => state.canvas);
+
+export const canvasEnabled = createSelector(canvas, state => state.enabled);
 
 export const selectedCell = createSelector(canvas, state => state.selectedCell);
 

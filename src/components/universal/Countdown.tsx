@@ -1,48 +1,49 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import moment from "moment";
 import { Text, StyleSheet, StyleProp, TextStyle } from "react-native";
-
-// @ts-ignore
-import uuid from "uuid/v4";
 import isUndefined from "lodash/isUndefined";
 
 import { TextStyles } from "@lib";
+import { useReduxAction } from "@hooks";
+import { CanvasActions } from "@redux/modules";
+import * as selectors from "@redux/selectors";
 
 export interface Countdown {
-  enabled?: boolean;
-  enable?: (val: string) => void;
   style?: StyleProp<TextStyle>;
   toDate?: number;
 }
 
 const ZEROED = "0:00";
 export const Countdown: React.FC<Countdown> = React.memo(
-  ({ enable, enabled, style, toDate }) => {
+  ({ style, toDate }) => {
+    const enabled = useSelector(selectors.canvasEnabled);
+    const enable = useReduxAction(CanvasActions.enableCanvas);
+
     const [count, setCount] = useState(ZEROED);
 
     useEffect(() => {
       const interval = setInterval(() => {
-        if (isUndefined(toDate)) {
-          return;
-        }
+        const seconds = isUndefined(toDate)
+          ? 0
+          : moment.unix(toDate).diff(moment(), "seconds");
+        const minutes = Math.floor(seconds / 60);
+        const diffSeconds = seconds - minutes * 60;
 
-        const seconds = moment.unix(toDate).diff(moment(), "seconds");
+        const formatted = `${minutes}:${
+          diffSeconds < 10 ? `0${diffSeconds}` : diffSeconds
+        }`;
 
         if (seconds <= 0) {
           if (count !== ZEROED) setCount(ZEROED);
-          if (!enabled && enable) enable(uuid());
+          if (!enabled) enable();
         } else {
-          const minutes = Math.floor(seconds / 60);
-          const diffSeconds = seconds - minutes * 60;
-
-          setCount(
-            `${minutes}:${diffSeconds < 10 ? `0${diffSeconds}` : diffSeconds}`
-          );
+          setCount(formatted);
         }
       }, 1000);
 
       return () => clearInterval(interval);
-    }, [toDate, enable]);
+    }, [toDate, enabled]);
 
     return <Text style={[styles.count, style]}>{count}</Text>;
   }

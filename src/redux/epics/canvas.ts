@@ -31,7 +31,7 @@ import { Actions, ActionTypes, AppActions, CanvasActions } from "../modules";
 import canvas, { CellUpdate, Canvas, CanvasViz } from "../modules/canvas";
 import { RootState, ExtractActionFromActionCreator } from "../types";
 
-const openCanvas: Epic<Actions> = action$ =>
+const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
     filter(isOfType(ActionTypes.OPEN_CANVAS)),
     switchMap(action => {
@@ -43,9 +43,11 @@ const openCanvas: Epic<Actions> = action$ =>
         let initialLoadComplete = false;
         ref.once("value").then(val => {
           initialLoadComplete = true;
+
           subscriber.next(
             CanvasActions.openSuccess({
               id,
+              enabled: false,
               cells: val.val(),
               selectedCell: -1,
               selectedColor: ""

@@ -1,10 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { StyleSheet, View, Share } from "react-native";
-import { connect, ConnectedProps, useSelector } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import moment from "moment";
 
 import * as selectors from "@redux/selectors";
 import { CanvasActions } from "@redux/modules";
@@ -21,7 +20,8 @@ import { StackParamList } from "../App";
 const mapStateToProps = (state: RootState) => ({
   activeCanvas: selectors.activeCanvas(state),
   loadingCanvas: selectors.isLoadingCanvas(state),
-  canvas: selectors.canvas(state)
+  canvas: selectors.canvas(state),
+  canvasActiveAt: selectors.canvasActiveAt(state)
 });
 const mapDispatchToProps = {
   close: CanvasActions.close,
@@ -37,12 +37,10 @@ export interface CanvasProps {
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
   loadingCanvas,
+  canvasActiveAt,
   open,
   close
 }) => {
-  const [, setKey] = useState("");
-  const canvasActiveAt = useSelector(selectors.canvasActiveAt);
-
   useFocusEffect(
     useCallback(() => {
       open(activeCanvas);
@@ -56,14 +54,13 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     });
   };
 
-  const enabled = canvasActiveAt < moment().unix();
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={close}>
           <X width={20} height={20} />
         </TouchableOpacity>
-        <Countdown enabled={enabled} enable={setKey} toDate={canvasActiveAt} />
+        <Countdown toDate={canvasActiveAt} />
         <TouchableOpacity onPress={onPressShare}>
           <Hamburger width={20} height={20} />
         </TouchableOpacity>

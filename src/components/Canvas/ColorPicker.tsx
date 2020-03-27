@@ -23,7 +23,9 @@ import {
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
+import { useSelector } from "react-redux";
 
+import * as selectors from "@redux/selectors";
 import { FillColors, onGestureEnd } from "@lib";
 import CloseIcon from "@assets/svg/close.svg";
 
@@ -135,7 +137,9 @@ const Color: React.FC<ColorProps> = React.memo(
 );
 
 export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
-  ({ onChoose, enabled = true, visible }) => {
+  ({ onChoose, visible }) => {
+    const enabled = useSelector(selectors.canvasEnabled);
+
     const panRef = useRef<PanGestureHandler>(null);
     const [dragX, dragY, velocityX, velocityY] = useValues<number>(
       [0, 0, 0, 0],

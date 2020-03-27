@@ -19,6 +19,7 @@ export type CanvasViz = {
   id: string;
   selectedCell: number;
   selectedColor: string;
+  enabled: boolean;
   cells: { [id: string]: Cell } | null;
 };
 
@@ -56,6 +57,7 @@ const initialState: CanvasState = {
   canvases: {},
   canvas: {
     id: "",
+    enabled: false,
     selectedCell: -1,
     selectedColor: "",
     cells: null
@@ -125,6 +127,13 @@ export default (
       });
     }
 
+    case ActionTypes.ENABLE_CANVAS: {
+      return immer(state, draft => {
+        draft.canvas.enabled = true;
+        return draft;
+      });
+    }
+
     case ActionTypes.SELECT_CELL: {
       const { cell } = action.payload;
       return immer(state, draft => {
@@ -150,6 +159,8 @@ export default (
         draft.canvases[activeCanvas].nextDrawAt = moment()
           .add(DRAW_INTERVAL, "minutes")
           .unix();
+
+        draft.canvas.enabled = false;
 
         return draft;
       });
@@ -181,6 +192,7 @@ export enum ActionTypes {
   FETCH_CANVASES_SUCCESS = "canvas/FETCH_SUCCESS",
   OPEN_CANVAS = "canvas/OPEN",
   OPEN_CANVAS_SUCCESS = "canvas/OPEN_SUCCESS",
+  ENABLE_CANVAS = "cavnas/ENABLE",
   SELECT_CELL = "canvas/SELECT_CELL",
   SELECT_COLOR = "canvas/SELECT_COLOR",
   CREATE_CANVAS = "canvas/CREATE",
@@ -208,6 +220,7 @@ export const Actions = {
   createSuccess: (canvas: Canvas) =>
     createAction(ActionTypes.CREATE_CANVAS_SUCCESS, { canvas }),
 
+  enableCanvas: () => createAction(ActionTypes.ENABLE_CANVAS),
   selectColor: (color: string) =>
     createAction(ActionTypes.SELECT_COLOR, { color }),
   selectCell: (cell: number) => createAction(ActionTypes.SELECT_CELL, { cell }),

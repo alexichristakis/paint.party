@@ -31,8 +31,6 @@ const { onChange, useCode, or, debug, eq, set, cond, call } = Animated;
 const { ACTIVE, UNDETERMINED, END } = State;
 
 const mapStateToProps = (state: RootState) => ({
-  selectedCell: selectors.selectedCell(state),
-  selectedColor: selectors.selectedColor(state),
   backgroundColor: selectors.activeCanvasEntity(state).backgroundColor
 });
 const mapDispatchToProps = {
@@ -47,10 +45,8 @@ export interface CanvasProps {
 
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   loading,
-  selectedCell,
   selectCell,
   selectColor,
-  selectedColor,
   backgroundColor
 }) => {
   const pinchRef = useRef<PinchGestureHandler>(null);
@@ -120,7 +116,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
 
   const handleOnChooseColor = useCallback(
     (color: string) => selectColor(color),
-    [selectedCell]
+    []
   );
 
   const gestureBegan = or(eq(panState, ACTIVE), eq(pinchState, ACTIVE));
@@ -170,7 +166,6 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
                   <CellHighlight
                     selectCell={selectCell}
                     visible={pickerVisible}
-                    cell={selectedCell}
                   />
                 </Animated.View>
               </TapGestureHandler>
