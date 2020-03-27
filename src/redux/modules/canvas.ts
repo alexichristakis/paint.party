@@ -50,6 +50,15 @@ export type CanvasState = Readonly<{
   loadingCanvas: boolean;
 }>;
 
+export const initialCanvasViz = {
+  id: "",
+  enabled: false,
+  selectedCell: -1,
+  selectedColor: "",
+  live: null,
+  cells: null
+};
+
 const initialState: CanvasState = {
   activeCanvas: "",
   creatingCanvas: false,
@@ -58,14 +67,7 @@ const initialState: CanvasState = {
   joiningCanvas: false,
   loadingCell: false,
   canvases: {},
-  canvas: {
-    id: "",
-    enabled: false,
-    selectedCell: -1,
-    selectedColor: "",
-    live: null,
-    cells: null
-  }
+  canvas: initialCanvasViz
 };
 
 export default (

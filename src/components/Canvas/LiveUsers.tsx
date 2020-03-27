@@ -34,19 +34,21 @@ export const LiveUsers: React.FC<LiveUsersProps> = () => {
   );
 
   const opacity = bInterpolate(value, 0.5, 1);
-  if (positions) {
-    const num = Object.keys(positions).length;
-    return (
-      <Animated.View style={[styles.container, { opacity }]}>
-        <View style={styles.indicator} />
-        <Text style={styles.text}>
-          {num} user{num > 1 ? "s" : ""} live
-        </Text>
-      </Animated.View>
-    );
-  }
 
-  return null;
+  if (!positions) return null;
+
+  const num = Object.keys(positions).length - 1;
+
+  if (!num) return null;
+
+  return (
+    <Animated.View style={[styles.container, { opacity }]}>
+      <View style={styles.indicator} />
+      <Text style={styles.text}>
+        {num} user{num > 1 ? "s" : ""} live
+      </Text>
+    </Animated.View>
+  );
 };
 
 const styles = StyleSheet.create({

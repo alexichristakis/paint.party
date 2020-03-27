@@ -24,12 +24,11 @@ import database, {
 import firestore from "@react-native-firebase/firestore";
 
 import * as selectors from "../selectors";
-import { Actions, ActionTypes, AppActions, CanvasActions } from "../modules";
-import canvas, { CellUpdate, Canvas, CanvasViz } from "../modules/canvas";
-import { RootState, ExtractActionFromActionCreator } from "../types";
+import { Actions, ActionTypes, CanvasActions } from "../modules";
+import { Canvas, CanvasViz, initialCanvasViz } from "../modules/canvas";
+import { RootState } from "../types";
 import { Notifications } from "react-native-notifications";
 import { DRAW_INTERVAL, canvasUrl } from "@lib";
-import { firebase } from "@react-native-firebase/auth";
 
 const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
@@ -46,17 +45,18 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
           initialLoadComplete = true;
 
           const data = val.val();
-          const { live, ...rest } = data;
-          subscriber.next(
-            CanvasActions.openSuccess({
-              id,
-              enabled: false,
-              cells: rest,
-              live,
-              selectedCell: -1,
-              selectedColor: ""
-            })
-          );
+
+          let loadedCanvasPayload: CanvasViz = {
+            id,
+            ...initialCanvasViz
+          };
+
+          if (data) {
+            const { live, ...rest } = data;
+            loadedCanvasPayload = { ...loadedCanvasPayload, live, cells: rest };
+          }
+
+          subscriber.next(CanvasActions.openSuccess(loadedCanvasPayload));
         });
 
         ref.on(
@@ -117,17 +117,6 @@ const drawOnCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
         .set({ author: uid, time: moment().unix(), color });
 
       const { name } = selectors.activeCanvasEntity(state$.value);
-
-      // Notifications.postLocalNotification({
-      //   fireDate: moment()
-      //     .add(5, "seconds")
-      //     .toISOString(),
-      //   body: "Local notificiation!",
-      //   title: "Local Notification Title",
-
-      //   category: "SOME_CATEGORY",
-
-      // });
 
       const nextDrawAt = moment().add(DRAW_INTERVAL, "minutes");
 
@@ -223,8 +212,6 @@ const closeCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
     tap(async () => {
       const uid = selectors.uid(state$.value);
       const { id } = selectors.canvas(state$.value);
-
-      console.log(canvas, uid);
 
       await database()
         .ref(id)
