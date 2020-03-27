@@ -10,22 +10,21 @@ import {
   onGestureEvent,
   useValues,
   withScaleOffset,
-  useTransition,
   withDecay
 } from "react-native-redash";
 import times from "lodash/times";
 import { useMemoOne } from "use-memo-one";
-import { StyleSheet, ActivityIndicator } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
-import { Colors, CANVAS_DIMENSIONS, coordinatesToIndex } from "@lib";
+import { CANVAS_DIMENSIONS, coordinatesToIndex } from "@lib";
 
 import { Row } from "./Row";
 import { CellHighlight } from "./CellHighlight";
 import { ColorPicker } from "./ColorPicker";
 import { RootState } from "@redux/types";
 import { CanvasActions } from "@redux/modules";
+import { LoadingOverlay } from "@components/universal";
 
 const { onChange, useCode, or, eq, set, cond, call } = Animated;
 const { ACTIVE, UNDETERMINED, END } = State;
@@ -134,7 +133,6 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     []
   );
 
-  const loadingOverlayOpacity = useTransition(loading);
   return (
     <>
       <PanGestureHandler
@@ -175,21 +173,6 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  loadingIndicator: {
-    width: 80,
-    height: 80,
-    backgroundColor: Colors.transGray,
-    transform: [{ scale: 1.5 }],
-    borderRadius: 15
-  }
-});
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(Canvas);
