@@ -35,7 +35,9 @@ export const FillColors = [
   Colors.nearBlack
 ];
 
-const baseText: TextStyle = {};
+const baseText: TextStyle = {
+  fontFamily: "Sofia Pro"
+};
 
 export enum TextSizes {
   small = "small",

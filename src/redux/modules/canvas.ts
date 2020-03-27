@@ -158,6 +158,7 @@ export default (
       return immer(state, draft => {
         draft.canvas.selectedColor = color;
         draft.loadingCell = true;
+        draft.loadingCanvas = true;
 
         return draft;
       });
@@ -170,6 +171,8 @@ export default (
       return immer(state, draft => {
         draft.canvases[activeCanvas].nextDrawAt = nextDrawAt;
         draft.canvas.enabled = false;
+        draft.loadingCell = false;
+        draft.loadingCanvas = false;
 
         return draft;
       });

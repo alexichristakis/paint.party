@@ -13,10 +13,11 @@ import { CreateCanvas } from "@components/CreateCanvas";
 import { Canvases } from "@components/Canvases";
 
 import { StackParamList } from "../App";
-import { SB_HEIGHT } from "@lib";
+import { SB_HEIGHT, TextStyles } from "@lib";
 import Plus from "@assets/svg/plus.svg";
 import { Notifications } from "react-native-notifications";
 import moment from "moment";
+import { useValues, onScroll } from "react-native-redash";
 
 const mapStateToProps = (state: RootState) => ({
   activeCanvas: selectors.activeCanvas(state),
@@ -44,6 +45,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
   createCanvas,
   unsubscribe
 }) => {
+  const [scrollY] = useValues([0], []);
   const [modalVisible, setModalVisible] = useState(false);
 
   //
@@ -58,15 +60,30 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
     <>
       <Animated.ScrollView
         style={styles.container}
+        onScroll={onScroll({ y: scrollY })}
+        scrollEventThrottle={16}
         contentContainerStyle={styles.contentContainer}
       >
         <TouchableOpacity
-          style={{ alignItems: "flex-end", marginHorizontal: 10 }}
+          style={styles.header}
           onPress={() => setModalVisible(true)}
         >
-          <Plus width={40} height={40} />
+          {!values(canvases).length ? (
+            <View style={styles.headerContent}>
+              <Text style={styles.welcomeText}>
+                To start on a canvas, tap here or an invite link.
+              </Text>
+              <Plus width={40} height={40} />
+            </View>
+          ) : (
+            <Plus width={40} height={40} />
+          )}
         </TouchableOpacity>
-        <Canvases onPressCanvas={openCanvas} canvases={values(canvases)} />
+        <Canvases
+          scrollY={scrollY}
+          onPressCanvas={openCanvas}
+          canvases={values(canvases)}
+        />
       </Animated.ScrollView>
       <CreateCanvas
         visible={modalVisible}
@@ -82,6 +99,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: SB_HEIGHT + 5
+  },
+  header: { alignItems: "flex-end", marginHorizontal: 10 },
+  headerContent: {
+    alignSelf: "stretch",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between"
+  },
+  welcomeText: {
+    ...TextStyles.medium
   },
   contentContainer: {
     //

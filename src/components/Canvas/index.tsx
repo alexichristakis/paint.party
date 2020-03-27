@@ -114,10 +114,10 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     []
   );
 
-  const handleOnChooseColor = useCallback(
-    (color: string) => selectColor(color),
-    []
-  );
+  const handleOnChooseColor = useCallback((color: string) => {
+    pickerVisible.setValue(0);
+    selectColor(color);
+  }, []);
 
   const gestureBegan = or(eq(panState, ACTIVE), eq(pinchState, ACTIVE));
   useCode(

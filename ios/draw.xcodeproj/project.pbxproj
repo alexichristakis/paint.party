@@ -13,6 +13,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7A99B4EA242D59B200B1BBB0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7A99B4E9242D59B200B1BBB0 /* GoogleService-Info.plist */; };
+		1F99187A0579472F816A08AD /* sofia.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D7A6A09DF5743DA979E445C /* sofia.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +21,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* drawTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = drawTests.m; sourceTree = "<group>"; };
 		0DF83EA2DFFC948061911499 /* libPods-draw-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-draw-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07F961A680F5B00A75B9A /* draw.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = draw.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* paint party.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paint party.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = draw/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = draw/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -34,6 +35,7 @@
 		6FAA52255036409E67D600E6 /* libPods-draw.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-draw.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7032F8060EDC5FB7C4A5047F /* libPods-draw-drawTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-draw-drawTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A99B4E9242D59B200B1BBB0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		7AAFA4DD242DE892006865FE /* paint party.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = "paint party.entitlements"; path = "draw/paint party.entitlements"; sourceTree = "<group>"; };
 		8C4E7032463121F6312BC124 /* Pods-draw.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-draw.release.xcconfig"; path = "Target Support Files/Pods-draw/Pods-draw.release.xcconfig"; sourceTree = "<group>"; };
 		A03FEBDB8C1AFDD6ACEC6A8D /* Pods-draw-drawTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-draw-drawTests.debug.xcconfig"; path = "Target Support Files/Pods-draw-drawTests/Pods-draw-drawTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B0B6E5A1D3A6273F2885EF1E /* Pods-draw.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-draw.debug.xcconfig"; path = "Target Support Files/Pods-draw/Pods-draw.debug.xcconfig"; sourceTree = "<group>"; };
@@ -41,6 +43,7 @@
 		D429012A7CFEC0D8DD35278D /* Pods-draw-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-draw-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-draw-tvOSTests/Pods-draw-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		9D7A6A09DF5743DA979E445C /* sofia.ttf */ = {isa = PBXFileReference; name = "sofia.ttf"; path = "../src/assets/font/sofia.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +78,7 @@
 		13B07FAE1A68108700A75B9A /* draw */ = {
 			isa = PBXGroup;
 			children = (
+				7AAFA4DD242DE892006865FE /* paint party.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -131,6 +135,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				57E5C9B763C04B3473235CE6 /* Pods */,
+				1CF1D9B669B64C4E8D0534EF /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -140,10 +145,19 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* draw.app */,
+				13B07F961A680F5B00A75B9A /* paint party.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		1CF1D9B669B64C4E8D0534EF /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				9D7A6A09DF5743DA979E445C /* sofia.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -167,7 +181,7 @@
 			);
 			name = draw;
 			productName = draw;
-			productReference = 13B07F961A680F5B00A75B9A /* draw.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* paint party.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -210,6 +224,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				7A99B4EA242D59B200B1BBB0 /* GoogleService-Info.plist in Resources */,
+				1F99187A0579472F816A08AD /* sofia.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,6 +347,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "draw/paint party.entitlements";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 78CR4UUJ4J;
 				ENABLE_BITCODE = NO;
@@ -349,7 +365,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = christakis.draw;
-				PRODUCT_NAME = draw;
+				PRODUCT_NAME = "paint party";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -362,6 +378,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "draw/paint party.entitlements";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 78CR4UUJ4J;
 				INFOPLIST_FILE = draw/Info.plist;
@@ -374,7 +391,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = christakis.draw;
-				PRODUCT_NAME = draw;
+				PRODUCT_NAME = "paint party";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
