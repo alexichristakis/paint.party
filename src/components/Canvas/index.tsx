@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useCallback } from "react";
 import {
   PanGestureHandler,
   PinchGestureHandler,
@@ -27,7 +27,7 @@ import { ColorPicker } from "./ColorPicker";
 import { RootState } from "@redux/types";
 import { CanvasActions } from "@redux/modules";
 
-const { onChange, useCode, or, debug, eq, set, cond, call } = Animated;
+const { onChange, useCode, or, eq, set, cond, call } = Animated;
 const { ACTIVE, UNDETERMINED, END } = State;
 
 const mapStateToProps = (state: RootState) => ({

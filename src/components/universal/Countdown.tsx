@@ -12,13 +12,13 @@ import * as selectors from "@redux/selectors";
 export interface Countdown {
   style?: StyleProp<TextStyle>;
   toDate?: number;
+  enable?: () => void;
 }
 
 const ZEROED = "0:00";
 export const Countdown: React.FC<Countdown> = React.memo(
-  ({ style, toDate }) => {
+  ({ style, enable, toDate }) => {
     const enabled = useSelector(selectors.canvasEnabled);
-    const enable = useReduxAction(CanvasActions.enableCanvas);
 
     const [count, setCount] = useState(ZEROED);
 
@@ -36,7 +36,7 @@ export const Countdown: React.FC<Countdown> = React.memo(
 
         if (seconds <= 0) {
           if (count !== ZEROED) setCount(ZEROED);
-          if (!enabled) enable();
+          if (!enabled && enable) enable();
         } else {
           setCount(formatted);
         }

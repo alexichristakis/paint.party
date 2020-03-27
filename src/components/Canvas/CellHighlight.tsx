@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import * as selectors from "@redux/selectors";
 import { CELL_SIZE, coordinatesFromIndex } from "@lib";
 
-const { cond, set, call, not } = Animated;
+const { set } = Animated;
 
 const config = {
   damping: 40,

@@ -3,8 +3,7 @@ import Animated, {
   Easing,
   interpolate,
   onChange,
-  useCode,
-  debug
+  useCode
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import {
@@ -26,10 +25,10 @@ import { useMemoOne } from "use-memo-one";
 import { useSelector } from "react-redux";
 
 import * as selectors from "@redux/selectors";
-import { FillColors, onGestureEnd } from "@lib";
+import { FillColors } from "@lib";
 import CloseIcon from "@assets/svg/close.svg";
 
-const { set, or, eq, neq, sub, cond, call } = Animated;
+const { set, or, eq, sub, cond, call } = Animated;
 
 const COLOR_SIZE = 60;
 const ANGLE_INCREMENT = 360 / FillColors.length;
@@ -114,7 +113,6 @@ const Color: React.FC<ColorProps> = React.memo(
             style={[
               styles.color,
               {
-                // borderWidth,
                 borderRadius,
                 backgroundColor,
                 transform: [{ scale }]
@@ -221,7 +219,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
       </PanGestureHandler>
     );
   },
-  (p, n) => true
+  () => true
 );
 
 const styles = StyleSheet.create({

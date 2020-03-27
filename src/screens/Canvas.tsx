@@ -30,6 +30,7 @@ const mapStateToProps = (state: RootState) => ({
   canvasActiveAt: selectors.canvasActiveAt(state)
 });
 const mapDispatchToProps = {
+  enable: CanvasActions.enableCanvas,
   close: CanvasActions.close,
   open: CanvasActions.open
 };
@@ -44,6 +45,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
   loadingCanvas,
   canvasActiveAt,
+  enable,
   open,
   close
 }) => {
@@ -53,12 +55,11 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     }, [])
   );
 
-  const onPressShare = async () => {
-    const result = await Share.share({
+  const onPressShare = () =>
+    Share.share({
       title: "share unexpected",
       message: canvasUrl(activeCanvas)
     });
-  };
 
   return (
     <View style={styles.container}>
@@ -66,7 +67,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
         <TouchableOpacity onPress={close}>
           <X width={20} height={20} />
         </TouchableOpacity>
-        <Countdown toDate={canvasActiveAt} />
+        <Countdown enable={enable} toDate={canvasActiveAt} />
         <TouchableOpacity onPress={onPressShare}>
           <Hamburger width={20} height={20} />
         </TouchableOpacity>
