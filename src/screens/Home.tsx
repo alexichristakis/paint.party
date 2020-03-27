@@ -84,7 +84,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
           onPressCanvas={openCanvas}
           canvases={values(canvases)}
         />
-        <Button title="sign out" onPress={logout} />
+        {/* <Button title="sign out" onPress={logout} /> */}
       </Animated.ScrollView>
       <CreateCanvas
         visible={modalVisible}
