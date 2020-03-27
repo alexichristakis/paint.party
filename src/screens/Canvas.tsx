@@ -9,7 +9,7 @@ import moment from "moment";
 import * as selectors from "@redux/selectors";
 import { CanvasActions } from "@redux/modules";
 import { RootState } from "@redux/types";
-import { Canvas as CanvasVisualization } from "@components/Canvas";
+import CanvasVisualization from "@components/Canvas";
 import { Countdown } from "@components/universal";
 import { SCREEN_HEIGHT, SCREEN_WIDTH, Colors, SB_HEIGHT } from "@lib";
 
@@ -25,7 +25,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 const mapDispatchToProps = {
   close: CanvasActions.close,
-  draw: CanvasActions.draw,
   open: CanvasActions.open
 };
 
@@ -39,8 +38,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
   loadingCanvas,
   open,
-  close,
-  draw
+  close
 }) => {
   const [, setKey] = useState("");
   const canvasActiveAt = useSelector(selectors.canvasActiveAt);
@@ -70,11 +68,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
           <Hamburger width={20} height={20} />
         </TouchableOpacity>
       </View>
-      <CanvasVisualization
-        loading={loadingCanvas}
-        enabled={enabled}
-        onDraw={draw}
-      />
+      <CanvasVisualization loading={loadingCanvas} />
     </View>
   );
 };

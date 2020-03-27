@@ -27,6 +27,13 @@ export const canvasActiveAt = createSelector(
 
 export const canvas = createSelector(s, state => state.canvas);
 
+export const selectedCell = createSelector(canvas, state => state.selectedCell);
+
+export const selectedColor = createSelector(
+  canvas,
+  state => state.selectedColor
+);
+
 export const cellColor = createSelector(
   [canvas, activeCanvasEntity, (_: RootState, i: number) => i],
   (canvas, activeCanvasMetadata, index) => {

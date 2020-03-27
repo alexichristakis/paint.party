@@ -17,6 +17,8 @@ export type Cell = { [cellUpdateId: string]: CellUpdate };
 
 export type CanvasViz = {
   id: string;
+  selectedCell: number;
+  selectedColor: string;
   cells: { [id: string]: Cell } | null;
 };
 
@@ -54,6 +56,8 @@ const initialState: CanvasState = {
   canvases: {},
   canvas: {
     id: "",
+    selectedCell: -1,
+    selectedColor: "",
     cells: null
   }
 };
@@ -121,11 +125,23 @@ export default (
       });
     }
 
-    case ActionTypes.DRAW_ON_CANVAS: {
-      return {
-        ...state,
-        loadingCell: true
-      };
+    case ActionTypes.SELECT_CELL: {
+      const { cell } = action.payload;
+      return immer(state, draft => {
+        draft.canvas.selectedCell = cell;
+
+        return draft;
+      });
+    }
+
+    case ActionTypes.SELECT_COLOR: {
+      const { color } = action.payload;
+      return immer(state, draft => {
+        draft.canvas.selectedColor = color;
+        draft.loadingCell = true;
+
+        return draft;
+      });
     }
 
     case ActionTypes.DRAW_ON_CANVAS_SUCCESS: {
@@ -165,6 +181,8 @@ export enum ActionTypes {
   FETCH_CANVASES_SUCCESS = "canvas/FETCH_SUCCESS",
   OPEN_CANVAS = "canvas/OPEN",
   OPEN_CANVAS_SUCCESS = "canvas/OPEN_SUCCESS",
+  SELECT_CELL = "canvas/SELECT_CELL",
+  SELECT_COLOR = "canvas/SELECT_COLOR",
   CREATE_CANVAS = "canvas/CREATE",
   CREATE_CANVAS_SUCCESS = "canvas/CREATE_SUCCESS",
   JOIN_CANVAS = "canvas/JOIN",
@@ -190,14 +208,15 @@ export const Actions = {
   createSuccess: (canvas: Canvas) =>
     createAction(ActionTypes.CREATE_CANVAS_SUCCESS, { canvas }),
 
+  selectColor: (color: string) =>
+    createAction(ActionTypes.SELECT_COLOR, { color }),
+  selectCell: (cell: number) => createAction(ActionTypes.SELECT_CELL, { cell }),
+  drawSuccess: () => createAction(ActionTypes.DRAW_ON_CANVAS_SUCCESS),
+
   join: (id: string) => createAction(ActionTypes.JOIN_CANVAS, { id }),
   joinSuccess: (canvas: Canvas) =>
     createAction(ActionTypes.JOIN_CANVAS_SUCCESS, { canvas }),
   joinFailure: () => createAction(ActionTypes.JOIN_CANVAS_FAILURE),
-
-  draw: (cellId: number, color: string) =>
-    createAction(ActionTypes.DRAW_ON_CANVAS, { cellId, color }),
-  drawSuccess: () => createAction(ActionTypes.DRAW_ON_CANVAS_SUCCESS),
 
   close: () => createAction(ActionTypes.CLOSE_CANVAS),
   update: (cellId: number, update: Cell) =>

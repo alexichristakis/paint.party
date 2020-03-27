@@ -2,7 +2,7 @@ import { CELL_SIZE, CANVAS_DIMENSIONS } from "./constants";
 import Animated from "react-native-reanimated";
 import { State } from "react-native-gesture-handler";
 
-const { cond, eq, neq, call, set, proc, block } = Animated;
+const { cond, eq, neq, and, call, set, proc, block } = Animated;
 
 export const coordinatesToIndex = (x: number, y: number) =>
   Math.floor(y / CELL_SIZE) * CANVAS_DIMENSIONS + Math.floor(x / CELL_SIZE);
@@ -14,7 +14,7 @@ export const coordinatesFromIndex = (index: number) => {
   return { x, y };
 };
 
-export const onGestureChange = proc(
+export const onGestureEnd = proc(
   (
     val: Animated.Adaptable<number>,
     prevVal: Animated.Value<number>,
@@ -22,6 +22,9 @@ export const onGestureChange = proc(
   ) =>
     block([
       cond(eq(prevVal, State.UNDETERMINED), set(prevVal, val)),
-      cond(neq(val, prevVal), [set(prevVal, val), action])
+      cond(neq(val, prevVal), [
+        set(prevVal, val),
+        cond(eq(val, State.END), action)
+      ])
     ])
 );

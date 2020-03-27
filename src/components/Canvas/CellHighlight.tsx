@@ -9,13 +9,13 @@ import { CELL_SIZE, coordinatesFromIndex } from "@lib";
 const { cond, call, not } = Animated;
 
 export interface CellHighlightProps {
-  reset: () => void;
+  selectCell: (cell: number) => void;
   visible: Animated.Value<0 | 1>;
   cell: number;
 }
 
 export const CellHighlight: React.FC<CellHighlightProps> = ({
-  reset,
+  selectCell,
   visible,
   cell
 }) => {
@@ -29,7 +29,7 @@ export const CellHighlight: React.FC<CellHighlightProps> = ({
         visible,
         cond(
           not(visible),
-          call([], () => setTimeout(reset, 250))
+          call([], () => setTimeout(() => selectCell(-1), 250))
         )
       )
     ],

@@ -43,7 +43,14 @@ const openCanvas: Epic<Actions> = action$ =>
         let initialLoadComplete = false;
         ref.once("value").then(val => {
           initialLoadComplete = true;
-          subscriber.next(CanvasActions.openSuccess({ id, cells: val.val() }));
+          subscriber.next(
+            CanvasActions.openSuccess({
+              id,
+              cells: val.val(),
+              selectedCell: -1,
+              selectedColor: ""
+            })
+          );
         });
 
         ref.on(
@@ -80,12 +87,13 @@ const openCanvas: Epic<Actions> = action$ =>
 
 const drawOnCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
-    filter(isOfType(ActionTypes.DRAW_ON_CANVAS)),
+    filter(isOfType(ActionTypes.SELECT_COLOR)),
     switchMap(async ({ payload }) => {
-      const { cellId, color } = payload;
+      const { color } = payload;
 
       const uid = selectors.uid(state$.value);
       const activeCanvas = selectors.activeCanvas(state$.value);
+      const cellId = selectors.selectedCell(state$.value);
 
       await database()
         .ref(activeCanvas)

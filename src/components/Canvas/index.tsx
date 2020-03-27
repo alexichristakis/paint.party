@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import {
   PanGestureHandler,
   PinchGestureHandler,
@@ -9,7 +9,6 @@ import Animated from "react-native-reanimated";
 import {
   onGestureEvent,
   useValues,
-  withOffset,
   withScaleOffset,
   useTransition,
   withDecay
@@ -17,7 +16,7 @@ import {
 import times from "lodash/times";
 import { useMemoOne } from "use-memo-one";
 import { StyleSheet, ActivityIndicator } from "react-native";
-import { useSelector } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
 import { Colors, CANVAS_DIMENSIONS, coordinatesToIndex } from "@lib";
@@ -25,26 +24,38 @@ import { Colors, CANVAS_DIMENSIONS, coordinatesToIndex } from "@lib";
 import { Row } from "./Row";
 import { CellHighlight } from "./CellHighlight";
 import { ColorPicker } from "./ColorPicker";
+import { RootState } from "@redux/types";
+import { CanvasActions } from "@redux/modules";
 
 const { onChange, useCode, or, debug, eq, set, cond, call } = Animated;
 const { ACTIVE, UNDETERMINED, END } = State;
 
+const mapStateToProps = (state: RootState) => ({
+  selectedCell: selectors.selectedCell(state),
+  selectedColor: selectors.selectedColor(state),
+  backgroundColor: selectors.activeCanvasEntity(state).backgroundColor
+});
+const mapDispatchToProps = {
+  selectColor: CanvasActions.selectColor,
+  selectCell: CanvasActions.selectCell
+};
+
+export type CanvasReduxProps = ConnectedProps<typeof connector>;
 export interface CanvasProps {
-  enabled: boolean;
   loading: boolean;
-  onDraw: (cell: number, color: string) => void;
 }
 
-export const Canvas: React.FC<CanvasProps> = ({ loading, onDraw, enabled }) => {
-  const [selectedCell, setSelectedCell] = useState(-1);
-
-  console.log("render canvas");
-
+const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
+  loading,
+  selectedCell,
+  selectCell,
+  selectColor,
+  selectedColor,
+  backgroundColor
+}) => {
   const pinchRef = useRef<PinchGestureHandler>(null);
   const panRef = useRef<PanGestureHandler>(null);
   const childRef = useRef<Animated.View>(null);
-
-  const { backgroundColor } = useSelector(selectors.activeCanvasEntity);
 
   const [pinchState, panState, tapState] = useValues<State>(
     [UNDETERMINED, UNDETERMINED, UNDETERMINED],
@@ -103,8 +114,13 @@ export const Canvas: React.FC<CanvasProps> = ({ loading, onDraw, enabled }) => {
   );
 
   const handleOnPressCell = useCallback(
-    (x: number, y: number) => setSelectedCell(coordinatesToIndex(x, y)),
+    ([x, y]: Readonly<number[]>) => selectCell(coordinatesToIndex(x, y)),
     []
+  );
+
+  const handleOnChooseColor = useCallback(
+    (color: string) => selectColor(color),
+    [selectedCell]
   );
 
   const gestureBegan = or(eq(panState, ACTIVE), eq(pinchState, ACTIVE));
@@ -114,9 +130,7 @@ export const Canvas: React.FC<CanvasProps> = ({ loading, onDraw, enabled }) => {
       onChange(
         tapState,
         cond(eq(tapState, END), [
-          call([tapX, tapY], numbers =>
-            handleOnPressCell(...(numbers as [number, number]))
-          ),
+          call([tapX, tapY], handleOnPressCell),
           set(pickerVisible, 1)
         ])
       )
@@ -154,9 +168,9 @@ export const Canvas: React.FC<CanvasProps> = ({ loading, onDraw, enabled }) => {
                     <Row key={i} index={i} />
                   ))}
                   <CellHighlight
+                    selectCell={selectCell}
                     visible={pickerVisible}
                     cell={selectedCell}
-                    reset={() => setSelectedCell(-1)}
                   />
                 </Animated.View>
               </TapGestureHandler>
@@ -164,13 +178,7 @@ export const Canvas: React.FC<CanvasProps> = ({ loading, onDraw, enabled }) => {
           </PinchGestureHandler>
         </Animated.View>
       </PanGestureHandler>
-      <ColorPicker
-        enabled={enabled}
-        visible={pickerVisible}
-        cell={selectedCell}
-        onChoose={onDraw}
-      />
-
+      <ColorPicker visible={pickerVisible} onChoose={handleOnChooseColor} />
       <Animated.View
         pointerEvents={loading ? "auto" : "none"}
         style={[styles.loadingOverlay, { opacity: loadingOverlayOpacity }]}
@@ -195,3 +203,6 @@ const styles = StyleSheet.create({
     borderRadius: 15
   }
 });
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+export default connector(Canvas);

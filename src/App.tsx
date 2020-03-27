@@ -83,4 +83,4 @@ const App: React.FC = () => {
 const codePushOptions = {
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME
 };
-export default CodePush(codePushOptions)(gestureHandlerRootHOC(App));
+export default gestureHandlerRootHOC(App);
