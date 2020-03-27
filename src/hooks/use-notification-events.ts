@@ -1,13 +1,10 @@
 import { useEffect } from "react";
 import { Notifications } from "react-native-notifications";
 
-import { AppActions } from "@redux/modules";
-import { useReduxAction } from "./use-redux-action";
-
 export function useNotificationEvents() {
-  // const updateUser = useReduxAction(UserActions.updateUser);
-
   return useEffect(() => {
+    Notifications.registerRemoteNotifications();
+
     const subscribers = [
       Notifications.events().registerNotificationOpened(
         (notification, complete) => {
@@ -26,7 +23,7 @@ export function useNotificationEvents() {
       ),
       Notifications.events().registerRemoteNotificationsRegistered(
         ({ deviceToken }) => {
-          console.log(deviceToken);
+          // console.log(deviceToken);
           // updateUser({ deviceToken });
         }
       ),

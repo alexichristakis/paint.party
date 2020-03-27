@@ -4,21 +4,58 @@ import {
   filter,
   mergeMap,
   exhaustMap,
-  catchError
+  catchError,
+  flatMap,
+  mapTo,
+  switchMap
 } from "rxjs/operators";
 import { Action } from "redux";
 import { isOfType } from "typesafe-actions";
-import {
-  Epic,
-  ofType,
-  ActionsObservable,
-  StateObservable
-} from "redux-observable";
+import { Epic } from "redux-observable";
 import auth from "@react-native-firebase/auth";
 import AsyncStorage from "@react-native-community/async-storage";
+import { Observable, fromEvent, pipe } from "rxjs";
+import { REHYDRATE } from "redux-persist";
+import { AppState, Linking } from "react-native";
 
-import { Actions, ActionTypes, AppActions } from "../modules";
+import * as selectors from "@redux/selectors";
+
+import { Actions, ActionTypes, AppActions, CanvasActions } from "../modules";
 import { RootState, ExtractActionFromActionCreator } from "../types";
+
+const appStateEpic: Epic<Actions, Actions, RootState> = (action$, state$) =>
+  action$.pipe(
+    filter(isOfType(REHYDRATE)),
+    switchMap(
+      () =>
+        new Observable<Actions>(subscriber => {
+          const obs1 = fromEvent(AppState, "change").subscribe(async status => {
+            subscriber.next(AppActions.setStatus(status));
+          });
+
+          const obs2 = fromEvent(Linking, "url").subscribe(({ url }) => {
+            const group = url.match(/canvas\/(.*)/);
+
+            if (group) {
+              const [, canvasId] = group;
+
+              const canvases = selectors.canvases(state$.value);
+
+              if (Object.keys(canvases).includes(canvasId)) {
+                return subscriber.next(CanvasActions.open(canvasId));
+              }
+
+              return subscriber.next(CanvasActions.join(canvasId));
+            }
+          });
+
+          return () => {
+            obs1.unsubscribe();
+            obs2.unsubscribe();
+          };
+        })
+    )
+  );
 
 const loginEpic: Epic<Actions, Actions, RootState> = (action$, store$) =>
   action$.pipe(
@@ -42,4 +79,4 @@ const logoutEpic: Epic<Actions, Actions, RootState> = (action$, store$) =>
     catchError(error => AppActions.authError)
   );
 
-export default [loginEpic, logoutEpic];
+export default [loginEpic, logoutEpic, appStateEpic];

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StyleSheet, View, Text, Button, TouchableOpacity } from "react-native";
 import values from "lodash/values";
 import Animated from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/core";
@@ -14,6 +14,9 @@ import { Canvases } from "@components/Canvases";
 
 import { StackParamList } from "../App";
 import { SB_HEIGHT } from "@lib";
+import Plus from "@assets/svg/plus.svg";
+import { Notifications } from "react-native-notifications";
+import moment from "moment";
 
 const mapStateToProps = (state: RootState) => ({
   activeCanvas: selectors.activeCanvas(state),
@@ -57,8 +60,13 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
       >
+        <TouchableOpacity
+          style={{ alignItems: "flex-end", marginHorizontal: 10 }}
+          onPress={() => setModalVisible(true)}
+        >
+          <Plus width={40} height={40} />
+        </TouchableOpacity>
         <Canvases onPressCanvas={openCanvas} canvases={values(canvases)} />
-        <Button title="create canvas" onPress={() => setModalVisible(true)} />
       </Animated.ScrollView>
       <CreateCanvas
         visible={modalVisible}
@@ -73,7 +81,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: SB_HEIGHT + 10
+    paddingTop: SB_HEIGHT + 5
   },
   contentContainer: {
     //

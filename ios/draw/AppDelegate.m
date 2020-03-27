@@ -3,6 +3,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+#import <React/RCTLinkingManager.h>
 
 #import <Firebase.h>
 #import <CodePush/CodePush.h>
@@ -16,10 +17,16 @@
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
+#ifdef FB_SONARKIT_ENABLED
+#import <flipper-plugin-react-native-performance/FlipperReactPerformancePlugin.h>
+#endif
+
+
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
   [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
+  [client addPlugin: [FlipperReactPerformancePlugin sharedInstance]];
   [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
   [client addPlugin:[FlipperKitReactPlugin new]];
   [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
@@ -55,7 +62,14 @@ static void InitializeFlipper(UIApplication *application) {
   
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  
+
+
+#ifdef DEBUG
+#ifdef FB_SONARKIT_ENABLED
+  [[FlipperReactPerformancePlugin sharedInstance] setBridge:bridge];
+#endif
+#endif
+
   return YES;
 }
 
@@ -74,6 +88,12 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
   [RNNotifications didFailToRegisterForRemoteNotificationsWithError:error];
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
+ options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+ return [RCTLinkingManager application:app openURL:url options:options];
 }
 
 @end

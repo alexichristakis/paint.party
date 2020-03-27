@@ -8,6 +8,8 @@ def add_flipper_pods!
   pod 'FlipperKit/SKIOSNetworkPlugin', version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitReactPlugin', version, :configuration => 'Debug'
+  
+  pod 'flipper-plugin-react-native-performance', :path => "../node_modules/flipper-plugin-react-native-performance/ios", :configuration => 'Debug'
 end
 
 # Post Install processing for Flipper
@@ -54,11 +56,6 @@ target 'draw' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  target 'drawTests' do
-    inherit! :complete
-    # Pods for testing
-  end
-
   use_native_modules!
 
   # Enables Flipper.
@@ -71,11 +68,3 @@ target 'draw' do
   end
 end
 
-target 'draw-tvOS' do
-  # Pods for draw-tvOS
-
-  target 'draw-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-end

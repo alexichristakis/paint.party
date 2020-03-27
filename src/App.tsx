@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { StatusBar } from "react-native";
+import { StatusBar, Linking } from "react-native";
 
 import { NavigationContainer, useLinking } from "@react-navigation/native";
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
@@ -26,15 +26,11 @@ const Stack = createNativeStackNavigator<StackParamList>();
 const Root = () => {
   const ref = useRef(null);
 
-  // const { getInitialState } = useLinking(ref, {
-  //   prefixes: ["https://mychat.com", "mychat://"]
-  // });
-
   const isAuthenticated = useSelector(selectors.isAuthenticated);
   const activeCanvas = useSelector(selectors.activeCanvas);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={ref}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,

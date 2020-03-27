@@ -1,9 +1,8 @@
 import immer from "immer";
-import moment from "moment";
+import { Alert } from "react-native";
 import keyBy from "lodash/keyBy";
 import merge from "lodash/merge";
 
-import { DRAW_INTERVAL } from "@lib";
 import { createAction, ActionsUnion } from "../types";
 
 export type CellUpdate = {
@@ -127,6 +126,17 @@ export default (
       });
     }
 
+    case ActionTypes.JOIN_CANVAS_FAILURE: {
+      Alert.alert(
+        "invalid canvas",
+        "hmmm it appears that canvas doesn't exist"
+      );
+
+      return immer(state, draft => {
+        draft.joiningCanvas = false;
+      });
+    }
+
     case ActionTypes.ENABLE_CANVAS: {
       return immer(state, draft => {
         draft.canvas.enabled = true;
@@ -154,12 +164,11 @@ export default (
     }
 
     case ActionTypes.DRAW_ON_CANVAS_SUCCESS: {
+      const { nextDrawAt } = action.payload;
       const { activeCanvas } = state;
-      return immer(state, draft => {
-        draft.canvases[activeCanvas].nextDrawAt = moment()
-          .add(DRAW_INTERVAL, "minutes")
-          .unix();
 
+      return immer(state, draft => {
+        draft.canvases[activeCanvas].nextDrawAt = nextDrawAt;
         draft.canvas.enabled = false;
 
         return draft;
@@ -224,7 +233,8 @@ export const Actions = {
   selectColor: (color: string) =>
     createAction(ActionTypes.SELECT_COLOR, { color }),
   selectCell: (cell: number) => createAction(ActionTypes.SELECT_CELL, { cell }),
-  drawSuccess: () => createAction(ActionTypes.DRAW_ON_CANVAS_SUCCESS),
+  drawSuccess: (nextDrawAt: number) =>
+    createAction(ActionTypes.DRAW_ON_CANVAS_SUCCESS, { nextDrawAt }),
 
   join: (id: string) => createAction(ActionTypes.JOIN_CANVAS, { id }),
   joinSuccess: (canvas: Canvas) =>

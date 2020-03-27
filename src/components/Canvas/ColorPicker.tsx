@@ -52,20 +52,12 @@ interface ColorProps {
   index: number;
   panRef: any;
   openTransition: Animated.Node<number>;
-  enabledTransition: Animated.Node<number>;
   color: string;
   onChoose: (color: string) => void;
 }
 
 const Color: React.FC<ColorProps> = React.memo(
-  ({
-    index,
-    color: backgroundColor,
-    panRef,
-    openTransition,
-    enabledTransition,
-    onChoose
-  }) => {
+  ({ index, color: backgroundColor, panRef, openTransition, onChoose }) => {
     const [state] = useValues([State.UNDETERMINED], []);
 
     const activeTransition = useMemoOne(

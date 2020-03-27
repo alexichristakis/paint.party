@@ -4,6 +4,8 @@ export const CANVAS_DIMENSIONS = 20;
 
 export const DRAW_INTERVAL = 0.5;
 
+export const URL_PREFIX = "canvus://";
+
 export const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get(
   "window"
 );

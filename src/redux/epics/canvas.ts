@@ -15,12 +15,7 @@ import {
 } from "rxjs/operators";
 import { Action } from "redux";
 import { isOfType } from "typesafe-actions";
-import {
-  Epic,
-  ofType,
-  ActionsObservable,
-  StateObservable
-} from "redux-observable";
+import { Epic } from "redux-observable";
 import database, {
   FirebaseDatabaseTypes
 } from "@react-native-firebase/database";
@@ -30,6 +25,8 @@ import * as selectors from "../selectors";
 import { Actions, ActionTypes, AppActions, CanvasActions } from "../modules";
 import canvas, { CellUpdate, Canvas, CanvasViz } from "../modules/canvas";
 import { RootState, ExtractActionFromActionCreator } from "../types";
+import { Notifications } from "react-native-notifications";
+import { DRAW_INTERVAL, canvasUrl } from "@lib";
 
 const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
@@ -41,6 +38,7 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
 
       const obs = new Observable<Actions>(subscriber => {
         let initialLoadComplete = false;
+
         ref.once("value").then(val => {
           initialLoadComplete = true;
 
@@ -103,7 +101,31 @@ const drawOnCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
         .push()
         .set({ author: uid, time: moment().unix(), color });
 
-      return CanvasActions.drawSuccess();
+      const { name } = selectors.activeCanvasEntity(state$.value);
+
+      // Notifications.postLocalNotification({
+      //   fireDate: moment()
+      //     .add(5, "seconds")
+      //     .toISOString(),
+      //   body: "Local notificiation!",
+      //   title: "Local Notification Title",
+
+      //   category: "SOME_CATEGORY",
+
+      // });
+
+      const nextDrawAt = moment().add(DRAW_INTERVAL, "minutes");
+
+      // @ts-ignore
+      Notifications.postLocalNotification({
+        fireDate: nextDrawAt.toISOString(),
+        body: "Ready to draw!",
+        title: name,
+        sound: "chime.aiff",
+        link: canvasUrl(activeCanvas)
+      });
+
+      return CanvasActions.drawSuccess(nextDrawAt.unix());
     })
   );
 

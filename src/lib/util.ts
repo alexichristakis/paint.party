@@ -1,6 +1,7 @@
-import { CELL_SIZE, CANVAS_DIMENSIONS } from "./constants";
 import Animated from "react-native-reanimated";
 import { State } from "react-native-gesture-handler";
+
+import { URL_PREFIX, CELL_SIZE, CANVAS_DIMENSIONS } from "./constants";
 
 const { cond, eq, neq, and, call, set, proc, block } = Animated;
 
@@ -28,3 +29,6 @@ export const onGestureEnd = proc(
       ])
     ])
 );
+
+export const canvasUrl = (canvasId: string) =>
+  URL_PREFIX + "canvas/" + canvasId;

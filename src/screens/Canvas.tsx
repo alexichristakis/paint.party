@@ -10,7 +10,13 @@ import { CanvasActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import CanvasVisualization from "@components/Canvas";
 import { Countdown } from "@components/universal";
-import { SCREEN_HEIGHT, SCREEN_WIDTH, Colors, SB_HEIGHT } from "@lib";
+import {
+  SCREEN_HEIGHT,
+  SCREEN_WIDTH,
+  Colors,
+  SB_HEIGHT,
+  canvasUrl
+} from "@lib";
 
 import X from "@assets/svg/X.svg";
 import Hamburger from "@assets/svg/hamburger.svg";
@@ -50,7 +56,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   const onPressShare = async () => {
     const result = await Share.share({
       title: "share unexpected",
-      message: "https://expect.photos"
+      message: canvasUrl(activeCanvas)
     });
   };
 
