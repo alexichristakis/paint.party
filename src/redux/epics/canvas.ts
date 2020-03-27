@@ -47,8 +47,8 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
           const data = val.val();
 
           let loadedCanvasPayload: CanvasViz = {
-            id,
-            ...initialCanvasViz
+            ...initialCanvasViz,
+            id
           };
 
           if (data) {

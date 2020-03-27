@@ -12,17 +12,16 @@ import {
   withScaleOffset,
   withDecay
 } from "react-native-redash";
-import times from "lodash/times";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
-import { CANVAS_DIMENSIONS, coordinatesToIndex } from "@lib";
+import { coordinatesToIndex } from "@lib";
 import { RootState } from "@redux/types";
 import { CanvasActions } from "@redux/modules";
 import { LoadingOverlay } from "@components/universal";
 
-import { Row } from "./Row";
+import { Grid } from "./Grid";
 import { CellHighlight } from "./CellHighlight";
 import { ColorPicker } from "./ColorPicker";
 
@@ -156,11 +155,9 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
               <TapGestureHandler {...tapHandler}>
                 <Animated.View
                   ref={childRef}
-                  style={{ backgroundColor, transform: [{ scale }] }}
+                  style={{ transform: [{ scale }] }}
                 >
-                  {times(CANVAS_DIMENSIONS, i => (
-                    <Row key={i} index={i} />
-                  ))}
+                  <Grid backgroundColor={backgroundColor} />
                   <CellHighlight visible={pickerVisible} />
                 </Animated.View>
               </TapGestureHandler>
