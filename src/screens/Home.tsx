@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Button } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import values from "lodash/values";
 import Animated from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/core";
@@ -17,18 +17,20 @@ import { SB_HEIGHT, TextStyles } from "@lib";
 import Plus from "@assets/svg/plus.svg";
 import { useValues, onScroll } from "react-native-redash";
 
-const mapStateToProps = (state: RootState) => ({
-  activeCanvas: selectors.activeCanvas(state),
-  isCreatingCanvas: selectors.isCreatingCanvas(state),
-  canvases: selectors.canvases(state)
-});
-const mapDispatchToProps = {
-  logout: AppActions.logout,
-  openCanvas: CanvasActions.open,
-  unsubscribe: CanvasActions.close,
-  createCanvas: CanvasActions.create,
-  fetchCanvases: CanvasActions.fetch
-};
+const connector = connect(
+  (state: RootState) => ({
+    activeCanvas: selectors.activeCanvas(state),
+    isCreatingCanvas: selectors.isCreatingCanvas(state),
+    canvases: selectors.canvases(state)
+  }),
+  {
+    logout: AppActions.logout,
+    openCanvas: CanvasActions.open,
+    unsubscribe: CanvasActions.close,
+    createCanvas: CanvasActions.create,
+    fetchCanvases: CanvasActions.fetch
+  }
+);
 
 export type HomeReduxProps = ConnectedProps<typeof connector>;
 export interface HomeProps {
@@ -84,7 +86,6 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
           onPressCanvas={openCanvas}
           canvases={values(canvases)}
         />
-        {/* <Button title="sign out" onPress={logout} /> */}
       </Animated.ScrollView>
       <CreateCanvas
         visible={modalVisible}
@@ -116,5 +117,4 @@ const styles = StyleSheet.create({
   }
 });
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(Home);

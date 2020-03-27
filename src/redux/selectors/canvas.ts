@@ -57,4 +57,6 @@ export const isCreatingCanvas = createSelector(
   state => state.creatingCanvas
 );
 
+export const livePositions = createSelector(canvas, canvas => canvas.live);
+
 export const isLoadingCanvas = createSelector(s, state => state.loadingCanvas);

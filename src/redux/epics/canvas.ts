@@ -11,7 +11,9 @@ import {
   catchError,
   takeUntil,
   startWith,
-  switchMap
+  switchMap,
+  tap,
+  ignoreElements
 } from "rxjs/operators";
 import { Action } from "redux";
 import { isOfType } from "typesafe-actions";
@@ -27,6 +29,7 @@ import canvas, { CellUpdate, Canvas, CanvasViz } from "../modules/canvas";
 import { RootState, ExtractActionFromActionCreator } from "../types";
 import { Notifications } from "react-native-notifications";
 import { DRAW_INTERVAL, canvasUrl } from "@lib";
+import { firebase } from "@react-native-firebase/auth";
 
 const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
@@ -42,11 +45,14 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
         ref.once("value").then(val => {
           initialLoadComplete = true;
 
+          const data = val.val();
+          const { live, ...rest } = data;
           subscriber.next(
             CanvasActions.openSuccess({
               id,
               enabled: false,
-              cells: val.val(),
+              cells: rest,
+              live,
               selectedCell: -1,
               selectedColor: ""
             })
@@ -56,7 +62,16 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
         ref.on(
           "child_changed",
           (change: FirebaseDatabaseTypes.DataSnapshot) => {
-            subscriber.next(CanvasActions.update(+change.key!, change.val()));
+            const id = change.key;
+            if (id === "live") {
+              return subscriber.next(
+                CanvasActions.setLivePositions(change.val())
+              );
+            }
+
+            return subscriber.next(
+              CanvasActions.update(+change.key!, change.val())
+            );
           }
           //   error => console.log("ERROR", error)
         );
@@ -202,10 +217,49 @@ const fetchCanvases: Epic<Actions, Actions, RootState> = (action$, state$) =>
     })
   );
 
+const closeCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
+  action$.pipe(
+    filter(isOfType(ActionTypes.CLOSE_CANVAS)),
+    tap(async () => {
+      const uid = selectors.uid(state$.value);
+      const { id } = selectors.canvas(state$.value);
+
+      console.log(canvas, uid);
+
+      await database()
+        .ref(id)
+        .child(`live/${uid}`)
+        .remove();
+    }),
+    ignoreElements()
+  );
+
+const updateLivePosition: Epic<Actions, Actions, RootState> = (
+  action$,
+  state$
+) =>
+  action$.pipe(
+    filter(isOfType(ActionTypes.SELECT_CELL)),
+    tap(async action => {
+      const { cell } = action.payload;
+
+      const uid = selectors.uid(state$.value);
+      const canvas = selectors.activeCanvas(state$.value);
+
+      await database()
+        .ref(canvas)
+        .child(`live/${uid}`)
+        .set(cell);
+    }),
+    ignoreElements()
+  );
+
 export default [
   openCanvas,
+  closeCanvas,
   drawOnCanvas,
   createCanvas,
   joinCanvas,
-  fetchCanvases
+  fetchCanvases,
+  updateLivePosition
 ];

@@ -8,7 +8,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import * as selectors from "@redux/selectors";
 import { CanvasActions } from "@redux/modules";
 import { RootState } from "@redux/types";
-import CanvasVisualization from "@components/Canvas";
+import CanvasVisualization, { LiveUsers } from "@components/Canvas";
 import { Countdown } from "@components/universal";
 import {
   SCREEN_HEIGHT,
@@ -64,13 +64,16 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={close}>
-          <X width={20} height={20} />
-        </TouchableOpacity>
-        <Countdown enable={enable} toDate={canvasActiveAt} />
-        <TouchableOpacity onPress={onPressShare}>
-          <Hamburger width={20} height={20} />
-        </TouchableOpacity>
+        <View style={styles.headerRow}>
+          <TouchableOpacity onPress={close}>
+            <X width={20} height={20} />
+          </TouchableOpacity>
+          <Countdown enable={enable} toDate={canvasActiveAt} />
+          <TouchableOpacity onPress={onPressShare}>
+            <Hamburger width={20} height={20} />
+          </TouchableOpacity>
+        </View>
+        <LiveUsers />
       </View>
       <CanvasVisualization loading={loadingCanvas} />
     </View>
@@ -87,13 +90,17 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   header: {
-    justifyContent: "space-between",
     alignItems: "center",
     position: "absolute",
-    flexDirection: "row",
     left: 12,
     right: 12,
     top: SB_HEIGHT + 5
+  },
+  headerRow: {
+    alignSelf: "stretch",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
   }
 });
 

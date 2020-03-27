@@ -18,13 +18,13 @@ import { connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
 import { CANVAS_DIMENSIONS, coordinatesToIndex } from "@lib";
+import { RootState } from "@redux/types";
+import { CanvasActions } from "@redux/modules";
+import { LoadingOverlay } from "@components/universal";
 
 import { Row } from "./Row";
 import { CellHighlight } from "./CellHighlight";
 import { ColorPicker } from "./ColorPicker";
-import { RootState } from "@redux/types";
-import { CanvasActions } from "@redux/modules";
-import { LoadingOverlay } from "@components/universal";
 
 const { onChange, useCode, or, eq, set, cond, call } = Animated;
 const { ACTIVE, UNDETERMINED, END } = State;
@@ -176,3 +176,5 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(Canvas);
+
+export * from "./LiveUsers";
