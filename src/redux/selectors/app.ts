@@ -9,4 +9,9 @@ export const isAuthenticated = createSelector(
   state => state.isAuthenticated
 );
 
+export const isAuthenticating = createSelector(
+  s,
+  state => state.isAuthenticating
+);
+
 export const uid = createSelector(s, state => state.user?.uid);

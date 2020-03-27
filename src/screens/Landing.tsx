@@ -1,13 +1,18 @@
-import React from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
+import React, { useEffect } from "react";
+import { StyleSheet, View, Button } from "react-native";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
 import { connect, ConnectedProps } from "react-redux";
 
+import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
-import { StackParamList } from "../App";
 import { AppActions } from "@redux/modules";
 
-const mapStateToProps = (state: RootState) => ({});
+import { StackParamList } from "../App";
+import { LoadingOverlay } from "@components/universal";
+
+const mapStateToProps = (state: RootState) => ({
+  loading: selectors.isAuthenticating(state)
+});
 const mapDispatchToProps = {
   login: AppActions.login
 };
@@ -17,11 +22,17 @@ export interface LandingProps {
   navigation: NativeStackNavigationProp<StackParamList>;
 }
 
-const Landing: React.FC<LandingProps & LandingReduxProps> = ({ login }) => {
+const Landing: React.FC<LandingProps & LandingReduxProps> = ({
+  login,
+  loading
+}) => {
+  useEffect(() => {
+    login();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text>landing page</Text>
-      <Button title="login" onPress={login} />
+      <LoadingOverlay loading={true} />
     </View>
   );
 };

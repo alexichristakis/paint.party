@@ -171,12 +171,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
         </Animated.View>
       </PanGestureHandler>
       <ColorPicker visible={pickerVisible} onChoose={handleOnChooseColor} />
-      <Animated.View
-        pointerEvents={loading ? "auto" : "none"}
-        style={[styles.loadingOverlay, { opacity: loadingOverlayOpacity }]}
-      >
-        <ActivityIndicator style={styles.loadingIndicator} size={"large"} />
-      </Animated.View>
+      <LoadingOverlay loading={loading} />
     </>
   );
 };
