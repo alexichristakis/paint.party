@@ -163,10 +163,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
                   {times(CANVAS_DIMENSIONS, i => (
                     <Row key={i} index={i} />
                   ))}
-                  <CellHighlight
-                    selectCell={selectCell}
-                    visible={pickerVisible}
-                  />
+                  <CellHighlight visible={pickerVisible} />
                 </Animated.View>
               </TapGestureHandler>
             </Animated.View>
