@@ -1,10 +1,5 @@
 import React, { useRef } from "react";
-import Animated, {
-  Easing,
-  interpolate,
-  onChange,
-  useCode
-} from "react-native-reanimated";
+import Animated, { Easing, onChange, useCode } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import {
   State,
@@ -28,7 +23,19 @@ import * as selectors from "@redux/selectors";
 import { FillColors } from "@lib";
 import CloseIcon from "@assets/svg/close.svg";
 
-const { set, or, eq, sub, cond, call } = Animated;
+const {
+  divide,
+  atan,
+  defined,
+  set,
+  or,
+  eq,
+  sub,
+  cond,
+  add,
+  call,
+  multiply
+} = Animated;
 
 const COLOR_SIZE = 60;
 const ANGLE_INCREMENT = 360 / FillColors.length;
@@ -129,17 +136,6 @@ const Color: React.FC<ColorProps> = React.memo(
 export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
   ({ onChoose, visible }) => {
     const enabled = useSelector(selectors.canvasEnabled);
-
-    const panRef = useRef<PanGestureHandler>(null);
-    const [dragX, dragY, velocityX, velocityY] = useValues<number>(
-      [0, 0, 0, 0],
-      []
-    );
-    const [panState, tapState] = useValues<State>(
-      [State.UNDETERMINED, State.UNDETERMINED],
-      []
-    );
-
     const openTransition = useMemoOne(
       () => withSpringTransition(visible, config),
       []
@@ -147,42 +143,73 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
 
     const enabledTransition = useSpringTransition(enabled, config);
 
+    const panRef = useRef<PanGestureHandler>(null);
+
+    const [
+      x,
+      y,
+      translationX,
+      translationY,
+      velocityX,
+      velocityY,
+      velocity,
+      angle
+    ] = useValues<number>(
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      []
+    );
+
+    const [panState, tapState] = useValues<State>(
+      [State.UNDETERMINED, State.UNDETERMINED],
+      []
+    );
+
     const [panHandler, tapHandler] = useMemoOne(
       () => [
         onGestureEvent({
-          translationX: dragX,
-          translationY: dragY,
           state: panState,
+          x,
+          y,
           velocityX,
-          velocityY
+          velocityY,
+          translationX,
+          translationY
         }),
         onGestureEvent({ state: tapState })
       ],
       []
     );
 
-    const scroll = useMemoOne(
-      () =>
-        withDecay({
-          state: panState,
-          value: sub(dragX, dragY),
-          velocity: sub(velocityX, velocityY)
-        }),
-      []
-    );
-
     useCode(
       () => [
-        onChange(tapState, cond(eq(tapState, State.END), [set(visible, 0)]))
+        set(
+          angle,
+          sub(
+            atan(
+              divide(sub(x, translationX), multiply(-1, sub(y, translationY)))
+            ),
+            atan(divide(x, multiply(-1, y)))
+          )
+        ),
+
+        set(
+          velocity,
+          divide(
+            sub(multiply(x, velocityY), multiply(y, velocityX)),
+            add(multiply(x, x), multiply(y, y))
+          )
+        )
       ],
       []
     );
 
-    const translateY = bInterpolate(openTransition, 75, -10);
-    const rotate = interpolate(scroll, {
-      inputRange: [0, 100],
-      outputRange: [1, 2]
+    const rotate = withDecay({
+      value: cond(defined(angle), multiply(-1, angle), 0),
+      velocity,
+      state: panState
     });
+
+    const translateY = bInterpolate(openTransition, 75, -10);
     const scale = bInterpolate(openTransition, 0, 1);
     const opacity = bInterpolate(enabledTransition, 0.5, 1);
     return (
