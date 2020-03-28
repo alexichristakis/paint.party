@@ -140,10 +140,6 @@ const Color: React.FC<ColorProps> = React.memo(
 export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
   ({ onChoose, visible }) => {
     const enabled = useSelector(selectors.canvasEnabled);
-    const openTransition = useMemoOne(
-      () => withSpringTransition(visible, config),
-      []
-    );
 
     const enabledTransition = useSpringTransition(enabled, config);
 
@@ -165,6 +161,17 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
 
     const [panState, tapState] = useValues<State>(
       [State.UNDETERMINED, State.UNDETERMINED],
+      []
+    );
+
+    const [openTransition, closeTransition] = useMemoOne(
+      () => [
+        withSpringTransition(visible, config),
+        withTransition(
+          or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
+          { duration: 200, easing: Easing.inOut(Easing.ease) }
+        )
+      ],
       []
     );
 
@@ -206,11 +213,6 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
         )
       ],
       []
-    );
-
-    const closeTransition = withTransition(
-      or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
-      { duration: 200, easing: Easing.inOut(Easing.ease) }
     );
 
     const rotate = withDecay({

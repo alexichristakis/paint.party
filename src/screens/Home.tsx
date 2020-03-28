@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import values from "lodash/values";
 import Animated from "react-native-reanimated";
@@ -9,7 +9,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "@redux/types";
 import * as selectors from "@redux/selectors";
 import { CanvasActions, AppActions } from "@redux/modules";
-import { CreateCanvas } from "@components/CreateCanvas";
+import { CreateCanvas, CreateCanvasRef } from "@components/CreateCanvas";
 import { Canvases } from "@components/Canvases";
 
 import { StackParamList } from "../App";
@@ -38,7 +38,6 @@ export interface HomeProps {
 }
 
 const Home: React.FC<HomeProps & HomeReduxProps> = ({
-  logout,
   isCreatingCanvas,
   canvases,
   openCanvas,
@@ -48,7 +47,8 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
   unsubscribe
 }) => {
   const [scrollY] = useValues([0], []);
-  const [modalVisible, setModalVisible] = useState(false);
+  const createCanvasRef = useRef<CreateCanvasRef>(null);
+  // const [modalVisible, setModalVisible] = useState(false);
 
   //
   useFocusEffect(
@@ -68,7 +68,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
       >
         <TouchableOpacity
           style={styles.header}
-          onPress={() => setModalVisible(true)}
+          onPress={() => createCanvasRef.current?.open()}
         >
           {!values(canvases).length ? (
             <View style={styles.headerContent}>
@@ -88,9 +88,8 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
         />
       </Animated.ScrollView>
       <CreateCanvas
-        visible={modalVisible}
+        ref={createCanvasRef}
         loading={isCreatingCanvas}
-        onClose={() => setModalVisible(false)}
         onCreate={createCanvas}
       />
     </>
