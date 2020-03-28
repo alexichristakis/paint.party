@@ -1,13 +1,16 @@
 import React, { useRef } from "react";
-import { StatusBar, Linking } from "react-native";
+import { StatusBar } from "react-native";
 
-import { NavigationContainer, useLinking } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  NavigationContainerRef
+} from "@react-navigation/native";
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { Provider, useSelector } from "react-redux";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
-import CodePush from "react-native-code-push";
+import CodePush, { CodePushOptions } from "react-native-code-push";
 
 import { useNotificationEvents } from "@hooks";
 import * as selectors from "@redux/selectors";
@@ -24,7 +27,7 @@ export type StackParamList = {
 const Stack = createNativeStackNavigator<StackParamList>();
 
 const Root = () => {
-  const ref = useRef(null);
+  const ref = useRef<NavigationContainerRef>(null);
 
   const isAuthenticated = useSelector(selectors.isAuthenticated);
   const activeCanvas = useSelector(selectors.activeCanvas);
@@ -68,7 +71,7 @@ const App: React.FC = () => {
   );
 };
 
-const codePushOptions = {
+const codePushOptions: CodePushOptions = {
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME
 };
 export default CodePush(codePushOptions)(gestureHandlerRootHOC(App));

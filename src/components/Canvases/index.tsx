@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginLeft: 10,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.lightGray
+    backgroundColor: Colors.mediumGray
   },
   emptyState: {
     marginTop: 30,

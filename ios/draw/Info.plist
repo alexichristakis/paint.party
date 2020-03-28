@@ -37,8 +37,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-  <key>CodePushDeploymentKey</key>
-  <string>o14ES60QeQysWgV9TQpp37KWgI7tskqK2E_Jw</string>
+	<key>CodePushDeploymentKey</key>
+	<string>1tNw85D3PyZBimj5NV2dtRxEuIBliLhqUWYR-</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
