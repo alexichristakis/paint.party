@@ -15,7 +15,7 @@ export const LiveUsers: React.FC<LiveUsersProps> = () => {
   const [clock] = useClocks(1, []);
   const [value] = useValues([0], []);
 
-  const positions = useSelector(selectors.livePositions);
+  const positions = useSelector(selectors.numberOfLiveUsers);
 
   useCode(
     () => [
@@ -37,15 +37,11 @@ export const LiveUsers: React.FC<LiveUsersProps> = () => {
 
   if (!positions) return null;
 
-  const num = Object.keys(positions).length - 1;
-
-  if (!num) return null;
-
   return (
     <Animated.View style={[styles.container, { opacity }]}>
       <View style={styles.indicator} />
       <Text style={styles.text}>
-        {num} user{num > 1 ? "s" : ""} live
+        {positions} user{positions > 1 ? "s" : ""} live
       </Text>
     </Animated.View>
   );
