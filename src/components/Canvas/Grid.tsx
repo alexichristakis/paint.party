@@ -1,4 +1,5 @@
 import React from "react";
+import { View } from "react-native";
 import times from "lodash/times";
 import Svg, { Rect } from "react-native-svg";
 import { useSelector } from "react-redux";
@@ -16,21 +17,26 @@ const Cell = ({ i, j }: { i: number; j: number }) => {
     selectors.cellColor(state, i * CANVAS_DIMENSIONS + j)
   );
 
-  return (
-    <Rect
-      x={CELL_SIZE * j}
-      y={CELL_SIZE * i}
-      width={CELL_SIZE}
-      height={CELL_SIZE}
-      fill={fill}
-    />
-  );
+  if (fill)
+    return (
+      <Rect
+        x={CELL_SIZE * j}
+        y={CELL_SIZE * i}
+        width={CELL_SIZE}
+        height={CELL_SIZE}
+        fill={fill}
+      />
+    );
+
+  return null;
 };
 
 export const Grid: React.FC<GridProps> = React.memo(({ backgroundColor }) => (
-  <Svg width={CANVAS_SIZE} height={CANVAS_SIZE} fill={backgroundColor}>
-    {times(CANVAS_DIMENSIONS, i =>
-      times(CANVAS_DIMENSIONS, j => <Cell key={`${i}-${j}`} {...{ i, j }} />)
-    )}
-  </Svg>
+  <View style={{ backgroundColor }}>
+    <Svg width={CANVAS_SIZE} height={CANVAS_SIZE}>
+      {times(CANVAS_DIMENSIONS, i =>
+        times(CANVAS_DIMENSIONS, j => <Cell key={`${i}-${j}`} {...{ i, j }} />)
+      )}
+    </Svg>
+  </View>
 ));
