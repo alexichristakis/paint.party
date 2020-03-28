@@ -39,8 +39,9 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
         ref.on(
           "child_added",
           (change: FirebaseDatabaseTypes.DataSnapshot) => {
-            if (loaded)
+            if (loaded) {
               subscriber.next(CanvasActions.update(+change.key!, change.val()));
+            }
           }
           //   error => console.log("ERROR", error)
         );
@@ -64,28 +65,31 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
           //   error => console.log("ERROR", error)
         );
 
-        Promise.all([ref.once("value"), ref.child(`live/${uid}`).set(-1)]).then(
-          ([val]) => {
-            const data = val.val();
+        ref.once("value").then(val => {
+          const data = val.val();
 
-            let loadedCanvasPayload: CanvasViz = {
-              ...initialCanvasViz,
-              id
+          let loadedCanvasPayload: CanvasViz = {
+            ...initialCanvasViz,
+            id
+          };
+
+          if (data) {
+            const { live, ...rest } = data;
+            loadedCanvasPayload = {
+              ...loadedCanvasPayload,
+              live,
+              cells: rest
             };
-
-            if (data) {
-              const { live, ...rest } = data;
-              loadedCanvasPayload = {
-                ...loadedCanvasPayload,
-                live,
-                cells: rest
-              };
-            }
-
-            loaded = true;
-            subscriber.next(CanvasActions.openSuccess(loadedCanvasPayload));
           }
-        );
+
+          ref
+            .child(`live/${uid}`)
+            .set(-1)
+            .then(() => {
+              loaded = true;
+              subscriber.next(CanvasActions.openSuccess(loadedCanvasPayload));
+            });
+        });
 
         return () => {
           ref.off("child_added");

@@ -72,10 +72,10 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     pickerVisible.setValue(0);
   };
 
-  const handleOnChooseColor = useCallback((color: string) => {
+  const handleOnChooseColor = (color: string) => {
     pickerVisible.setValue(0);
     selectColor(color);
-  }, []);
+  };
 
   return (
     <View style={styles.container}>

@@ -4,6 +4,7 @@ import keyBy from "lodash/keyBy";
 import merge from "lodash/merge";
 
 import { createAction, ActionsUnion } from "../types";
+import { REHYDRATE } from "redux-persist";
 
 export type CellUpdate = {
   id: string;
@@ -85,6 +86,8 @@ export default (
       return immer(state, draft => {
         const newCanvases = keyBy(canvases, o => o.id);
 
+        draft.fetchingCanvases = false;
+        draft.creatingCanvas = false;
         draft.canvases = merge(draft.canvases, newCanvases);
 
         return draft;

@@ -1,5 +1,10 @@
 import React, { useRef } from "react";
-import Animated, { Easing, onChange, useCode } from "react-native-reanimated";
+import Animated, {
+  Easing,
+  onChange,
+  useCode,
+  debug
+} from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import {
   State,
@@ -26,6 +31,7 @@ import { RootState } from "@redux/types";
 
 const {
   divide,
+  not,
   atan,
   defined,
   set,
@@ -39,7 +45,7 @@ const {
 } = Animated;
 
 const COLOR_SIZE = 60;
-const ANGLE_INCREMENT = 360 / FillColors.length;
+const ANGLE_INCREMENT = (2 * Math.PI) / FillColors.length;
 
 const config = {
   damping: 40,
@@ -117,7 +123,7 @@ const Color: React.FC<ColorProps> = React.memo(
           style={{
             alignItems: "center",
             transform: [
-              { rotate: `${index * ANGLE_INCREMENT}deg` },
+              { rotate: index * ANGLE_INCREMENT },
               { translateY: bInterpolate(openTransition, 0, 150) },
               { translateY: bInterpolate(closeTransition, 0, -30) }
             ]
@@ -216,7 +222,7 @@ const ColorPicker: React.FC<ColorPickerProps & ColorPickerConnectedProps> = ({
         velocity,
         divide(
           sub(multiply(x, velocityY), multiply(y, velocityX)),
-          add(multiply(x, x), multiply(y, y))
+          add(multiply(x, x), multiply(y, y)) // add 1 to avoid NaN
         )
       )
     ],
@@ -225,7 +231,7 @@ const ColorPicker: React.FC<ColorPickerProps & ColorPickerConnectedProps> = ({
 
   const rotate = withDecay({
     velocity,
-    value: cond(defined(angle), multiply(-1, angle), 0),
+    value: cond(defined(angle), multiply(-1, angle)),
     state: panState
   });
 
@@ -236,7 +242,7 @@ const ColorPicker: React.FC<ColorPickerProps & ColorPickerConnectedProps> = ({
 
   const rotationStyle = {
     transform: [
-      { rotate },
+      { rotate: cond(defined(rotate), rotate, 0) },
       { rotate: bInterpolate(openTransition, -Math.PI / 4, 0) }
     ]
   };
