@@ -30,7 +30,7 @@ import { RootState } from "../types";
 import { Notifications } from "react-native-notifications";
 import { DRAW_INTERVAL, canvasUrl } from "@lib";
 
-const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
+const openCanvas: Epic<Actions> = action$ =>
   action$.pipe(
     filter(isOfType(ActionTypes.OPEN_CANVAS)),
     switchMap(action => {

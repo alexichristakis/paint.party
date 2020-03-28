@@ -58,12 +58,20 @@ interface ColorProps {
   index: number;
   panRef: any;
   openTransition: Animated.Node<number>;
+  closeTransition: Animated.Node<number>;
   color: string;
   onChoose: (color: string) => void;
 }
 
 const Color: React.FC<ColorProps> = React.memo(
-  ({ index, color: backgroundColor, panRef, openTransition, onChoose }) => {
+  ({
+    index,
+    color: backgroundColor,
+    panRef,
+    openTransition,
+    onChoose,
+    closeTransition
+  }) => {
     const [state] = useValues([State.UNDETERMINED], []);
 
     const activeTransition = useMemoOne(
@@ -91,15 +99,6 @@ const Color: React.FC<ColorProps> = React.memo(
       state
     });
 
-    const [scale, borderRadius, translateY] = useMemoOne(
-      () => [
-        bInterpolate(activeTransition, 1, 1.45),
-        bInterpolate(activeTransition, COLOR_SIZE / 2, COLOR_SIZE / 4),
-        bInterpolate(openTransition, 0, 150)
-      ],
-      []
-    );
-
     return (
       <TapGestureHandler
         {...tapHandler}
@@ -112,7 +111,8 @@ const Color: React.FC<ColorProps> = React.memo(
             alignItems: "center",
             transform: [
               { rotate: `${index * ANGLE_INCREMENT}deg` },
-              { translateY }
+              { translateY: bInterpolate(openTransition, 0, 150) },
+              { translateY: bInterpolate(closeTransition, 0, -30) }
             ]
           }}
         >
@@ -120,9 +120,13 @@ const Color: React.FC<ColorProps> = React.memo(
             style={[
               styles.color,
               {
-                borderRadius,
+                borderRadius: bInterpolate(
+                  activeTransition,
+                  COLOR_SIZE / 2,
+                  COLOR_SIZE / 4
+                ),
                 backgroundColor,
-                transform: [{ scale }]
+                transform: [{ scale: bInterpolate(activeTransition, 1, 1.45) }]
               }
             ]}
           />
@@ -182,6 +186,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
 
     useCode(
       () => [
+        onChange(tapState, cond(eq(tapState, State.END), set(visible, 0))),
         set(
           angle,
           sub(
@@ -203,14 +208,20 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
       []
     );
 
+    const closeTransition = withTransition(
+      or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
+      { duration: 200, easing: Easing.inOut(Easing.ease) }
+    );
+
     const rotate = withDecay({
-      value: cond(defined(angle), multiply(-1, angle), 0),
       velocity,
+      value: cond(defined(angle), multiply(-1, angle), 0),
       state: panState
     });
 
     const translateY = bInterpolate(openTransition, 75, -10);
     const scale = bInterpolate(openTransition, 0, 1);
+
     const opacity = bInterpolate(enabledTransition, 0.5, 1);
     return (
       <PanGestureHandler ref={panRef} {...panHandler}>
@@ -219,25 +230,41 @@ export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
         >
           <Animated.View
             pointerEvents={enabled ? "auto" : "none"}
-            style={{ transform: [{ rotate }], opacity }}
+            style={{
+              transform: [
+                { rotate },
+                {
+                  rotate: bInterpolate(openTransition, -Math.PI / 4, 0)
+                }
+              ],
+              opacity
+            }}
           >
             {FillColors.map((color, index) => (
               <Color
                 key={index}
                 {...{
+                  color,
                   index,
                   panRef,
                   onChoose,
                   openTransition,
-                  enabledTransition,
-                  color
+                  closeTransition
                 }}
               />
             ))}
           </Animated.View>
           <TapGestureHandler {...tapHandler}>
             <Animated.View
-              style={[styles.closeButton, { transform: [{ scale }] }]}
+              style={[
+                styles.closeButton,
+                {
+                  transform: [
+                    { scale },
+                    { scale: bInterpolate(closeTransition, 1, 0.9) }
+                  ]
+                }
+              ]}
             >
               <CloseIcon width={70} height={70} />
             </Animated.View>
@@ -263,6 +290,6 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    bottom: 35
+    bottom: 20
   }
 });
