@@ -17,11 +17,12 @@ import {
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
-import { useSelector } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
 import { FillColors } from "@lib";
 import CloseIcon from "@assets/svg/close.svg";
+import { RootState } from "@redux/types";
 
 const {
   divide,
@@ -62,6 +63,12 @@ interface ColorProps {
   color: string;
   onChoose: (color: string) => void;
 }
+
+export type ColorPickerConnectedProps = ConnectedProps<typeof connector>;
+
+const mapStateToProps = (state: RootState) => ({
+  enabled: selectors.canvasEnabled(state)
+});
 
 const Color: React.FC<ColorProps> = React.memo(
   ({
@@ -137,146 +144,138 @@ const Color: React.FC<ColorProps> = React.memo(
   (p, n) => p.color === n.color && p.index === n.index
 );
 
-export const ColorPicker: React.FC<ColorPickerProps> = React.memo(
-  ({ onChoose, visible }) => {
-    const enabled = useSelector(selectors.canvasEnabled);
+const ColorPicker: React.FC<ColorPickerProps & ColorPickerConnectedProps> = ({
+  onChoose,
+  enabled,
+  visible
+}) => {
+  const enabledTransition = useSpringTransition(enabled, config);
 
-    const enabledTransition = useSpringTransition(enabled, config);
+  const panRef = useRef<PanGestureHandler>(null);
 
-    const panRef = useRef<PanGestureHandler>(null);
+  const [
+    x,
+    y,
+    translationX,
+    translationY,
+    velocityX,
+    velocityY,
+    velocity,
+    angle
+  ] = useValues<number>(
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    []
+  );
 
-    const [
-      x,
-      y,
-      translationX,
-      translationY,
-      velocityX,
-      velocityY,
-      velocity,
-      angle
-    ] = useValues<number>(
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      []
-    );
+  const [panState, tapState] = useValues<State>(
+    [State.UNDETERMINED, State.UNDETERMINED],
+    []
+  );
 
-    const [panState, tapState] = useValues<State>(
-      [State.UNDETERMINED, State.UNDETERMINED],
-      []
-    );
+  const [openTransition, closeTransition] = useMemoOne(
+    () => [
+      withSpringTransition(visible, config),
+      withTransition(
+        or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
+        { duration: 200, easing: Easing.inOut(Easing.ease) }
+      )
+    ],
+    []
+  );
 
-    const [openTransition, closeTransition] = useMemoOne(
-      () => [
-        withSpringTransition(visible, config),
-        withTransition(
-          or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
-          { duration: 200, easing: Easing.inOut(Easing.ease) }
+  const [panHandler, tapHandler] = useMemoOne(
+    () => [
+      onGestureEvent({
+        state: panState,
+        x,
+        y,
+        velocityX,
+        velocityY,
+        translationX,
+        translationY
+      }),
+      onGestureEvent({ state: tapState })
+    ],
+    []
+  );
+
+  useCode(
+    () => [
+      onChange(tapState, cond(eq(tapState, State.END), set(visible, 0))),
+      set(
+        angle,
+        sub(
+          atan(
+            divide(sub(x, translationX), multiply(-1, sub(y, translationY)))
+          ),
+          atan(divide(x, multiply(-1, y)))
         )
-      ],
-      []
-    );
+      ),
 
-    const [panHandler, tapHandler] = useMemoOne(
-      () => [
-        onGestureEvent({
-          state: panState,
-          x,
-          y,
-          velocityX,
-          velocityY,
-          translationX,
-          translationY
-        }),
-        onGestureEvent({ state: tapState })
-      ],
-      []
-    );
-
-    useCode(
-      () => [
-        onChange(tapState, cond(eq(tapState, State.END), set(visible, 0))),
-        set(
-          angle,
-          sub(
-            atan(
-              divide(sub(x, translationX), multiply(-1, sub(y, translationY)))
-            ),
-            atan(divide(x, multiply(-1, y)))
-          )
-        ),
-
-        set(
-          velocity,
-          divide(
-            sub(multiply(x, velocityY), multiply(y, velocityX)),
-            add(multiply(x, x), multiply(y, y))
-          )
+      set(
+        velocity,
+        divide(
+          sub(multiply(x, velocityY), multiply(y, velocityX)),
+          add(multiply(x, x), multiply(y, y))
         )
-      ],
-      []
-    );
+      )
+    ],
+    []
+  );
 
-    const rotate = withDecay({
-      velocity,
-      value: cond(defined(angle), multiply(-1, angle), 0),
-      state: panState
-    });
+  const rotate = withDecay({
+    velocity,
+    value: cond(defined(angle), multiply(-1, angle), 0),
+    state: panState
+  });
 
-    const translateY = bInterpolate(openTransition, 75, -10);
-    const scale = bInterpolate(openTransition, 0, 1);
+  const translateY = bInterpolate(openTransition, 75, -10);
+  const scale = bInterpolate(openTransition, 0, 1);
 
-    const opacity = bInterpolate(enabledTransition, 0.5, 1);
-    return (
-      <PanGestureHandler ref={panRef} {...panHandler}>
+  const opacity = bInterpolate(enabledTransition, 0.5, 1);
+
+  const rotationStyle = {
+    transform: [
+      { rotate },
+      { rotate: bInterpolate(openTransition, -Math.PI / 4, 0) }
+    ]
+  };
+
+  const scaleStyle = {
+    transform: [{ scale }, { scale: bInterpolate(closeTransition, 1, 0.9) }]
+  };
+  return (
+    <PanGestureHandler ref={panRef} {...panHandler}>
+      <Animated.View
+        style={[styles.container, { transform: [{ translateY }] }]}
+      >
         <Animated.View
-          style={[styles.container, { transform: [{ translateY }] }]}
+          pointerEvents={enabled ? "auto" : "none"}
+          style={[rotationStyle, { opacity }]}
         >
-          <Animated.View
-            pointerEvents={enabled ? "auto" : "none"}
-            style={{
-              transform: [
-                { rotate },
-                {
-                  rotate: bInterpolate(openTransition, -Math.PI / 4, 0)
-                }
-              ],
-              opacity
-            }}
-          >
-            {FillColors.map((color, index) => (
-              <Color
-                key={index}
-                {...{
-                  color,
-                  index,
-                  panRef,
-                  onChoose,
-                  openTransition,
-                  closeTransition
-                }}
-              />
-            ))}
-          </Animated.View>
-          <TapGestureHandler {...tapHandler}>
-            <Animated.View
-              style={[
-                styles.closeButton,
-                {
-                  transform: [
-                    { scale },
-                    { scale: bInterpolate(closeTransition, 1, 0.9) }
-                  ]
-                }
-              ]}
-            >
-              <CloseIcon width={70} height={70} />
-            </Animated.View>
-          </TapGestureHandler>
+          {FillColors.map((color, index) => (
+            <Color
+              key={index}
+              {...{
+                color,
+                index,
+                panRef,
+                onChoose,
+                openTransition,
+                closeTransition
+              }}
+            />
+          ))}
         </Animated.View>
-      </PanGestureHandler>
-    );
-  },
-  () => true
-);
+        <TapGestureHandler {...tapHandler}>
+          <Animated.View style={[styles.closeButton, scaleStyle]}>
+            <CloseIcon width={70} height={70} />
+          </Animated.View>
+        </TapGestureHandler>
+      </Animated.View>
+    </PanGestureHandler>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -295,3 +294,6 @@ const styles = StyleSheet.create({
     bottom: 20
   }
 });
+
+const connector = connect(mapStateToProps, {});
+export default connector(ColorPicker);

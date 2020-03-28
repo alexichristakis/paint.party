@@ -1,49 +1,73 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import Animated, { useCode, Easing } from "react-native-reanimated";
-import { useValues, loop, useClocks, bInterpolate } from "react-native-redash";
-import { useSelector } from "react-redux";
+import Animated, { useCode, Easing, onChange } from "react-native-reanimated";
+import {
+  useValues,
+  loop,
+  useClocks,
+  bInterpolate,
+  onGestureEvent
+} from "react-native-redash";
+import { connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
 import { TextStyles, Colors, pluralize } from "@lib";
+import { TapGestureHandler, State } from "react-native-gesture-handler";
+import { RootState } from "@redux/types";
 
-const { set } = Animated;
+const { set, cond, eq, call } = Animated;
 
-export interface LiveUsersProps {}
+export interface LiveUsersProps {
+  onPress: () => void;
+}
 
-export const LiveUsers: React.FC<LiveUsersProps> = () => {
-  const [clock] = useClocks(1, []);
-  const [value] = useValues([0], []);
+const mapStateToProps = (state: RootState) => ({
+  numUsers: selectors.numLiveUsers(state)
+});
+const mapDispatchToProps = {};
 
-  const positions = useSelector(selectors.numberOfLiveUsers);
+export type LiveUsersConnectedProps = ConnectedProps<typeof connector>;
 
-  useCode(
-    () => [
-      set(
-        value,
-        loop({
-          clock,
-          duration: 550,
-          easing: Easing.inOut(Easing.ease),
-          boomerang: true,
-          autoStart: true
-        })
-      )
-    ],
-    []
-  );
+const LiveUsers: React.FC<LiveUsersProps &
+  LiveUsersConnectedProps> = React.memo(
+  ({ numUsers, onPress }) => {
+    const [clock] = useClocks(1, []);
+    const [value, state] = useValues([0, State.UNDETERMINED], []);
 
-  const opacity = bInterpolate(value, 0.5, 1);
+    const handler = onGestureEvent({ state });
 
-  if (!positions) return null;
+    useCode(
+      () => [
+        onChange(state, cond(eq(state, State.END), call([], onPress))),
+        set(
+          value,
+          loop({
+            clock,
+            duration: 550,
+            easing: Easing.inOut(Easing.ease),
+            boomerang: true,
+            autoStart: true
+          })
+        )
+      ],
+      []
+    );
 
-  return (
-    <Animated.View style={[styles.container, { opacity }]}>
-      <View style={styles.indicator} />
-      <Text style={styles.text}>{pluralize("user", positions)} live</Text>
-    </Animated.View>
-  );
-};
+    const opacity = bInterpolate(value, 0.5, 1);
+
+    if (!numUsers) return null;
+
+    return (
+      <TapGestureHandler {...handler}>
+        <Animated.View style={[styles.container, { opacity }]}>
+          <View style={styles.indicator} />
+          <Text style={styles.text}>{pluralize("other user", numUsers)}</Text>
+        </Animated.View>
+      </TapGestureHandler>
+    );
+  },
+  (p, n) => p.numUsers === n.numUsers
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -62,3 +86,6 @@ const styles = StyleSheet.create({
     ...TextStyles.medium
   }
 });
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+export default connector(LiveUsers);

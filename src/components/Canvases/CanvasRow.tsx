@@ -15,10 +15,6 @@ import {
   LongPressGestureHandler,
   State
 } from "react-native-gesture-handler";
-
-import { TextStyles, Colors, pluralize, SCREEN_WIDTH, canvasUrl } from "@lib";
-import { Canvas } from "@redux/modules/canvas";
-import { Countdown } from "@components/universal";
 import {
   useValues,
   onGestureEvent,
@@ -27,6 +23,10 @@ import {
   withTransition
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
+
+import { TextStyles, Colors, pluralize, SCREEN_WIDTH, canvasUrl } from "@lib";
+import { Canvas } from "@redux/modules/canvas";
+import { Countdown } from "@components/universal";
 import { useOnLayout } from "@hooks";
 
 const { or, eq, cond, call } = Animated;

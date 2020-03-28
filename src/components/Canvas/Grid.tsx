@@ -31,7 +31,7 @@ const Cell = ({ i, j }: { i: number; j: number }) => {
   return null;
 };
 
-export const Grid: React.FC<GridProps> = React.memo(({ backgroundColor }) => (
+export default React.memo(({ backgroundColor }: GridProps) => (
   <View style={{ backgroundColor }}>
     <Svg width={CANVAS_SIZE} height={CANVAS_SIZE}>
       {times(CANVAS_DIMENSIONS, i =>

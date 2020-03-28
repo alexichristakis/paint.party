@@ -1,5 +1,5 @@
-import React, { useCallback, useState, useRef } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import React, { useCallback } from "react";
+import { StyleSheet } from "react-native";
 import values from "lodash/values";
 import Animated from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/core";
@@ -42,9 +42,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
   unsubscribe
 }) => {
   const [scrollY] = useValues([0], []);
-  // const [modalVisible, setModalVisible] = useState(false);
 
-  //
   useFocusEffect(
     useCallback(() => {
       if (activeCanvas.length) unsubscribe();

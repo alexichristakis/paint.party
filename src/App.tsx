@@ -39,19 +39,11 @@ const Root = () => {
         }}
       >
         {isAuthenticated ? (
-          <Stack.Screen name="HOME">
-            {() => (
-              <Stack.Navigator
-                screenOptions={{ headerShown: false, stackAnimation: "fade" }}
-              >
-                {activeCanvas.length ? (
-                  <Stack.Screen name="CANVAS" component={Canvas} />
-                ) : (
-                  <Stack.Screen name="HOME" component={Home} />
-                )}
-              </Stack.Navigator>
-            )}
-          </Stack.Screen>
+          activeCanvas.length ? (
+            <Stack.Screen name="CANVAS" component={Canvas} />
+          ) : (
+            <Stack.Screen name="HOME" component={Home} />
+          )
         ) : (
           <Stack.Screen name="LANDING" component={Landing} />
         )}

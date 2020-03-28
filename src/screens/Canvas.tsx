@@ -4,12 +4,13 @@ import { connect, ConnectedProps } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { useValues } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
 import { CanvasActions } from "@redux/modules";
 import { RootState } from "@redux/types";
-import CanvasVisualization, { LiveUsers } from "@components/Canvas";
-import { Countdown } from "@components/universal";
+import { Visualization, ColorPicker, LiveUsers } from "@components/Canvas";
+import { Countdown, LoadingOverlay } from "@components/universal";
 import {
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
@@ -30,6 +31,7 @@ const mapStateToProps = (state: RootState) => ({
   canvasActiveAt: selectors.canvasActiveAt(state)
 });
 const mapDispatchToProps = {
+  selectColor: CanvasActions.selectColor,
   enable: CanvasActions.enableCanvas,
   close: CanvasActions.close,
   open: CanvasActions.open
@@ -43,6 +45,7 @@ export interface CanvasProps {
 
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
+  selectColor,
   loadingCanvas,
   canvasActiveAt,
   canvas,
@@ -50,17 +53,29 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   open,
   close
 }) => {
+  const [positionsVisible, pickerVisible] = useValues<0 | 1>([0, 0], []);
+
   useFocusEffect(
     useCallback(() => {
       open(activeCanvas);
     }, [])
   );
 
-  const onPressShare = () =>
+  const handleOnPressShare = () =>
     Share.share({
       title: `share ${canvas.name}`,
       message: canvasUrl(activeCanvas)
     });
+
+  const handleOnPressUsers = () => {
+    positionsVisible.setValue(1);
+    pickerVisible.setValue(0);
+  };
+
+  const handleOnChooseColor = useCallback((color: string) => {
+    pickerVisible.setValue(0);
+    selectColor(color);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -70,13 +85,18 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
             <X width={20} height={20} />
           </TouchableOpacity>
           <Countdown enable={enable} toDate={canvasActiveAt} />
-          <TouchableOpacity onPress={onPressShare}>
+          <TouchableOpacity onPress={handleOnPressShare}>
             <Hamburger width={20} height={20} />
           </TouchableOpacity>
         </View>
-        <LiveUsers />
+        <LiveUsers onPress={handleOnPressUsers} />
       </View>
-      <CanvasVisualization loading={loadingCanvas} />
+      <Visualization
+        pickerVisible={pickerVisible}
+        positionsVisible={positionsVisible}
+      />
+      <ColorPicker visible={pickerVisible} onChoose={handleOnChooseColor} />
+      <LoadingOverlay loading={loadingCanvas} />
     </View>
   );
 };

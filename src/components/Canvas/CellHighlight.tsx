@@ -10,10 +10,11 @@ import {
   useClocks,
   bInterpolate
 } from "react-native-redash";
-import { useSelector } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
-import { CELL_SIZE, coordinatesFromIndex } from "@lib";
+import { CELL_SIZE, coordinatesFromIndex, Colors } from "@lib";
+import { RootState } from "@redux/types";
 
 const { set } = Animated;
 
@@ -26,59 +27,68 @@ const config = {
   restDisplacementThreshold: 0.1
 };
 
+export type CellHighlightConnectedProps = ConnectedProps<typeof connector>;
+
 export interface CellHighlightProps {
+  color?: string;
+  cell: number;
   visible: Animated.Value<0 | 1>;
 }
 
 const BORDER_WIDTH = 3;
 
-export const CellHighlight: React.FC<CellHighlightProps> = ({ visible }) => {
-  const [clock] = useClocks(1, []);
-  const [top, left] = useValues<number>([0, 0], []);
+export const CellHighlight: React.FC<CellHighlightProps> = React.memo(
+  ({ color, cell, visible }) => {
+    const [clock] = useClocks(1, []);
+    const [top, left] = useValues<number>([0, 0], []);
 
-  const cell = useSelector(selectors.selectedCell);
-  const { x, y } = coordinatesFromIndex(cell);
+    console.log("render highlight:", cell);
 
-  useCode(
-    () => [
-      set(top, spring({ to: y - BORDER_WIDTH, from: top, config })),
-      set(left, spring({ to: x - BORDER_WIDTH, from: left, config }))
-    ],
-    [x, y]
-  );
+    const { x, y } = coordinatesFromIndex(cell);
 
-  const loopValue = useMemoOne(
-    () =>
-      loop({
-        clock,
-        duration: 550,
-        easing: Easing.inOut(Easing.ease),
-        boomerang: true,
-        autoStart: true
-      }),
-    []
-  );
-
-  const opacity = useMemoOne(() => withTimingTransition(visible), []);
-
-  const scale = bInterpolate(loopValue, 0.9, 1.1);
-  if (cell > -1)
-    return (
-      <Animated.View
-        style={[
-          styles.cell,
-          {
-            opacity,
-            top,
-            left,
-            transform: [{ scale }]
-          }
-        ]}
-      />
+    useCode(
+      () => [
+        set(top, spring({ to: y - BORDER_WIDTH, from: top, config })),
+        set(left, spring({ to: x - BORDER_WIDTH, from: left, config }))
+      ],
+      [x, y]
     );
 
-  return null;
-};
+    const loopValue = useMemoOne(
+      () =>
+        loop({
+          clock,
+          duration: 550,
+          easing: Easing.inOut(Easing.ease),
+          boomerang: true,
+          autoStart: true
+        }),
+      []
+    );
+
+    const opacity = useMemoOne(() => withTimingTransition(visible), []);
+
+    const scale = bInterpolate(loopValue, 0.9, 1.1);
+    if (cell > -1)
+      return (
+        <Animated.View
+          style={[
+            styles.cell,
+            {
+              borderColor: color ?? Colors.nearBlack,
+              opacity,
+              top,
+              left,
+              transform: [{ scale }]
+            }
+          ]}
+        />
+      );
+
+    return null;
+  },
+  (p, n) => p.cell === n.cell && p.color === n.color
+);
 
 const styles = StyleSheet.create({
   cell: {
@@ -89,3 +99,11 @@ const styles = StyleSheet.create({
     borderWidth: BORDER_WIDTH
   }
 });
+
+// default export inject user's selected cell
+const mapStateToProps = (state: RootState) => ({
+  cell: selectors.selectedCell(state)
+});
+
+const connector = connect(mapStateToProps, {});
+export default connector(CellHighlight);
