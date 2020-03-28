@@ -42,8 +42,6 @@ export const CellHighlight: React.FC<CellHighlightProps> = React.memo(
     const [clock] = useClocks(1, []);
     const [top, left] = useValues<number>([0, 0], []);
 
-    console.log("render highlight:", cell);
-
     const { x, y } = coordinatesFromIndex(cell);
 
     useCode(

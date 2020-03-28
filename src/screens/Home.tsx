@@ -74,7 +74,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: SB_HEIGHT + 5
   },
-  header: { alignItems: "flex-end", marginHorizontal: 10 },
+  header: {
+    alignItems: "flex-end",
+    marginHorizontal: 10
+  },
   headerContent: {
     alignSelf: "stretch",
     flexDirection: "row",
