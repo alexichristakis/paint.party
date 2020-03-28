@@ -7,13 +7,9 @@ import { Colors } from "@lib";
 
 export interface LoadingOverlayProps {
   loading: boolean;
-  text?: string;
 }
 
-export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
-  loading,
-  text
-}) => {
+export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ loading }) => {
   const loadingOverlayOpacity = useTransition(loading);
   return (
     <Animated.View

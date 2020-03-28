@@ -17,7 +17,8 @@ export const Colors = {
   red: "#E02020",
   grayBlue: "#C6E2FF",
   white: "#FFFFFF",
-  pink: "#FF6FA6"
+  pink: "#FF6FA6",
+  brown: "#664441"
 };
 
 export const FillColors = [
@@ -32,7 +33,7 @@ export const FillColors = [
   Colors.white,
   Colors.lightGray,
   Colors.gray,
-  Colors.nearBlack
+  Colors.brown
 ];
 
 const baseText: TextStyle = {
