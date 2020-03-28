@@ -32,3 +32,13 @@ export const onGestureEnd = proc(
 
 export const canvasUrl = (canvasId: string) =>
   URL_PREFIX + "canvas/" + canvasId;
+
+export const pluralize = (text: string, ls: number | any[]) => {
+  let count = ls;
+  if (ls instanceof Array) {
+    count = ls.length;
+  }
+
+  if (count === 1) return `1 ${text}`;
+  return `${count} ${text}s`;
+};

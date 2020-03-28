@@ -5,7 +5,7 @@ import { useValues, loop, useClocks, bInterpolate } from "react-native-redash";
 import { useSelector } from "react-redux";
 
 import * as selectors from "@redux/selectors";
-import { TextStyles, Colors } from "@lib";
+import { TextStyles, Colors, pluralize } from "@lib";
 
 const { set } = Animated;
 
@@ -40,9 +40,7 @@ export const LiveUsers: React.FC<LiveUsersProps> = () => {
   return (
     <Animated.View style={[styles.container, { opacity }]}>
       <View style={styles.indicator} />
-      <Text style={styles.text}>
-        {positions} user{positions > 1 ? "s" : ""} live
-      </Text>
+      <Text style={styles.text}>{pluralize("user", positions)} live</Text>
     </Animated.View>
   );
 };

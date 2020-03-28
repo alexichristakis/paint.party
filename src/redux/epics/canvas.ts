@@ -1,21 +1,15 @@
-import { from, fromEvent, fromEventPattern, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import moment from "moment";
 import uniq from "lodash/uniq";
 import {
   map,
-  withLatestFrom,
-  delay,
   filter,
-  mergeMap,
-  exhaustMap,
   catchError,
   takeUntil,
-  startWith,
   switchMap,
   tap,
   ignoreElements
 } from "rxjs/operators";
-import { Action } from "redux";
 import { isOfType } from "typesafe-actions";
 import { Epic } from "redux-observable";
 import database, {
@@ -30,7 +24,7 @@ import { RootState } from "../types";
 import { Notifications } from "react-native-notifications";
 import { DRAW_INTERVAL, canvasUrl } from "@lib";
 
-const openCanvas: Epic<Actions> = action$ =>
+const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
     filter(isOfType(ActionTypes.OPEN_CANVAS)),
     switchMap(action => {
@@ -38,52 +32,59 @@ const openCanvas: Epic<Actions> = action$ =>
 
       const ref = database().ref(id);
 
+      const uid = selectors.uid(state$.value);
       const obs = new Observable<Actions>(subscriber => {
-        let initialLoadComplete = false;
-
-        ref.once("value").then(val => {
-          initialLoadComplete = true;
-
-          const data = val.val();
-
-          let loadedCanvasPayload: CanvasViz = {
-            ...initialCanvasViz,
-            id
-          };
-
-          if (data) {
-            const { live, ...rest } = data;
-            loadedCanvasPayload = { ...loadedCanvasPayload, live, cells: rest };
-          }
-
-          subscriber.next(CanvasActions.openSuccess(loadedCanvasPayload));
-        });
+        let loaded = false;
 
         ref.on(
-          "child_changed",
+          "child_added",
           (change: FirebaseDatabaseTypes.DataSnapshot) => {
-            const id = change.key;
-            if (id === "live") {
-              return subscriber.next(
-                CanvasActions.setLivePositions(change.val())
-              );
-            }
-
-            return subscriber.next(
-              CanvasActions.update(+change.key!, change.val())
-            );
+            if (loaded)
+              subscriber.next(CanvasActions.update(+change.key!, change.val()));
           }
           //   error => console.log("ERROR", error)
         );
 
         ref.on(
-          "child_added",
+          "child_changed",
           (change: FirebaseDatabaseTypes.DataSnapshot) => {
-            if (initialLoadComplete) {
-              subscriber.next(CanvasActions.update(+change.key!, change.val()));
+            if (loaded) {
+              const id = change.key;
+              if (id === "live") {
+                return subscriber.next(
+                  CanvasActions.setLivePositions(change.val())
+                );
+              }
+
+              return subscriber.next(
+                CanvasActions.update(+change.key!, change.val())
+              );
             }
           }
           //   error => console.log("ERROR", error)
+        );
+
+        Promise.all([ref.once("value"), ref.child(`live/${uid}`).set(-1)]).then(
+          ([val]) => {
+            const data = val.val();
+
+            let loadedCanvasPayload: CanvasViz = {
+              ...initialCanvasViz,
+              id
+            };
+
+            if (data) {
+              const { live, ...rest } = data;
+              loadedCanvasPayload = {
+                ...loadedCanvasPayload,
+                live,
+                cells: rest
+              };
+            }
+
+            loaded = true;
+            subscriber.next(CanvasActions.openSuccess(loadedCanvasPayload));
+          }
         );
 
         return () => {

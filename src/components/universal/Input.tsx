@@ -12,7 +12,6 @@ import { Colors, TextSizes, TextStyles } from "@lib";
 export interface InputProps extends TextInputProps {
   textInputRef?: React.RefObject<TextInput>;
   label?: string;
-  light?: boolean;
   loading?: boolean;
   error?: string;
   size?: TextSizes;
@@ -20,7 +19,6 @@ export interface InputProps extends TextInputProps {
 export const Input: React.FC<InputProps> = ({
   style,
   label,
-  light,
   loading,
   error,
   textInputRef = null,
@@ -31,7 +29,7 @@ export const Input: React.FC<InputProps> = ({
     <View style={style}>
       <TextInput
         ref={textInputRef}
-        placeholderTextColor={light ? Colors.lightGray : Colors.gray}
+        placeholderTextColor={Colors.lightGray}
         style={[styles.textInput, TextStyles[size]]}
         {...rest}
       />

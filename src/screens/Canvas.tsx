@@ -26,7 +26,7 @@ import { StackParamList } from "../App";
 const mapStateToProps = (state: RootState) => ({
   activeCanvas: selectors.activeCanvas(state),
   loadingCanvas: selectors.isLoadingCanvas(state),
-  canvas: selectors.canvas(state),
+  canvas: selectors.activeCanvasEntity(state),
   canvasActiveAt: selectors.canvasActiveAt(state)
 });
 const mapDispatchToProps = {
@@ -45,6 +45,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
   loadingCanvas,
   canvasActiveAt,
+  canvas,
   enable,
   open,
   close
@@ -57,7 +58,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
 
   const onPressShare = () =>
     Share.share({
-      title: "share unexpected",
+      title: `share ${canvas.name}`,
       message: canvasUrl(activeCanvas)
     });
 

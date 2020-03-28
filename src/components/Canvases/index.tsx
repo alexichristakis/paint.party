@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { Text, StyleSheet } from "react-native";
+import Animated, { interpolate } from "react-native-reanimated";
 
-import { CanvasRow } from "./CanvasRow";
 import { Canvas } from "@redux/modules/canvas";
 import { Colors, TextStyles } from "@lib";
-import Animated, { interpolate } from "react-native-reanimated";
+import { CanvasRow } from "./CanvasRow";
 
 export interface CanvasesProps {
   onPressCanvas: (canvasId: string) => void;
@@ -28,15 +28,23 @@ export const Canvases: React.FC<CanvasesProps> = ({
     return (
       <>
         {canvases.map((canvas, i) => (
-          <Animated.View key={i} style={{ transform: [translateY(i)] }}>
-            {i ? <View style={styles.separator} /> : null}
-            <CanvasRow onPress={onPressCanvas} canvas={canvas} />
-          </Animated.View>
+          <React.Fragment key={i}>
+            {i ? (
+              <Animated.View
+                style={[styles.separator, { transform: [translateY(i - 0.5)] }]}
+              />
+            ) : null}
+            <CanvasRow
+              onPress={onPressCanvas}
+              canvas={canvas}
+              style={{ transform: [translateY(i)] }}
+            />
+          </React.Fragment>
         ))}
       </>
     );
 
-  return <Text style={styles.emptyState}>{"Welcome to PaintParty"}</Text>;
+  return <Text style={styles.emptyState}>Welcome to PaintParty</Text>;
 };
 
 const styles = StyleSheet.create({
