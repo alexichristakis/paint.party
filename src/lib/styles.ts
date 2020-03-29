@@ -46,8 +46,6 @@ export const OuterWheel = [
   Colors.purple,
   Colors.pink,
   Colors.grayBlue,
-  Colors.grayBlue,
-  Colors.yellow,
   Colors.white,
   Colors.lightGray,
   Colors.gray,

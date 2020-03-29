@@ -3,7 +3,10 @@ import Animated, {
   Easing,
   onChange,
   useCode,
-  debug
+  debug,
+  greaterThan,
+  lessThan,
+  acos
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import {
@@ -20,6 +23,7 @@ import {
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
+import { dist } from "@lib";
 
 const {
   divide,
@@ -31,6 +35,7 @@ const {
   sub,
   cond,
   add,
+  and,
   call,
   multiply
 } = Animated;
@@ -138,8 +143,7 @@ const ColorWheel: React.FC<ColorWheelProps> = ({
   onChoose,
   closing,
   enabled,
-  visible,
-  angleOffset = 0
+  visible
 }) => {
   const panRef = useRef<PanGestureHandler>(null);
 
@@ -187,7 +191,7 @@ const ColorWheel: React.FC<ColorWheelProps> = ({
         velocity,
         divide(
           sub(multiply(x, velocityY), multiply(y, velocityX)),
-          add(multiply(x, x), multiply(y, y)) // add 1 to avoid NaN
+          add(multiply(x, x), multiply(y, y))
         )
       )
     ],
@@ -196,7 +200,7 @@ const ColorWheel: React.FC<ColorWheelProps> = ({
 
   const rotate = withDecay({
     velocity,
-    value: cond(defined(angle), multiply(-1, angle)),
+    value: cond(defined(angle), multiply(-1, angle), 0),
     state: panState
   });
 
@@ -204,8 +208,8 @@ const ColorWheel: React.FC<ColorWheelProps> = ({
 
   const rotationStyle = {
     transform: [
-      { rotate: cond(defined(rotate), rotate, 0) },
-      { rotate: bInterpolate(visible, -Math.PI / 4, 0) }
+      { rotate },
+      { rotate: bInterpolate(visible, -Math.PI / 4, Math.PI / 4) }
     ]
   };
 
@@ -219,7 +223,7 @@ const ColorWheel: React.FC<ColorWheelProps> = ({
         {colors.map((color, index) => (
           <Color
             key={index}
-            rotate={angleIncrement * index + angleOffset}
+            rotate={angleIncrement * index}
             {...{ color, radius, panRef, onChoose, visible, closing }}
           />
         ))}

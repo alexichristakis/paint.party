@@ -1,4 +1,4 @@
-import Animated from "react-native-reanimated";
+import Animated, { sqrt, pow, add, sub } from "react-native-reanimated";
 import { State } from "react-native-gesture-handler";
 
 import { URL_PREFIX, CELL_SIZE, CANVAS_DIMENSIONS } from "./constants";
@@ -42,3 +42,8 @@ export const pluralize = (text: string, ls: number | any[]) => {
   if (count === 1) return `1 ${text}`;
   return `${count} ${text}s`;
 };
+
+export const dist = (
+  x: Animated.Adaptable<number>,
+  y: Animated.Adaptable<number>
+) => sqrt(add(pow(x, 2), pow(y, 2)));
