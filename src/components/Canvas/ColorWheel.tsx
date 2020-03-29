@@ -1,13 +1,5 @@
 import React, { useRef } from "react";
-import Animated, {
-  Easing,
-  onChange,
-  useCode,
-  debug,
-  greaterThan,
-  lessThan,
-  acos
-} from "react-native-reanimated";
+import Animated, { Easing, onChange, useCode } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import {
   State,
@@ -19,11 +11,19 @@ import {
   onGestureEvent,
   bInterpolate,
   withDecay,
+  withSpringTransition,
+  useSpringTransition,
   withTransition
 } from "react-native-redash";
-import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
-import { dist } from "@lib";
+import { connect, ConnectedProps } from "react-redux";
+
+import * as selectors from "@redux/selectors";
+import { FillColors, OuterWheel } from "@lib";
+import { RootState } from "@redux/types";
+
+import Color from "./Color";
+import { CanvasActions } from "@redux/modules";
 
 const {
   divide,
@@ -35,116 +35,41 @@ const {
   sub,
   cond,
   add,
-  and,
   call,
   multiply
 } = Animated;
 
-const COLOR_SIZE = 60;
+const config = {
+  damping: 40,
+  mass: 1,
+  stiffness: 300,
+  overshootClamping: false,
+  restSpeedThreshold: 0.1,
+  restDisplacementThreshold: 0.1
+};
 
 export interface ColorWheelProps {
-  radius: number;
-  colors: string[];
-  enabled: Animated.Node<number>;
-  visible: Animated.Node<number>;
-  closing: Animated.Node<number>;
-  onChoose: (color: string) => void;
-  angleOffset?: number;
+  colors?: string[];
+  visible: Animated.Value<0 | 1>;
 }
 
-interface ColorProps {
-  radius: number;
-  rotate: number;
-  panRef: any;
-  visible: Animated.Node<number>;
-  closing: Animated.Node<number>;
-  color: string;
-  onChoose: (color: string) => void;
-}
+export type ColorWheelConnectedProps = ConnectedProps<typeof connector>;
 
-const Color: React.FC<ColorProps> = React.memo(
-  ({
-    rotate,
-    radius,
-    color: backgroundColor,
-    panRef,
-    visible,
-    onChoose,
-    closing
-  }) => {
-    const [state] = useValues([State.UNDETERMINED], []);
+const mapStateToProps = (state: RootState) => ({
+  enabled: selectors.canvasEnabled(state)
+});
+const mapDispatchToProps = {
+  onChoose: CanvasActions.selectColor
+};
 
-    const activeTransition = useMemoOne(
-      () =>
-        withTransition(or(eq(state, State.BEGAN), eq(state, State.ACTIVE)), {
-          duration: 200,
-          easing: Easing.inOut(Easing.ease)
-        }),
-      []
-    );
-
-    const handleOnChoose = () => {
-      Haptics.trigger("impactMedium");
-      onChoose(backgroundColor);
-    };
-
-    useCode(
-      () => [
-        onChange(state, cond(eq(state, State.END), call([], handleOnChoose)))
-      ],
-      []
-    );
-
-    const tapHandler = onGestureEvent({
-      state
-    });
-
-    return (
-      <TapGestureHandler
-        {...tapHandler}
-        simultaneousHandlers={panRef}
-        maxDeltaX={10}
-        maxDeltaY={10}
-      >
-        <Animated.View
-          style={{
-            alignItems: "center",
-            transform: [
-              { rotate },
-              { translateY: bInterpolate(visible, 0, radius) },
-              { translateY: bInterpolate(closing, 0, -30) }
-            ]
-          }}
-        >
-          <Animated.View
-            style={[
-              styles.color,
-              {
-                borderRadius: bInterpolate(
-                  activeTransition,
-                  COLOR_SIZE / 2,
-                  COLOR_SIZE / 4
-                ),
-                backgroundColor,
-                transform: [{ scale: bInterpolate(activeTransition, 1, 1.45) }]
-              }
-            ]}
-          />
-        </Animated.View>
-      </TapGestureHandler>
-    );
-  },
-  (p, n) => p.color === n.color
-);
-
-const ColorWheel: React.FC<ColorWheelProps> = ({
-  colors,
-  radius,
+const ColorWheel: React.FC<ColorWheelProps & ColorWheelConnectedProps> = ({
+  colors = OuterWheel,
   onChoose,
-  closing,
   enabled,
   visible
 }) => {
+  const enabledTransition = useSpringTransition(enabled, config);
+
   const panRef = useRef<PanGestureHandler>(null);
 
   const [
@@ -156,12 +81,29 @@ const ColorWheel: React.FC<ColorWheelProps> = ({
     velocityY,
     velocity,
     angle
-  ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0], []);
+  ] = useValues<number>(
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    []
+  );
 
-  const [panState] = useValues<State>([State.UNDETERMINED], []);
+  const [panState, tapState] = useValues<State>(
+    [State.UNDETERMINED, State.UNDETERMINED],
+    []
+  );
 
-  const [panHandler] = useMemoOne(
+  const [openTransition, closeTransition] = useMemoOne(
     () => [
+      withSpringTransition(visible, config),
+      withTransition(
+        or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
+        { duration: 200, easing: Easing.inOut(Easing.ease) }
+      )
+    ],
+    []
+  );
+
+  const panHandler = useMemoOne(
+    () =>
       onGestureEvent({
         state: panState,
         x,
@@ -170,13 +112,13 @@ const ColorWheel: React.FC<ColorWheelProps> = ({
         velocityY,
         translationX,
         translationY
-      })
-    ],
+      }),
     []
   );
 
   useCode(
     () => [
+      onChange(tapState, cond(eq(tapState, State.END), set(visible, 0))),
       set(
         angle,
         sub(
@@ -198,18 +140,24 @@ const ColorWheel: React.FC<ColorWheelProps> = ({
     []
   );
 
-  const rotate = withDecay({
-    velocity,
-    value: cond(defined(angle), multiply(-1, angle), 0),
-    state: panState
-  });
+  const rotate = useMemoOne(
+    () =>
+      withDecay({
+        velocity,
+        value: cond(defined(angle), multiply(-1, angle), 0),
+        state: panState
+      }),
+    []
+  );
 
-  const opacity = bInterpolate(enabled, 0.5, 1);
+  const translateY = bInterpolate(openTransition, 75, 10);
+
+  const opacity = bInterpolate(enabledTransition, 0.5, 1);
 
   const rotationStyle = {
     transform: [
       { rotate },
-      { rotate: bInterpolate(visible, -Math.PI / 4, Math.PI / 4) }
+      { rotate: bInterpolate(openTransition, -Math.PI / 4, 0) }
     ]
   };
 
@@ -217,16 +165,26 @@ const ColorWheel: React.FC<ColorWheelProps> = ({
   return (
     <PanGestureHandler ref={panRef} {...panHandler}>
       <Animated.View
-        pointerEvents={enabled ? "auto" : "none"}
-        style={[rotationStyle, { opacity }]}
+        style={[styles.container, { transform: [{ translateY }] }]}
       >
-        {colors.map((color, index) => (
-          <Color
-            key={index}
-            rotate={angleIncrement * index}
-            {...{ color, radius, panRef, onChoose, visible, closing }}
-          />
-        ))}
+        <Animated.View
+          pointerEvents={enabled ? "auto" : "none"}
+          style={[styles.container, rotationStyle, { opacity }]}
+        >
+          {FillColors.map((color, index) => (
+            <Color
+              key={index}
+              rotate={angleIncrement * index}
+              {...{
+                color,
+                panRef,
+                onChoose,
+                openTransition,
+                closeTransition
+              }}
+            />
+          ))}
+        </Animated.View>
       </Animated.View>
     </PanGestureHandler>
   );
@@ -237,17 +195,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     bottom: 0
-  },
-  color: {
-    position: "absolute",
-    borderWidth: 3,
-    height: COLOR_SIZE,
-    width: COLOR_SIZE
-  },
-  closeButton: {
-    position: "absolute",
-    bottom: 20
   }
 });
 
-export default ColorWheel;
+const connector = connect(mapStateToProps, mapDispatchToProps);
+export default connector(ColorWheel);

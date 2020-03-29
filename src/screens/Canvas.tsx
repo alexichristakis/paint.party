@@ -16,7 +16,8 @@ import {
   SCREEN_WIDTH,
   Colors,
   SB_HEIGHT,
-  canvasUrl
+  canvasUrl,
+  OuterWheel
 } from "@lib";
 
 import X from "@assets/svg/X.svg";
@@ -95,7 +96,11 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
         pickerVisible={pickerVisible}
         positionsVisible={positionsVisible}
       />
-      <ColorPicker visible={pickerVisible} onChoose={handleOnChooseColor} />
+      <ColorPicker
+        colors={OuterWheel}
+        visible={pickerVisible}
+        onChoose={handleOnChooseColor}
+      />
       <LoadingOverlay loading={loadingCanvas} />
     </View>
   );
