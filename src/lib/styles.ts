@@ -37,6 +37,35 @@ export const FillColors = [
   Colors.brown
 ];
 
+export const OuterWheel = [
+  Colors.red,
+  Colors.orange,
+  Colors.yellow,
+  Colors.green,
+  Colors.blue,
+  Colors.purple,
+  Colors.pink,
+  Colors.grayBlue,
+  Colors.grayBlue,
+  Colors.yellow,
+  Colors.white,
+  Colors.lightGray,
+  Colors.gray,
+  Colors.brown
+];
+
+export const InnerWheel = [
+  Colors.red,
+  Colors.orange,
+  Colors.yellow,
+  Colors.green,
+  Colors.blue,
+  Colors.purple,
+  Colors.pink,
+  Colors.grayBlue,
+  Colors.brown
+];
+
 const baseText: TextStyle = {
   fontFamily: "Sofia Pro"
 };
