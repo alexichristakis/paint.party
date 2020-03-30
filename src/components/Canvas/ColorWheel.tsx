@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import Animated, { Easing, useCode } from "react-native-reanimated";
+import Animated, { useCode } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import { State, PanGestureHandler } from "react-native-gesture-handler";
 import {
@@ -7,9 +7,7 @@ import {
   onGestureEvent,
   bInterpolate,
   withDecay,
-  withSpringTransition,
   useSpringTransition,
-  withTransition,
   cartesian2Polar
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
@@ -21,19 +19,7 @@ import { RootState } from "@redux/types";
 
 import Color from "./Color";
 
-const {
-  and,
-  divide,
-  onChange,
-  defined,
-  set,
-  or,
-  eq,
-  sub,
-  cond,
-  add,
-  multiply
-} = Animated;
+const { and, divide, defined, set, eq, sub, cond, add, multiply } = Animated;
 
 const config = {
   damping: 40,
@@ -45,7 +31,8 @@ const config = {
 };
 
 export interface ColorWheelProps {
-  visible: Animated.Value<0 | 1>;
+  openTransition: Animated.Node<number>;
+  closeTransition: Animated.Node<number>;
 }
 
 export type ColorWheelConnectedProps = ConnectedProps<typeof connector>;
@@ -58,7 +45,7 @@ const mapDispatchToProps = {};
 
 const ColorWheel: React.FC<ColorWheelProps &
   ColorWheelConnectedProps> = React.memo(
-  ({ numColors, enabled, visible }) => {
+  ({ numColors, enabled, openTransition, closeTransition }) => {
     const enabledTransition = useSpringTransition(enabled, config);
 
     const panRef = useRef<PanGestureHandler>(null);
@@ -77,21 +64,7 @@ const ColorWheel: React.FC<ColorWheelProps &
       editingColor
     ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []);
 
-    const [panState, tapState] = useValues<State>(
-      [State.UNDETERMINED, State.UNDETERMINED],
-      []
-    );
-
-    const [openTransition, closeTransition] = useMemoOne(
-      () => [
-        withSpringTransition(visible, config),
-        withTransition(
-          or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
-          { duration: 200, easing: Easing.inOut(Easing.ease) }
-        )
-      ],
-      []
-    );
+    const [panState] = useValues<State>([State.UNDETERMINED], []);
 
     const panHandler = useMemoOne(
       () =>
@@ -110,7 +83,6 @@ const ColorWheel: React.FC<ColorWheelProps &
 
     useCode(
       () => [
-        onChange(tapState, cond(eq(tapState, State.END), set(visible, 0))),
         set(x0, sub(x, translationX)),
         set(y0, sub(y, translationY)),
 
@@ -144,11 +116,14 @@ const ColorWheel: React.FC<ColorWheelProps &
       []
     );
 
-    const translateY = bInterpolate(openTransition, 75, 10);
-    const opacity = bInterpolate(enabledTransition, 0.5, 1);
+    const containerAnimatedStyle = {
+      transform: [{ translateY: bInterpolate(openTransition, 75, 10) }]
+    };
 
-    const rotationStyle = {
+    const animatedStyle = {
+      opacity: bInterpolate(enabledTransition, 0.5, 1),
       transform: [
+        { scale: bInterpolate(closeTransition, 1, 0.9) },
         { rotate },
         { rotate: bInterpolate(openTransition, -Math.PI / 4, 0) }
       ]
@@ -156,12 +131,10 @@ const ColorWheel: React.FC<ColorWheelProps &
 
     return (
       <PanGestureHandler ref={panRef} {...panHandler}>
-        <Animated.View
-          style={[styles.container, { transform: [{ translateY }] }]}
-        >
+        <Animated.View style={[styles.container, containerAnimatedStyle]}>
           <Animated.View
             pointerEvents={enabled ? "auto" : "none"}
-            style={[styles.container, rotationStyle, { opacity }]}
+            style={[styles.container, animatedStyle]}
           >
             {times(numColors, index => (
               <Color
@@ -174,8 +147,7 @@ const ColorWheel: React.FC<ColorWheelProps &
                   y: translationY,
                   editingColor,
                   panRef,
-                  openTransition,
-                  closeTransition
+                  openTransition
                 }}
               />
             ))}

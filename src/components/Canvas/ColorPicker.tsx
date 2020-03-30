@@ -1,47 +1,22 @@
-import React, { useRef } from "react";
+import React from "react";
 import Animated, { Easing, onChange, useCode } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
-import {
-  State,
-  PanGestureHandler,
-  TapGestureHandler
-} from "react-native-gesture-handler";
+import { State, TapGestureHandler } from "react-native-gesture-handler";
 import {
   useValues,
   onGestureEvent,
   bInterpolate,
-  withDecay,
   withSpringTransition,
-  useSpringTransition,
   withTransition
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
-import { connect, ConnectedProps } from "react-redux";
 
-import * as selectors from "@redux/selectors";
-import { FillColors } from "@lib";
 import CloseIcon from "@assets/svg/close.svg";
-import { RootState } from "@redux/types";
 
 import ColorWheel from "./ColorWheel";
 
-const {
-  divide,
-  atan,
-  defined,
-  set,
-  or,
-  eq,
-  sub,
-  cond,
-  add,
-  call,
-  multiply
-} = Animated;
-
-const COLOR_SIZE = 60;
-const ANGLE_INCREMENT = (2 * Math.PI) / FillColors.length;
+const { set, or, eq, cond, call } = Animated;
 
 const config = {
   damping: 40,
@@ -56,13 +31,7 @@ export interface ColorPickerProps {
   visible: Animated.Value<0 | 1>;
 }
 
-export type ColorPickerConnectedProps = ConnectedProps<typeof connector>;
-
-const mapStateToProps = (state: RootState) => ({});
-
-const ColorPicker: React.FC<ColorPickerProps & ColorPickerConnectedProps> = ({
-  visible
-}) => {
+const ColorPicker: React.FC<ColorPickerProps> = React.memo(({ visible }) => {
   const [tapState] = useValues<State>([State.UNDETERMINED], []);
 
   const [openTransition, closeTransition] = useMemoOne(
@@ -82,53 +51,46 @@ const ColorPicker: React.FC<ColorPickerProps & ColorPickerConnectedProps> = ({
   );
 
   useCode(
-    () => [onChange(tapState, cond(eq(tapState, State.END), set(visible, 0)))],
+    () => [
+      onChange(
+        tapState,
+        cond(eq(tapState, State.END), [
+          set(visible, 0),
+          call([], () => Haptics.trigger("impactLight"))
+        ])
+      )
+    ],
     []
   );
 
-  const translateY = bInterpolate(openTransition, 75, -10);
-  const scale = bInterpolate(openTransition, 0, 1);
+  const animatedStyle = {
+    transform: [
+      { translateY: bInterpolate(openTransition, 75, -10) },
+      { scale: bInterpolate(openTransition, 0, 1) },
+      { scale: bInterpolate(closeTransition, 1, 0.9) }
+    ]
+  };
 
   return (
     <>
-      <ColorWheel radius={150} visible={visible} />
-      <TapGestureHandler {...tapHandler}>
-        <Animated.View
-          style={[
-            styles.closeButton,
-            {
-              transform: [
-                { translateY },
-                { scale },
-                { scale: bInterpolate(closeTransition, 1, 0.9) }
-              ]
-            }
-          ]}
-        >
+      <ColorWheel
+        openTransition={openTransition}
+        closeTransition={closeTransition}
+      />
+      <TapGestureHandler maxDist={20} {...tapHandler}>
+        <Animated.View style={[styles.closeButton, animatedStyle]}>
           <CloseIcon width={70} height={70} />
         </Animated.View>
       </TapGestureHandler>
     </>
   );
-};
+});
 
 const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    alignItems: "center",
-    bottom: 0
-  },
-  color: {
-    position: "absolute",
-    borderWidth: 3,
-    height: COLOR_SIZE,
-    width: COLOR_SIZE
-  },
   closeButton: {
     position: "absolute",
     bottom: 20
   }
 });
 
-const connector = connect(mapStateToProps, {});
-export default connector(ColorPicker);
+export default ColorPicker;

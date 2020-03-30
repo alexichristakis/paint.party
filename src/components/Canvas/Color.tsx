@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import Animated, {
   Easing,
   useCode,
@@ -45,7 +45,6 @@ export interface ColorProps {
   panRef: any;
   editingColor: Animated.Value<number>;
   openTransition: Animated.Node<number>;
-  closeTransition: Animated.Node<number>;
 }
 
 export type ColorConnectedProps = ConnectedProps<typeof connector>;
@@ -73,8 +72,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
     fill,
     panRef,
     openTransition,
-    onChoose,
-    closeTransition
+    onChoose
   }) => {
     const tapRef = useRef<TapGestureHandler>(null);
     const longPressRef = useRef<LongPressGestureHandler>(null);
@@ -169,7 +167,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
               s,
               add(s, sub(SCREEN_WIDTH / 2, x0))
             ],
-            outputRange: [0, s, 1],
+            outputRange: [0.1, s, 1],
             extrapolate: Extrapolate.CLAMP
           }),
           interpolate(add(v, y), {
@@ -178,7 +176,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
               v,
               add(v, sub(absoluteY, y))
             ],
-            outputRange: [0, v, 1],
+            outputRange: [0.1, v, 1],
             extrapolate: Extrapolate.CLAMP
           })
         ),
@@ -197,8 +195,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
     ];
     const colorContainerTransform = [
       { rotate },
-      { translateY: bInterpolate(openTransition, 0, COLOR_WHEEL_RADIUS) },
-      { translateY: bInterpolate(closeTransition, 0, -30) }
+      { translateY: bInterpolate(openTransition, 0, COLOR_WHEEL_RADIUS) }
     ];
 
     return (
