@@ -91,7 +91,7 @@ const ColorPicker: React.FC<ColorPickerProps & ColorPickerConnectedProps> = ({
 
   return (
     <>
-      <ColorWheel visible={visible} />
+      <ColorWheel radius={150} visible={visible} />
       <TapGestureHandler {...tapHandler}>
         <Animated.View
           style={[

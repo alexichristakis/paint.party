@@ -2,6 +2,9 @@ import { Dimensions, Platform, StatusBar, PixelRatio } from "react-native";
 
 export const CANVAS_DIMENSIONS = 20;
 
+export const COLOR_WHEEL_RADIUS = 150;
+export const COLOR_SIZE = 60;
+
 export const DRAW_INTERVAL = 0;
 
 export const URL_PREFIX = "paintparty://";

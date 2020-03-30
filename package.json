@@ -40,6 +40,7 @@
     "redux-persist": "^6.0.0",
     "reselect": "^4.0.0",
     "rxjs": "^6.5.4",
+    "tinycolor2": "^1.4.1",
     "typesafe-actions": "^5.1.0",
     "use-memo-one": "^1.1.1"
   },
@@ -52,6 +53,8 @@
     "@types/react-native": "^0.61.23",
     "@types/react-redux": "^7.1.7",
     "@types/react-test-renderer": "16.9.1",
+    "@types/tinycolor": "^1.1.27",
+    "@types/tinycolor2": "^1.4.2",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
     "babel-jest": "^25.2.3",

@@ -1,18 +1,22 @@
 import React, { useRef } from "react";
-import Animated, { Easing, onChange, useCode } from "react-native-reanimated";
+import Animated, {
+  Easing,
+  useCode,
+  interpolate,
+  Extrapolate
+} from "react-native-reanimated";
 import { StyleSheet } from "react-native";
+import tinycolor from "tinycolor2";
 import {
   State,
-  PanGestureHandler,
-  TapGestureHandler
+  TapGestureHandler,
+  LongPressGestureHandler
 } from "react-native-gesture-handler";
 import {
   useValues,
   onGestureEvent,
   bInterpolate,
-  withDecay,
   withSpringTransition,
-  useSpringTransition,
   withTransition
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
@@ -20,89 +24,170 @@ import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
-import { FillColors } from "@lib";
-import CloseIcon from "@assets/svg/close.svg";
+import {
+  colorHSV,
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT,
+  COLOR_WHEEL_RADIUS,
+  COLOR_SIZE
+} from "@lib";
 import { RootState } from "@redux/types";
+import { PaletteActions, CanvasActions } from "@redux/modules";
 
-const {
-  divide,
-  atan,
-  defined,
-  set,
-  or,
-  eq,
-  sub,
-  cond,
-  add,
-  call,
-  multiply
-} = Animated;
+const { color, onChange, set, or, eq, sub, cond, add, call } = Animated;
 
-const COLOR_SIZE = 60;
-const ANGLE_INCREMENT = (2 * Math.PI) / FillColors.length;
-
-const config = {
-  damping: 40,
-  mass: 1,
-  stiffness: 300,
-  overshootClamping: false,
-  restSpeedThreshold: 0.1,
-  restDisplacementThreshold: 0.1
-};
-
-interface ColorProps {
-  rotate: number;
+export interface ColorProps {
+  index: number;
+  absoluteY: Animated.Value<number>;
+  x0: Animated.Value<number>;
+  x: Animated.Value<number>;
+  y: Animated.Value<number>;
   panRef: any;
+  editingColor: Animated.Value<number>;
   openTransition: Animated.Node<number>;
   closeTransition: Animated.Node<number>;
-  color: string;
-  onChoose: (color: string) => void;
 }
 
-const mapStateToProps = (state: RootState) => ({
-  enabled: selectors.canvasEnabled(state)
+export type ColorConnectedProps = ConnectedProps<typeof connector>;
+
+const mapStateToProps = (state: RootState, props: ColorProps) => ({
+  fill: selectors.color(state, props),
+  rotate: selectors.angleIncrement(state) * props.index
 });
 
-const Color: React.FC<ColorProps> = React.memo(
+const mapDispatchToProps = {
+  setColor: PaletteActions.set,
+  onChoose: CanvasActions.selectColor
+};
+
+const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
   ({
+    setColor,
+    index,
+    editingColor, // shared value between all colors
+    x0,
+    x,
+    y,
+    absoluteY,
     rotate,
-    color: backgroundColor,
+    fill,
     panRef,
     openTransition,
     onChoose,
     closeTransition
   }) => {
-    const [state] = useValues([State.UNDETERMINED], []);
+    const tapRef = useRef<TapGestureHandler>(null);
+    const longPressRef = useRef<LongPressGestureHandler>(null);
 
-    const activeTransition = useMemoOne(
-      () =>
-        withTransition(or(eq(state, State.BEGAN), eq(state, State.ACTIVE)), {
-          duration: 200,
-          easing: Easing.inOut(Easing.ease)
-        }),
+    const [editing] = useValues([0], []);
+
+    const [longPressState, tapState] = useValues(
+      [State.UNDETERMINED, State.UNDETERMINED],
+      []
+    );
+
+    const [activeTransition, editingTransition] = useMemoOne(
+      () => [
+        withTransition(
+          or(
+            eq(tapState, State.ACTIVE),
+            eq(tapState, State.BEGAN),
+            eq(longPressState, State.ACTIVE),
+            eq(longPressState, State.BEGAN)
+          ),
+          {
+            duration: 200,
+            easing: Easing.inOut(Easing.ease)
+          }
+        ),
+        withSpringTransition(editing)
+      ],
       []
     );
 
     const handleOnChoose = () => {
       Haptics.trigger("impactMedium");
-      onChoose(backgroundColor);
+      onChoose(fill);
     };
 
     useCode(
       () => [
-        onChange(state, cond(eq(state, State.END), call([], handleOnChoose)))
+        onChange(
+          tapState,
+          cond(eq(tapState, State.END), call([], handleOnChoose))
+        ),
+        onChange(
+          longPressState,
+          cond(
+            eq(longPressState, State.ACTIVE),
+            [
+              set(editing, 1),
+              set(editingColor, 1),
+              call([], () => Haptics.trigger("impactMedium"))
+            ],
+            cond(eq(longPressState, State.END), [
+              call([interpolatedColor], ([color]) => {
+                Haptics.trigger("impactHeavy");
+
+                const hex = color.toString(16).substring(2);
+                const newColor = tinycolor(hex).toHexString();
+
+                setColor(newColor, index);
+              }),
+              set(editing, 0),
+              set(editingColor, 0),
+              set(x, 0),
+              set(y, 0)
+            ])
+          )
+        )
+      ],
+      [fill]
+    );
+
+    const [longPressHandler, tapHandler] = useMemoOne(
+      () => [
+        onGestureEvent({ state: longPressState }),
+        onGestureEvent({ state: tapState })
       ],
       []
     );
 
-    const tapHandler = onGestureEvent({
-      state
-    });
+    const { h, s, v, r, g, b } = useMemoOne(() => {
+      const c = tinycolor(fill);
+
+      return { ...c.toHsv(), ...c.toRgb() };
+    }, [fill]);
+
+    const interpolatedColor = colorHSV(
+      h,
+      interpolate(add(s, x), {
+        inputRange: [
+          sub(s, SCREEN_WIDTH / 2, x0),
+          s,
+          add(s, sub(SCREEN_WIDTH / 2, x0))
+        ],
+        outputRange: [0, s, 1],
+        extrapolate: Extrapolate.CLAMP
+      }),
+      interpolate(add(v, y), {
+        inputRange: [
+          sub(v, SCREEN_HEIGHT, sub(absoluteY, y)),
+          v,
+          add(v, sub(absoluteY, y))
+        ],
+        outputRange: [0, v, 1],
+        extrapolate: Extrapolate.CLAMP
+      })
+    );
+
+    const backgroundColor = cond(editing, interpolatedColor, color(r, g, b));
 
     return (
       <TapGestureHandler
         {...tapHandler}
-        simultaneousHandlers={panRef}
+        simultaneousHandlers={[panRef, longPressRef]}
+        maxDurationMs={500}
         maxDeltaX={10}
         maxDeltaY={10}
       >
@@ -111,48 +196,49 @@ const Color: React.FC<ColorProps> = React.memo(
             alignItems: "center",
             transform: [
               { rotate },
-              { translateY: bInterpolate(openTransition, 0, 150) },
+              {
+                translateY: bInterpolate(openTransition, 0, COLOR_WHEEL_RADIUS)
+              },
               { translateY: bInterpolate(closeTransition, 0, -30) }
             ]
           }}
         >
-          <Animated.View
-            style={[
-              styles.color,
-              {
-                borderRadius: bInterpolate(
-                  activeTransition,
-                  COLOR_SIZE / 2,
-                  COLOR_SIZE / 4
-                ),
-                backgroundColor,
-                transform: [{ scale: bInterpolate(activeTransition, 1, 1.45) }]
-              }
-            ]}
-          />
+          <LongPressGestureHandler
+            {...longPressHandler}
+            simultaneousHandlers={[tapRef, panRef]}
+          >
+            <Animated.View
+              style={[
+                styles.color,
+                {
+                  backgroundColor,
+                  borderRadius: bInterpolate(
+                    activeTransition,
+                    COLOR_SIZE / 2,
+                    COLOR_SIZE / 4
+                  ),
+                  transform: [
+                    { scale: bInterpolate(activeTransition, 1, 1.45) },
+                    { scale: bInterpolate(editingTransition, 1, 1.3) }
+                  ]
+                }
+              ]}
+            />
+          </LongPressGestureHandler>
         </Animated.View>
       </TapGestureHandler>
     );
-  },
-  (p, n) => p.color === n.color
+  }
 );
 
 const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    alignItems: "center",
-    bottom: 0
-  },
   color: {
     position: "absolute",
     borderWidth: 3,
     height: COLOR_SIZE,
     width: COLOR_SIZE
-  },
-  closeButton: {
-    position: "absolute",
-    bottom: 20
   }
 });
 
-export default Color;
+const connector = connect(mapStateToProps, mapDispatchToProps);
+export default connector(Color);

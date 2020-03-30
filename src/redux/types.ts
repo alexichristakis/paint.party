@@ -2,10 +2,12 @@ import { ActionCreatorsMapObject } from "redux";
 
 import { AppState } from "./modules/app";
 import { CanvasState } from "./modules/canvas";
+import { PaletteState } from "./modules/palette";
 
 export type RootState = {
   app: AppState;
   canvas: CanvasState;
+  palette: PaletteState;
 };
 
 interface Action<T extends string> {

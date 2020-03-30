@@ -96,11 +96,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
         pickerVisible={pickerVisible}
         positionsVisible={positionsVisible}
       />
-      <ColorPicker
-        colors={OuterWheel}
-        visible={pickerVisible}
-        onChoose={handleOnChooseColor}
-      />
+      <ColorPicker visible={pickerVisible} />
       <LoadingOverlay loading={loadingCanvas} />
     </View>
   );
