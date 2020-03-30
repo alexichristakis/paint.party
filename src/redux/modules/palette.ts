@@ -21,6 +21,7 @@ export default (
 
     case ActionTypes.SET_COLOR: {
       const { index, color } = action.payload;
+
       return immer(state, draft => {
         draft.colors[index] = color;
       });

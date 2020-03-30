@@ -8,9 +8,12 @@ import {
   loop,
   useValues,
   useClocks,
-  bInterpolate
+  bInterpolate,
+  useTransition,
+  bInterpolateColor
 } from "react-native-redash";
 import { connect, ConnectedProps } from "react-redux";
+import isNull from "lodash/isNull";
 
 import * as selectors from "@redux/selectors";
 import { CELL_SIZE, coordinatesFromIndex, Colors } from "@lib";
@@ -30,30 +33,30 @@ const config = {
 export type CellHighlightConnectedProps = ConnectedProps<typeof connector>;
 
 export interface CellHighlightProps {
-  color?: string;
+  borderColor?: string;
   cell: number;
   visible: Animated.Value<0 | 1>;
 }
 
 const BORDER_WIDTH = 3;
 
-export const CellHighlight: React.FC<CellHighlightProps> = React.memo(
-  ({ color, cell, visible }) => {
-    const [clock] = useClocks(1, []);
+export const CellHighlight: React.FC<CellHighlightProps &
+  CellHighlightConnectedProps> = React.memo(
+  ({ borderColor = Colors.nearBlack, color, cell, visible }) => {
     const [top, left] = useValues<number>([0, 0], []);
+    const [clock] = useClocks(1, []);
 
     const { x, y } = coordinatesFromIndex(cell);
-
     useCode(
       () => [
         set(top, spring({ to: y - BORDER_WIDTH, from: top, config })),
         set(left, spring({ to: x - BORDER_WIDTH, from: left, config }))
       ],
-      [x, y]
+      [cell]
     );
 
-    const loopValue = useMemoOne(
-      () =>
+    const [loopValue, opacity] = useMemoOne(
+      () => [
         loop({
           clock,
           duration: 550,
@@ -61,10 +64,17 @@ export const CellHighlight: React.FC<CellHighlightProps> = React.memo(
           boomerang: true,
           autoStart: true
         }),
+        withTimingTransition(visible)
+      ],
       []
     );
 
-    const opacity = useMemoOne(() => withTimingTransition(visible), []);
+    const colorTransition = useTransition(!isNull(color));
+    const backgroundColor = bInterpolateColor(
+      colorTransition,
+      "transparent",
+      color as string
+    );
 
     const scale = bInterpolate(loopValue, 0.9, 1.1);
     if (cell > -1)
@@ -73,10 +83,11 @@ export const CellHighlight: React.FC<CellHighlightProps> = React.memo(
           style={[
             styles.cell,
             {
-              borderColor: color ?? Colors.nearBlack,
+              borderColor,
               opacity,
               top,
               left,
+              backgroundColor,
               transform: [{ scale }]
             }
           ]}
@@ -100,7 +111,8 @@ const styles = StyleSheet.create({
 
 // default export inject user's selected cell
 const mapStateToProps = (state: RootState) => ({
-  cell: selectors.selectedCell(state)
+  cell: selectors.selectedCell(state),
+  color: selectors.selectedColor(state)
 });
 
 const connector = connect(mapStateToProps, {});

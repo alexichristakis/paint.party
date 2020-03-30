@@ -20,9 +20,9 @@ export type Positions = { [uid: string]: number };
 
 export type CanvasViz = {
   id: string;
-  selectedCell: number;
-  selectedColor: string;
   enabled: boolean;
+  selectedCell: number;
+  selectedColor: string | null;
   cells: Cells | null;
   live: Positions | null;
 };
@@ -51,7 +51,7 @@ export type CanvasState = Readonly<{
   loadingCanvas: boolean;
 }>;
 
-export const initialCanvasViz = {
+export const initialCanvasViz: CanvasViz = {
   id: "",
   enabled: false,
   selectedCell: -1,
@@ -115,10 +115,7 @@ export default (
     }
 
     case ActionTypes.CREATE_CANVAS: {
-      return {
-        ...state,
-        creatingCanvas: true
-      };
+      return { ...state, creatingCanvas: true };
     }
 
     case ActionTypes.JOIN_CANVAS_SUCCESS:
@@ -156,8 +153,10 @@ export default (
 
     case ActionTypes.SELECT_CELL: {
       const { cell } = action.payload;
+
       return immer(state, draft => {
         draft.canvas.selectedCell = cell;
+        draft.canvas.selectedColor = null;
 
         return draft;
       });
@@ -165,13 +164,16 @@ export default (
 
     case ActionTypes.SELECT_COLOR: {
       const { color } = action.payload;
+
       return immer(state, draft => {
         draft.canvas.selectedColor = color;
-        draft.loadingCell = true;
-        draft.loadingCanvas = true;
 
         return draft;
       });
+    }
+
+    case ActionTypes.DRAW: {
+      return { ...state, loadingCell: true, loadingCanvas: true };
     }
 
     case ActionTypes.SET_LIVE_POSITIONS: {
@@ -182,13 +184,15 @@ export default (
       });
     }
 
-    case ActionTypes.DRAW_ON_CANVAS_SUCCESS: {
+    case ActionTypes.DRAW_SUCCESS: {
       const { nextDrawAt } = action.payload;
       const { activeCanvas } = state;
 
       return immer(state, draft => {
         draft.canvases[activeCanvas].nextDrawAt = nextDrawAt;
         draft.canvas.enabled = false;
+        draft.canvas.selectedColor = null;
+
         draft.loadingCell = false;
         draft.loadingCanvas = false;
 
@@ -224,7 +228,9 @@ export enum ActionTypes {
   OPEN_CANVAS_SUCCESS = "canvas/OPEN_SUCCESS",
   ENABLE_CANVAS = "cavnas/ENABLE",
   SELECT_CELL = "canvas/SELECT_CELL",
-  SELECT_COLOR = "canvas/SELECT_COLOR",
+  SELECT_COLOR = "canvas/SELECT",
+  DRAW = "canvas/DRAW",
+  DRAW_SUCCESS = "canvas/DRAW_SUCCESS",
   SET_LIVE_POSITIONS = "canvas/SET_LIVE_POSITIONS",
   CREATE_CANVAS = "canvas/CREATE",
   CREATE_CANVAS_SUCCESS = "canvas/CREATE_SUCCESS",
@@ -232,8 +238,6 @@ export enum ActionTypes {
   JOIN_CANVAS_SUCCESS = "canvas/JOIN_SUCCESS",
   JOIN_CANVAS_FAILURE = "canvas/JOIN_FAILURE",
   CLOSE_CANVAS = "canvas/CLOSE",
-  DRAW_ON_CANVAS = "canvas/DRAW",
-  DRAW_ON_CANVAS_SUCCESS = "canvas/DRAW_SUCCESS",
   UPDATE_CANVAS = "canvas/UPDATE",
   UPDATE_CANVAS_SUCCESS = "canvas/UPDATE_SUCCESS",
   UPDATE_CANVAS_FAILURE = "canvas/UPDATE_FAILURE"
@@ -252,13 +256,16 @@ export const Actions = {
     createAction(ActionTypes.CREATE_CANVAS_SUCCESS, { canvas }),
 
   enableCanvas: () => createAction(ActionTypes.ENABLE_CANVAS),
+
+  selectCell: (cell: number) => createAction(ActionTypes.SELECT_CELL, { cell }),
   selectColor: (color: string) =>
     createAction(ActionTypes.SELECT_COLOR, { color }),
-  selectCell: (cell: number) => createAction(ActionTypes.SELECT_CELL, { cell }),
   setLivePositions: (positions: Positions) =>
     createAction(ActionTypes.SET_LIVE_POSITIONS, { positions }),
+
+  draw: () => createAction(ActionTypes.DRAW),
   drawSuccess: (nextDrawAt: number) =>
-    createAction(ActionTypes.DRAW_ON_CANVAS_SUCCESS, { nextDrawAt }),
+    createAction(ActionTypes.DRAW_SUCCESS, { nextDrawAt }),
 
   join: (id: string) => createAction(ActionTypes.JOIN_CANVAS, { id }),
   joinSuccess: (canvas: Canvas) =>

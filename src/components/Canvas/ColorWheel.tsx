@@ -8,7 +8,7 @@ import {
   bInterpolate,
   withDecay,
   useSpringTransition,
-  cartesian2Polar
+  atan2
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
@@ -31,6 +31,7 @@ const config = {
 };
 
 export interface ColorWheelProps {
+  onChoose: () => void;
   openTransition: Animated.Node<number>;
   closeTransition: Animated.Node<number>;
 }
@@ -45,7 +46,7 @@ const mapDispatchToProps = {};
 
 const ColorWheel: React.FC<ColorWheelProps &
   ColorWheelConnectedProps> = React.memo(
-  ({ numColors, enabled, openTransition, closeTransition }) => {
+  ({ numColors, enabled, openTransition, closeTransition, onChoose }) => {
     const enabledTransition = useSpringTransition(enabled, config);
 
     const panRef = useRef<PanGestureHandler>(null);
@@ -97,11 +98,7 @@ const ColorWheel: React.FC<ColorWheelProps &
       []
     );
 
-    const diff = sub(
-      cartesian2Polar({ x, y }).theta,
-      cartesian2Polar({ x: x0, y: y0 }).theta
-    );
-
+    const diff = sub(atan2(x0, y0), atan2(x, y));
     const rotate = useMemoOne(
       () =>
         withDecay({
@@ -141,12 +138,12 @@ const ColorWheel: React.FC<ColorWheelProps &
                 key={index}
                 {...{
                   index,
+                  panRef,
                   x0,
                   absoluteY,
                   x: translationX,
                   y: translationY,
                   editingColor,
-                  panRef,
                   openTransition
                 }}
               />

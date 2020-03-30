@@ -4,6 +4,7 @@ export const CANVAS_DIMENSIONS = 20;
 
 export const COLOR_WHEEL_RADIUS = 150;
 export const COLOR_SIZE = 60;
+export const COLOR_BORDER_WIDTH = 3;
 
 export const DRAW_INTERVAL = 0;
 

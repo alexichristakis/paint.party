@@ -1,12 +1,7 @@
-import {
-  createSelector,
-  // createSelectorCreator,
-  defaultMemoize
-} from "reselect";
+import { createSelector } from "reselect";
 import values from "lodash/values";
 import sortBy from "lodash/sortBy";
 import omit from "lodash/omit";
-import isEqual from "lodash/isEqual";
 
 import { RootState } from "../types";
 import { uid } from "./app";
@@ -39,17 +34,14 @@ export const canvasActiveAt = createSelector(
   entity => entity.nextDrawAt ?? 0
 );
 
+/* CANVAS VIZ SELECTORS */
 export const canvas = createSelector(s, state => state.canvas);
-
 export const canvasEnabled = createSelector(canvas, state => state.enabled);
-
 export const selectedCell = createSelector(canvas, state => state.selectedCell);
-
 export const selectedColor = createSelector(
   canvas,
   state => state.selectedColor
 );
-
 export const cellColor = createSelector(
   [canvas, (_: RootState, i: number) => i],
   (canvas, index) => {
@@ -63,7 +55,6 @@ export const cellColor = createSelector(
     }
   }
 );
-
 export const live = createSelector(canvas, canvas => canvas.live);
 
 export const isCreatingCanvas = createSelector(

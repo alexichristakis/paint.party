@@ -29,6 +29,7 @@ import {
   SCREEN_WIDTH,
   SCREEN_HEIGHT,
   COLOR_WHEEL_RADIUS,
+  COLOR_BORDER_WIDTH,
   COLOR_SIZE
 } from "@lib";
 import { RootState } from "@redux/types";
@@ -56,7 +57,7 @@ const mapStateToProps = (state: RootState, props: ColorProps) => ({
 
 const mapDispatchToProps = {
   setColor: PaletteActions.set,
-  onChoose: CanvasActions.selectColor
+  selectColor: CanvasActions.selectColor
 };
 
 const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
@@ -72,7 +73,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
     fill,
     panRef,
     openTransition,
-    onChoose
+    selectColor
   }) => {
     const tapRef = useRef<TapGestureHandler>(null);
     const longPressRef = useRef<LongPressGestureHandler>(null);
@@ -105,7 +106,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
 
     const handleOnChoose = () => {
       Haptics.trigger("impactMedium");
-      onChoose(fill);
+      selectColor(fill);
     };
 
     useCode(
@@ -230,7 +231,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
 const styles = StyleSheet.create({
   color: {
     position: "absolute",
-    borderWidth: 3,
+    borderWidth: COLOR_BORDER_WIDTH,
     height: COLOR_SIZE,
     width: COLOR_SIZE
   }

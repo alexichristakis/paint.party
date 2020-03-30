@@ -107,13 +107,12 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
 
 const drawOnCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
-    filter(isOfType(ActionTypes.SELECT_COLOR)),
-    switchMap(async ({ payload }) => {
-      const { color } = payload;
-
+    filter(isOfType(ActionTypes.DRAW)),
+    switchMap(async () => {
       const uid = selectors.uid(state$.value);
       const activeCanvas = selectors.activeCanvas(state$.value);
       const cellId = selectors.selectedCell(state$.value);
+      const color = selectors.selectedColor(state$.value);
 
       await database()
         .ref(activeCanvas)

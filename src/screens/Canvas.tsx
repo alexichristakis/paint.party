@@ -32,7 +32,6 @@ const mapStateToProps = (state: RootState) => ({
   canvasActiveAt: selectors.canvasActiveAt(state)
 });
 const mapDispatchToProps = {
-  selectColor: CanvasActions.selectColor,
   enable: CanvasActions.enableCanvas,
   close: CanvasActions.close,
   open: CanvasActions.open
@@ -46,7 +45,6 @@ export interface CanvasProps {
 
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
-  selectColor,
   loadingCanvas,
   canvasActiveAt,
   canvas,
@@ -71,11 +69,6 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   const handleOnPressUsers = () => {
     positionsVisible.setValue(1);
     pickerVisible.setValue(0);
-  };
-
-  const handleOnChooseColor = (color: string) => {
-    pickerVisible.setValue(0);
-    selectColor(color);
   };
 
   return (
