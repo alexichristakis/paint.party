@@ -33,11 +33,15 @@ import {
   COLOR_SIZE
 } from "@lib";
 import { RootState } from "@redux/types";
-import { PaletteActions, CanvasActions } from "@redux/modules";
+import {
+  PaletteActions,
+  CanvasActions,
+  VisualizationActions
+} from "@redux/modules";
 
 const { color, onChange, set, or, eq, sub, cond, add, call } = Animated;
 
-export interface ColorProps {
+export interface SwatchProps {
   index: number;
   absoluteY: Animated.Value<number>;
   x0: Animated.Value<number>;
@@ -48,19 +52,19 @@ export interface ColorProps {
   openTransition: Animated.Node<number>;
 }
 
-export type ColorConnectedProps = ConnectedProps<typeof connector>;
+export type SwatchConnectedProps = ConnectedProps<typeof connector>;
 
-const mapStateToProps = (state: RootState, props: ColorProps) => ({
+const mapStateToProps = (state: RootState, props: SwatchProps) => ({
   fill: selectors.color(state, props),
   rotate: selectors.angleIncrement(state) * props.index
 });
 
 const mapDispatchToProps = {
   setColor: PaletteActions.set,
-  selectColor: CanvasActions.selectColor
+  selectColor: VisualizationActions.selectColor
 };
 
-const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
+const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
   ({
     setColor,
     index,
@@ -238,4 +242,4 @@ const styles = StyleSheet.create({
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
-export default connector(Color);
+export default connector(Swatch);

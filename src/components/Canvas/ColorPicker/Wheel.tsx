@@ -17,7 +17,7 @@ import times from "lodash/times";
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 
-import Color from "./Color";
+import Swatch from "./Swatch";
 
 const { and, divide, defined, set, eq, sub, cond, add, multiply } = Animated;
 
@@ -31,7 +31,6 @@ const config = {
 };
 
 export interface ColorWheelProps {
-  onChoose: () => void;
   openTransition: Animated.Node<number>;
   closeTransition: Animated.Node<number>;
 }
@@ -46,7 +45,7 @@ const mapDispatchToProps = {};
 
 const ColorWheel: React.FC<ColorWheelProps &
   ColorWheelConnectedProps> = React.memo(
-  ({ numColors, enabled, openTransition, closeTransition, onChoose }) => {
+  ({ numColors, enabled, openTransition, closeTransition }) => {
     const enabledTransition = useSpringTransition(enabled, config);
 
     const panRef = useRef<PanGestureHandler>(null);
@@ -134,7 +133,7 @@ const ColorWheel: React.FC<ColorWheelProps &
             style={[styles.container, animatedStyle]}
           >
             {times(numColors, index => (
-              <Color
+              <Swatch
                 key={index}
                 {...{
                   index,

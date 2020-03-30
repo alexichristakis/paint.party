@@ -1,6 +1,6 @@
-import { createAction, ActionsUnion } from "../types";
-import { FillColors } from "@lib";
 import immer from "immer";
+import { createAction, ActionTypes, ActionUnion } from "../types";
+import { FillColors } from "@lib";
 
 export type PaletteState = Readonly<{
   colors: string[];
@@ -12,7 +12,7 @@ const initialState: PaletteState = {
 
 export default (
   state: PaletteState = initialState,
-  action: ActionsUnion<typeof Actions>
+  action: ActionUnion
 ): PaletteState => {
   switch (action.type) {
     case ActionTypes.RESET_COLORS: {
@@ -32,12 +32,7 @@ export default (
   }
 };
 
-export enum ActionTypes {
-  RESET_COLORS = "palette/RESET",
-  SET_COLOR = "palette/SET"
-}
-
-export const Actions = {
+export const PaletteActions = {
   reset: () => createAction(ActionTypes.RESET_COLORS),
   set: (color: string, index: number) =>
     createAction(ActionTypes.SET_COLOR, { color, index })
