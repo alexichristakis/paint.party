@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import Animated, {
   Easing,
   useCode,
@@ -134,10 +134,10 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
 
                 setColor(newColor, index);
               }),
-              set(editing, 0),
               set(editingColor, 0),
               set(x, 0),
-              set(y, 0)
+              set(y, 0),
+              set(editing, 0)
             ])
           )
         )
@@ -159,29 +159,47 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
       return { ...c.toHsv(), ...c.toRgb() };
     }, [fill]);
 
-    const interpolatedColor = colorHSV(
-      h,
-      interpolate(add(s, x), {
-        inputRange: [
-          sub(s, SCREEN_WIDTH / 2, x0),
-          s,
-          add(s, sub(SCREEN_WIDTH / 2, x0))
-        ],
-        outputRange: [0, s, 1],
-        extrapolate: Extrapolate.CLAMP
-      }),
-      interpolate(add(v, y), {
-        inputRange: [
-          sub(v, SCREEN_HEIGHT, sub(absoluteY, y)),
-          v,
-          add(v, sub(absoluteY, y))
-        ],
-        outputRange: [0, v, 1],
-        extrapolate: Extrapolate.CLAMP
-      })
+    const interpolatedColor = useMemoOne(
+      () =>
+        colorHSV(
+          h,
+          interpolate(add(s, x), {
+            inputRange: [
+              sub(s, SCREEN_WIDTH / 2, x0),
+              s,
+              add(s, sub(SCREEN_WIDTH / 2, x0))
+            ],
+            outputRange: [0, s, 1],
+            extrapolate: Extrapolate.CLAMP
+          }),
+          interpolate(add(v, y), {
+            inputRange: [
+              sub(v, SCREEN_HEIGHT, sub(absoluteY, y)),
+              v,
+              add(v, sub(absoluteY, y))
+            ],
+            outputRange: [0, v, 1],
+            extrapolate: Extrapolate.CLAMP
+          })
+        ),
+      [fill]
     );
 
     const backgroundColor = cond(editing, interpolatedColor, color(r, g, b));
+    const borderRadius = bInterpolate(
+      activeTransition,
+      COLOR_SIZE / 2,
+      COLOR_SIZE / 4
+    );
+    const colorTransform = [
+      { scale: bInterpolate(activeTransition, 1, 1.45) },
+      { scale: bInterpolate(editingTransition, 1, 1.3) }
+    ];
+    const colorContainerTransform = [
+      { rotate },
+      { translateY: bInterpolate(openTransition, 0, COLOR_WHEEL_RADIUS) },
+      { translateY: bInterpolate(closeTransition, 0, -30) }
+    ];
 
     return (
       <TapGestureHandler
@@ -192,16 +210,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
         maxDeltaY={10}
       >
         <Animated.View
-          style={{
-            alignItems: "center",
-            transform: [
-              { rotate },
-              {
-                translateY: bInterpolate(openTransition, 0, COLOR_WHEEL_RADIUS)
-              },
-              { translateY: bInterpolate(closeTransition, 0, -30) }
-            ]
-          }}
+          style={{ alignItems: "center", transform: colorContainerTransform }}
         >
           <LongPressGestureHandler
             {...longPressHandler}
@@ -210,25 +219,15 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
             <Animated.View
               style={[
                 styles.color,
-                {
-                  backgroundColor,
-                  borderRadius: bInterpolate(
-                    activeTransition,
-                    COLOR_SIZE / 2,
-                    COLOR_SIZE / 4
-                  ),
-                  transform: [
-                    { scale: bInterpolate(activeTransition, 1, 1.45) },
-                    { scale: bInterpolate(editingTransition, 1, 1.3) }
-                  ]
-                }
+                { backgroundColor, borderRadius, transform: colorTransform }
               ]}
             />
           </LongPressGestureHandler>
         </Animated.View>
       </TapGestureHandler>
     );
-  }
+  },
+  (p, n) => p.fill === n.fill && p.index === n.index
 );
 
 const styles = StyleSheet.create({
