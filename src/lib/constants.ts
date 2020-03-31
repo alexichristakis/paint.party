@@ -2,7 +2,7 @@ import { Dimensions, Platform, StatusBar, PixelRatio } from "react-native";
 
 export const CANVAS_DIMENSIONS = 20;
 
-export const COLOR_WHEEL_RADIUS = 150;
+export const COLOR_WHEEL_RADIUS = 180;
 export const COLOR_SIZE = 60;
 export const COLOR_BORDER_WIDTH = 3;
 

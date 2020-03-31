@@ -5,7 +5,7 @@ import Animated, {
   interpolate,
   Extrapolate
 } from "react-native-reanimated";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import tinycolor from "tinycolor2";
 import {
   State,
@@ -43,6 +43,7 @@ const { color, onChange, set, or, eq, sub, cond, add, call } = Animated;
 
 export interface SwatchProps {
   index: number;
+  active: Animated.Adaptable<0 | 1>;
   absoluteY: Animated.Value<number>;
   x0: Animated.Value<number>;
   x: Animated.Value<number>;
@@ -66,6 +67,7 @@ const mapDispatchToProps = {
 
 const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
   ({
+    active,
     setColor,
     index,
     editingColor, // shared value between all colors
@@ -103,7 +105,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
             easing: Easing.inOut(Easing.ease)
           }
         ),
-        withSpringTransition(editing)
+        withSpringTransition(or(editing, active))
       ],
       []
     );
@@ -200,7 +202,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
     ];
     const colorContainerTransform = [
       { rotate },
-      { translateY: bInterpolate(openTransition, 0, COLOR_WHEEL_RADIUS) }
+      { translateX: bInterpolate(openTransition, 0, COLOR_WHEEL_RADIUS) }
     ];
 
     return (
@@ -212,7 +214,11 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
         maxDeltaY={10}
       >
         <Animated.View
-          style={{ alignItems: "center", transform: colorContainerTransform }}
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            transform: colorContainerTransform
+          }}
         >
           <LongPressGestureHandler
             {...longPressHandler}
@@ -221,7 +227,11 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
             <Animated.View
               style={[
                 styles.color,
-                { backgroundColor, borderRadius, transform: colorTransform }
+                {
+                  backgroundColor,
+                  borderRadius,
+                  transform: colorTransform
+                }
               ]}
             />
           </LongPressGestureHandler>

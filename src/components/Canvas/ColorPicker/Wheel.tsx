@@ -19,7 +19,18 @@ import { RootState } from "@redux/types";
 
 import Swatch from "./Swatch";
 
-const { and, divide, defined, set, eq, sub, cond, add, multiply } = Animated;
+const {
+  debug,
+  and,
+  divide,
+  defined,
+  set,
+  eq,
+  sub,
+  cond,
+  add,
+  multiply
+} = Animated;
 
 const config = {
   damping: 40,
@@ -31,6 +42,8 @@ const config = {
 };
 
 export interface ColorWheelProps {
+  angle: Animated.Value<number>;
+  activeIndex: Animated.Value<number>;
   openTransition: Animated.Node<number>;
   closeTransition: Animated.Node<number>;
 }
@@ -45,7 +58,14 @@ const mapDispatchToProps = {};
 
 const ColorWheel: React.FC<ColorWheelProps &
   ColorWheelConnectedProps> = React.memo(
-  ({ numColors, enabled, openTransition, closeTransition }) => {
+  ({
+    numColors,
+    enabled,
+    activeIndex,
+    angle,
+    openTransition,
+    closeTransition
+  }) => {
     const enabledTransition = useSpringTransition(enabled, config);
 
     const panRef = useRef<PanGestureHandler>(null);
@@ -62,7 +82,7 @@ const ColorWheel: React.FC<ColorWheelProps &
       velocity,
       absoluteY,
       editingColor
-    ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []);
+    ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []);
 
     const [panState] = useValues<State>([State.UNDETERMINED], []);
 
@@ -92,7 +112,22 @@ const ColorWheel: React.FC<ColorWheelProps &
             sub(multiply(x, velocityY), multiply(y, velocityX)),
             add(multiply(x, x), multiply(y, y))
           )
-        )
+        ),
+
+        set(angle, rotate)
+
+        // set(
+        //   angle,
+        //   withDecay({
+        //     velocity: cond(editingColor, 0, velocity),
+        //     value: cond(defined(diff), diff, 0),
+        //     state: cond(
+        //       and(editingColor, eq(panState, State.ACTIVE)),
+        //       State.END,
+        //       panState
+        //     ) as Animated.Value<State>
+        //   })
+        // )
       ],
       []
     );
@@ -112,6 +147,8 @@ const ColorWheel: React.FC<ColorWheelProps &
       []
     );
 
+    // const rotate = ;
+
     const containerAnimatedStyle = {
       transform: [{ translateY: bInterpolate(openTransition, 75, 10) }]
     };
@@ -119,9 +156,9 @@ const ColorWheel: React.FC<ColorWheelProps &
     const animatedStyle = {
       opacity: bInterpolate(enabledTransition, 0.5, 1),
       transform: [
-        { scale: bInterpolate(closeTransition, 1, 0.9) },
         { rotate },
-        { rotate: bInterpolate(openTransition, -Math.PI / 4, 0) }
+        { rotate: bInterpolate(openTransition, -Math.PI / 4, 0) },
+        { scale: bInterpolate(closeTransition, 1, 0.9) }
       ]
     };
 
@@ -135,6 +172,7 @@ const ColorWheel: React.FC<ColorWheelProps &
             {times(numColors, index => (
               <Swatch
                 key={index}
+                active={eq(activeIndex, index)}
                 {...{
                   index,
                   panRef,

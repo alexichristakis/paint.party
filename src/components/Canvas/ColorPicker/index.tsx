@@ -8,14 +8,16 @@ import {
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
+import { View, StyleSheet } from "react-native";
 
 import { RootState } from "@redux/types";
+import { COLOR_WHEEL_RADIUS, COLOR_SIZE } from "@lib";
 
 import Button from "./Button";
-import ColorWheel from "./Wheel";
 import Popup from "./Popup";
+import ColorWheel from "./Wheel";
 
-const { set, or, eq, cond, call } = Animated;
+const { or, eq } = Animated;
 
 const config = {
   damping: 40,
@@ -41,9 +43,11 @@ const ColorPicker: React.FC<ColorPickerProps &
     [State.UNDETERMINED, State.UNDETERMINED],
     []
   );
-  const [popupPositionX, popupPositionY] = useValues<number>([0, 0], []);
+  const [popupPositionX, popupPositionY, rotation, activeIndex] = useValues<
+    number
+  >([0, 0, 0, -1], []);
 
-  const [openTransition, pressInTransition] = useMemoOne(
+  const [openTransition, closeTransition] = useMemoOne(
     () => [
       withSpringTransition(visible, config),
       withTransition(
@@ -55,22 +59,34 @@ const ColorPicker: React.FC<ColorPickerProps &
   );
 
   return (
-    <>
+    <View style={styles.container}>
       <Button
         state={tapState}
         visible={visible}
         openTransition={openTransition}
       />
       <ColorWheel
-        openTransition={openTransition}
-        closeTransition={pressInTransition}
+        angle={rotation}
+        {...{ activeIndex, openTransition, closeTransition }}
       />
       <Popup
         state={popupDragState}
         position={{ x: popupPositionX, y: popupPositionY }}
+        {...{ rotation, activeIndex, openTransition }}
       />
-    </>
+    </View>
   );
+});
+
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    height: COLOR_WHEEL_RADIUS + COLOR_SIZE
+  }
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

@@ -1,10 +1,10 @@
 import { createSelector } from "reselect";
-import values from "lodash/values";
 import sortBy from "lodash/sortBy";
 import omit from "lodash/omit";
 
 import { RootState } from "../types";
 import { uid } from "./app";
+import { activeCanvasBackgroundColor } from "./canvas";
 
 const s = (state: RootState) => state.visualization;
 
@@ -12,11 +12,11 @@ export const canvasVizId = createSelector(s, state => state.id);
 export const canvasEnabled = createSelector(s, state => state.enabled);
 export const selectedCell = createSelector(s, state => state.selectedCell);
 export const selectedColor = createSelector(s, state => state.selectedColor);
+export const cells = createSelector(s, s => s.cells ?? {});
 export const cellColor = createSelector(
-  [s, (_: RootState, i: number) => i],
-  (canvas, index) => {
-    const cells = canvas.cells ?? {};
-    const updates = values(cells[index]) ?? [];
+  [cells, (_: RootState, i: number) => i],
+  (cells, index) => {
+    const updates = Object.values(cells[index] ?? {}) ?? [];
 
     if (updates.length) {
       const sorted = sortBy(updates, o => o.time);
@@ -26,6 +26,23 @@ export const cellColor = createSelector(
   }
 );
 export const live = createSelector(s, canvas => canvas.live);
+
+export const selectedCellLatestUpdate = createSelector(
+  [cells, selectedCell, activeCanvasBackgroundColor],
+  (cells, cell, backgroundColor) => {
+    const updates = Object.values(cells[cell] ?? {}) ?? [];
+
+    if (updates.length) {
+      const sorted = sortBy(updates, o => o.time);
+
+      return sorted[updates.length - 1];
+    }
+
+    return {
+      color: backgroundColor
+    };
+  }
+);
 
 export const livePositions = createSelector([live, uid], (live, uid) =>
   Object.values(omit(live ?? {}, uid ?? ""))
