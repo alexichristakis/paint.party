@@ -4,7 +4,7 @@ import omit from "lodash/omit";
 
 import { RootState } from "../types";
 import { uid } from "./app";
-import { activeCanvasBackgroundColor } from "./canvas";
+import { activeCanvasEntity } from "./canvas";
 
 const s = (state: RootState) => state.visualization;
 
@@ -28,8 +28,8 @@ export const cellColor = createSelector(
 export const live = createSelector(s, canvas => canvas.live);
 
 export const selectedCellLatestUpdate = createSelector(
-  [cells, selectedCell, activeCanvasBackgroundColor],
-  (cells, cell, backgroundColor) => {
+  [cells, selectedCell, activeCanvasEntity],
+  (cells, cell, canvas) => {
     const updates = Object.values(cells[cell] ?? {}) ?? [];
 
     if (updates.length) {
@@ -39,7 +39,8 @@ export const selectedCellLatestUpdate = createSelector(
     }
 
     return {
-      color: backgroundColor
+      color: canvas.backgroundColor,
+      time: canvas.createdAt
     };
   }
 );

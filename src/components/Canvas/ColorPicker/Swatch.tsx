@@ -197,8 +197,8 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
       COLOR_SIZE / 4
     );
     const colorTransform = [
-      { scale: bInterpolate(activeTransition, 1, 1.45) },
-      { scale: bInterpolate(editingTransition, 1, 1.3) }
+      { scale: bInterpolate(activeTransition, 1, 1.3) },
+      { scale: bInterpolate(editingTransition, 1, 1.45) }
     ];
     const colorContainerTransform = [
       { rotate },
@@ -215,8 +215,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
       >
         <Animated.View
           style={{
-            alignItems: "center",
-            justifyContent: "center",
+            ...styles.container,
             transform: colorContainerTransform
           }}
         >
@@ -225,14 +224,12 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
             simultaneousHandlers={[tapRef, panRef]}
           >
             <Animated.View
-              style={[
-                styles.color,
-                {
-                  backgroundColor,
-                  borderRadius,
-                  transform: colorTransform
-                }
-              ]}
+              style={{
+                ...styles.color,
+                backgroundColor,
+                borderRadius,
+                transform: colorTransform
+              }}
             />
           </LongPressGestureHandler>
         </Animated.View>
@@ -243,6 +240,10 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
 );
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    justifyContent: "center"
+  },
   color: {
     position: "absolute",
     borderWidth: COLOR_BORDER_WIDTH,

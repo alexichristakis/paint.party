@@ -147,8 +147,6 @@ const ColorWheel: React.FC<ColorWheelProps &
       []
     );
 
-    // const rotate = ;
-
     const containerAnimatedStyle = {
       transform: [{ translateY: bInterpolate(openTransition, 75, 10) }]
     };

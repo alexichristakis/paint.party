@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: "center",
-    height: COLOR_WHEEL_RADIUS + COLOR_SIZE
+    height: COLOR_WHEEL_RADIUS + COLOR_SIZE + 20
   }
 });
 

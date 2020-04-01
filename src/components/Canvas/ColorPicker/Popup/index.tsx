@@ -8,13 +8,12 @@ import {
   useValues,
   withSpring,
   withTransition,
-  canvas2Polar,
-  toDeg,
-  spring
+  canvas2Polar
 } from "react-native-redash";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet } from "react-native";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
+import { useMemoOne } from "use-memo-one";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
@@ -23,11 +22,14 @@ import {
   COLOR_SIZE,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
-  COLOR_WHEEL_RADIUS
+  COLOR_WHEEL_RADIUS,
+  Colors,
+  POPUP_SIZE,
+  POPUP_BORDER_RADIUS
 } from "@lib";
-import { useMemoOne } from "use-memo-one";
-import { useOnLayout } from "@hooks";
 import { PaletteActions } from "@redux/modules";
+
+import Label from "./Label";
 
 const {
   onChange,
@@ -36,18 +38,16 @@ const {
   round,
   modulo,
   set,
-  or,
   eq,
   divide,
   sub,
-  debug,
   cond,
   and,
-  lessThan,
   lessOrEq,
   greaterThan,
   call
 } = Animated;
+
 const config = {
   damping: 40,
   mass: 1,
@@ -91,8 +91,6 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
   cell,
   state
 }) => {
-  const { onLayout, width: measuredWidth } = useOnLayout();
-
   const [dragX, dragY, velocityX, velocityY] = useValues<number>(
     [0, 0, 0, 0],
     []
@@ -108,7 +106,9 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
     state
   });
 
-  const activeTransition = withSpringTransition(eq(state, State.ACTIVE));
+  const active = eq(state, State.ACTIVE);
+  const activeTransition = withTransition(active);
+  const activeSpringTransition = withSpringTransition(active);
 
   const [translateX, translateY] = useMemoOne(
     () => [
@@ -188,39 +188,26 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
     [angleIncrement, numColors]
   );
 
-  const scale = bInterpolate(activeTransition, 1, 1.3);
-  const width = bInterpolate(activeTransition, measuredWidth, 0);
+  const scale = bInterpolate(activeSpringTransition, 1, 1.8);
+  const borderWidth = bInterpolate(activeTransition, 0, COLOR_BORDER_WIDTH);
   return (
     <PanGestureHandler {...handler}>
       <Animated.View
-        style={[
-          styles.container,
-          {
-            opacity: openTransition,
-            transform: [{ scale }, { translateX }, { translateY }]
-          }
-        ]}
+        style={{
+          ...styles.container,
+          opacity: openTransition,
+          transform: [{ translateX }, { translateY }]
+        }}
       >
+        <Label {...{ activeTransition }} />
         <Animated.View
-          style={[
-            styles.color,
-            {
-              backgroundColor: cell.color
-            }
-          ]}
-        />
-        {/* <Animated.View
           style={{
-            transform: [
-              { translateX: bInterpolate(activeTransition, 0, -100) }
-            ],
-            justifyContent: "center"
-            // position: "absolute",
-            // left: COLOR_SIZE / 1.5,
+            ...styles.color,
+            borderWidth,
+            backgroundColor: cell.color,
+            transform: [{ scale }]
           }}
-        >
-          <Text style={styles.colorText}>{cell?.color}</Text>
-        </Animated.View> */}
+        />
       </Animated.View>
     </PanGestureHandler>
   );
@@ -229,18 +216,19 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
+    alignItems: "center",
     flexDirection: "row",
-    // top: 20,
+    backgroundColor: Colors.mediumGray,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    paddingRight: 10,
+    padding: 3,
     left: 5
   },
-  colorText: {
-    textTransform: "uppercase"
-  },
   color: {
-    borderWidth: COLOR_BORDER_WIDTH,
-    borderRadius: COLOR_SIZE / 3,
-    height: COLOR_SIZE / 1.5,
-    width: COLOR_SIZE / 1.5
+    borderRadius: POPUP_BORDER_RADIUS,
+    height: POPUP_SIZE,
+    width: POPUP_SIZE
   }
 });
 
