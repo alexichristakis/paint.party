@@ -33,7 +33,7 @@ export type CreateCanvasRef = {
   close: () => void;
 };
 
-export const CreateCanvas = React.memo(
+const CreateCanvas = React.memo(
   React.forwardRef<CreateCanvasRef, CreateCanvasProps>(({}, ref) => {
     const textInputRef = useRef<TextInput>(null);
     const modalRef = useRef<ModalListRef>(null);
@@ -166,3 +166,5 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   }
 });
+
+export default CreateCanvas;

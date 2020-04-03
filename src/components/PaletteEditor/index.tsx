@@ -1,27 +1,13 @@
 import React, { useRef, useEffect, useState, useImperativeHandle } from "react";
-import {
-  TextInput,
-  StyleSheet,
-  View,
-  ActivityIndicator,
-  Keyboard,
-  LayoutRectangle
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 
-import moment from "moment";
 import Animated from "react-native-reanimated";
-import {
-  useValues,
-  useSpringTransition,
-  bInterpolate
-} from "react-native-redash";
+import { useValues } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
-import { NewCanvas } from "@redux/modules/canvas";
 import { ModalList, ModalListRef } from "../ModalList";
-import { Input, Slider, BackgroundColorPicker } from "../universal";
-import { TextStyles, TextSizes, Colors } from "@lib";
+import { Colors } from "@lib";
 
 import Send from "@assets/svg/send.svg";
 import { useReduxAction, useColorEditorState } from "@hooks";
@@ -46,6 +32,7 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = {};
 
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
+
 const PaletteEditor = React.memo(
   React.forwardRef<PaletteEditorRef, Props>(({ palettes }, ref) => {
     const modalRef = useRef<ModalListRef>(null);
@@ -103,5 +90,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector = connect(mapStateToProps, mapDispatchToProps, null, {
+  forwardRef: true
+});
 export default connector(PaletteEditor);
