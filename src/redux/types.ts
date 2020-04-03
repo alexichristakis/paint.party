@@ -13,6 +13,8 @@ import {
 
 export enum PaletteActionTypes {
   RESET_COLORS = "palette/RESET",
+  EDIT_COLOR = "palette/EDIT",
+  CLOSE_EDITOR = "palette/CLOSE_EDITOR",
   SET_COLOR = "palette/SET",
   ADD_COLOR = "palette/ADD",
   REMOVE_COLOR = "palette/REMOVE"

@@ -13,10 +13,8 @@ import {
 } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
 import {
-  COLOR_SIZE,
   SCREEN_WIDTH,
   COLOR_BORDER_WIDTH,
-  COLOR_MARGIN,
   Colors,
   SCREEN_HEIGHT,
   colorHSV
@@ -24,20 +22,16 @@ import {
 import {
   useValues,
   bin,
-  delay,
-  timing,
   onGestureEvent,
   withSpringTransition,
   bInterpolate,
-  useSpringTransition,
-  useTransition,
   withTransition,
-  withSpring,
-  withOffset,
   clamp,
-  useClocks
+  useSpringTransition
 } from "react-native-redash";
+import tinycolor from "tinycolor2";
 import { useMemoOne } from "use-memo-one";
+
 import { Slider } from "@components/universal";
 
 const {
@@ -62,9 +56,7 @@ const {
 } = Animated;
 
 export type ColorEditorState = {
-  index: Animated.Value<number>;
-  transitioning: Animated.Value<0 | 1>;
-  paletteId: Animated.Value<string>;
+  id: Animated.Value<number>;
   color: {
     h: Animated.Value<number>;
     s: Animated.Value<number>;
@@ -86,10 +78,13 @@ export type ColorEditorConnectedProps = ConnectedProps<typeof connector>;
 
 export interface ColorEditorProps extends ColorEditorState {}
 
-const mapStateToProps = (state: RootState, props: ColorEditorProps) => ({});
+const mapStateToProps = (state: RootState) => ({
+  editing: selectors.editing(state)
+});
 
 const mapDispatchToProps = {
-  set: PaletteActions.set
+  closeEditor: PaletteActions.closeEditor,
+  setColor: PaletteActions.set
 };
 
 const EDITOR_SIZE = SCREEN_WIDTH - 50;
@@ -98,206 +93,206 @@ const LEFT = (SCREEN_WIDTH - EDITOR_SIZE) / 2;
 const TOP = (SCREEN_HEIGHT - EDITOR_SIZE) / 2;
 const INDICATOR_MIN = INDICATOR_SIZE / 2;
 const INDICATOR_MAX = EDITOR_SIZE - INDICATOR_SIZE + 5;
+const TRANSITION_DURATION = 200;
 
-const ColorEditor: React.FC<ColorEditorProps & ColorEditorConnectedProps> = ({
-  index,
-  color,
-  transitioning,
-  paletteId,
-  layout
-}) => {
-  const indicatorPanRef = useRef<PanGestureHandler>(null);
-  const tapRef = useRef<TapGestureHandler>(null);
-  const [clock] = useClocks(1, []);
+const ColorEditor: React.FC<ColorEditorProps &
+  ColorEditorConnectedProps> = React.memo(
+  ({ id, color, setColor, closeEditor, editing, layout }) => {
+    const indicatorPanRef = useRef<PanGestureHandler>(null);
+    const tapRef = useRef<TapGestureHandler>(null);
 
-  const [renderKey, setRenderKey] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [tapState, undoState, confirmState, indicatorPanState] = useValues(
-    [
-      State.UNDETERMINED,
-      State.UNDETERMINED,
-      State.UNDETERMINED,
-      State.UNDETERMINED
-    ],
-    []
-  );
+    const { active } = editing;
 
-  const [
-    editorOpacity,
-    indicatorDragX,
-    indicatorDragY,
-    indicatorPosX,
-    indicatorPosY,
-    hue
-  ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []);
+    const [_, setRenderKey] = useState(0);
+    const [tapState, undoState, confirmState, indicatorPanState] = useValues(
+      [
+        State.UNDETERMINED,
+        State.UNDETERMINED,
+        State.UNDETERMINED,
+        State.UNDETERMINED
+      ],
+      []
+    );
 
-  const indicatorPanHandler = onGestureEvent({
-    state: indicatorPanState,
-    translationX: indicatorDragX,
-    translationY: indicatorDragY,
-    x: indicatorPosX,
-    y: indicatorPosY
-  });
+    const [
+      indicatorDragX,
+      indicatorDragY,
+      indicatorPosX,
+      indicatorPosY,
+      hue
+    ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0, 0], []);
 
-  const tapHandler = onGestureEvent({ state: tapState });
-  const undoHandler = onGestureEvent({ state: undoState });
-  const confirmHandler = onGestureEvent({ state: confirmState });
+    const indicatorPanHandler = onGestureEvent({
+      state: indicatorPanState,
+      translationX: indicatorDragX,
+      translationY: indicatorDragY,
+      x: indicatorPosX,
+      y: indicatorPosY
+    });
 
-  const active = neq(index, -1);
-  const [transition, pressInTransition] = useMemoOne(
-    () => [
-      withTransition(active, {
-        duration: 200,
-        easing: Easing.inOut(Easing.ease)
-      }),
-      withSpringTransition(eq(tapState, State.BEGAN))
-    ],
-    []
-  );
+    const tapHandler = onGestureEvent({ state: tapState });
+    const undoHandler = onGestureEvent({ state: undoState });
+    const confirmHandler = onGestureEvent({ state: confirmState });
 
-  const [controlTransition] = useMemoOne(
-    () => [withSpringTransition(eq(transition, 1))],
-    []
-  );
+    const [transition, pressInTransition] = useMemoOne(
+      () => [
+        withTransition(and(neq(id, -1), bin(active)), {
+          duration: TRANSITION_DURATION,
+          easing: Easing.inOut(Easing.ease)
+        }),
+        withSpringTransition(eq(tapState, State.BEGAN))
+      ],
+      [active]
+    );
 
-  useCode(
-    () => [
-      cond(
-        and(eq(transition, 1), not(bin(open))),
-        call([], () => setOpen(true)),
-        cond(and(eq(transition, 0), bin(open)), [
-          call([], () => setOpen(false))
-        ])
-      )
-    ],
-    [open]
-  );
+    const [controlTransition] = useMemoOne(
+      () => [withSpringTransition(eq(transition, 1))],
+      [active]
+    );
 
-  const left = bInterpolate(transition, layout.x, LEFT);
-  const top = bInterpolate(transition, layout.y, TOP);
-  const width = bInterpolate(transition, layout.width, EDITOR_SIZE);
-  const height = bInterpolate(transition, layout.height, EDITOR_SIZE);
-  const borderRadius = bInterpolate(transition, divide(layout.height, 2), 30);
-  const backgroundOpacity = bInterpolate(transition, 0, 0.7);
-  const scale = bInterpolate(pressInTransition, 1, 0.95);
+    const left = bInterpolate(transition, layout.x, LEFT);
+    const top = bInterpolate(transition, layout.y, TOP);
+    const width = bInterpolate(transition, layout.width, EDITOR_SIZE);
+    const height = bInterpolate(transition, layout.height, EDITOR_SIZE);
+    const borderRadius = bInterpolate(transition, divide(layout.height, 2), 30);
+    const backgroundOpacity = bInterpolate(transition, 0, 0.7);
+    const scale = bInterpolate(pressInTransition, 1, 0.95);
 
-  const indicatorLeft = clamp(indicatorPosX, INDICATOR_MIN, INDICATOR_MAX);
-  const indicatorTop = clamp(indicatorPosY, INDICATOR_MIN, INDICATOR_MAX);
+    const indicatorLeft = clamp(indicatorPosX, INDICATOR_MIN, INDICATOR_MAX);
+    const indicatorTop = clamp(indicatorPosY, INDICATOR_MIN, INDICATOR_MAX);
 
-  const s = divide(
-    sub(indicatorLeft, INDICATOR_MIN),
-    INDICATOR_MAX - INDICATOR_MIN
-  );
+    const s = divide(
+      sub(indicatorLeft, INDICATOR_MIN),
+      INDICATOR_MAX - INDICATOR_MIN
+    );
 
-  const v = divide(
-    sub(indicatorTop, INDICATOR_MIN),
-    INDICATOR_MAX - INDICATOR_MIN
-  );
+    const v = divide(
+      sub(indicatorTop, INDICATOR_MIN),
+      INDICATOR_MAX - INDICATOR_MIN
+    );
 
-  const backgroundColor = colorHSV(hue, s, v);
+    const backgroundColor = colorHSV(hue, s, v);
 
-  const resetPositions = [
-    set(hue, color.h),
-    set(indicatorPosX, bInterpolate(color.s, INDICATOR_MIN, INDICATOR_MAX)),
-    set(indicatorPosY, bInterpolate(color.v, INDICATOR_MIN, INDICATOR_MAX)),
-    call([], () => setRenderKey(prevState => prevState + 1))
-  ];
+    const resetPositions = [
+      set(hue, color.h),
+      set(indicatorPosX, bInterpolate(color.s, INDICATOR_MIN, INDICATOR_MAX)),
+      set(indicatorPosY, bInterpolate(color.v, INDICATOR_MIN, INDICATOR_MAX)),
+      call([], () => setRenderKey(prevState => prevState + 1))
+    ];
 
-  useCode(
-    () => [
-      set(transitioning, transition),
-      cond(not(transition), delay(set(editorOpacity, 0), 100)),
-      onChange(tapState, cond(eq(tapState, State.END), [set(index, -1)])),
-      onChange(index, resetPositions),
-      onChange(undoState, cond(eq(undoState, State.END), resetPositions)),
-      onChange(
-        confirmState,
-        cond(eq(confirmState, State.END), [
-          call([index, backgroundColor], ([index, newColor]) => {})
-        ])
-      )
-    ],
-    []
-  );
+    useCode(
+      () => [
+        onChange(
+          confirmState,
+          cond(eq(confirmState, State.END), [
+            [
+              call([backgroundColor], ([color]) => {
+                const hex = color.toString(16).substring(2);
+                const newColor = tinycolor(hex).toHexString();
 
-  const animatedEditorStyle = {
-    height,
-    width,
-    opacity: 1,
-    transform: [{ scale }],
-    top,
-    left,
-    borderRadius,
-    backgroundColor
-  };
+                setColor(newColor);
+              }),
+              set(id, -1)
+            ]
+          ])
+        )
+      ],
+      []
+    );
 
-  return (
-    <View style={styles.container} pointerEvents={open ? "auto" : "none"}>
-      {/* <Animated.View
-        style={{
-          position: "absolute",
-          opacity: neq(transition, 0),
-          left: layout.x,
-          top: layout.y,
-          width: COLOR_SIZE + COLOR_MARGIN,
-          height: COLOR_SIZE + COLOR_MARGIN,
-          backgroundColor: "white"
-        }}
-      /> */}
-      <TapGestureHandler ref={tapRef} waitFor={indicatorPanRef} {...tapHandler}>
-        <Animated.View
-          style={{ ...styles.background, opacity: backgroundOpacity }}
-        />
-      </TapGestureHandler>
-      <Animated.View
-        style={{
-          ...styles.buttonContainer,
-          marginTop: bInterpolate(controlTransition, -70, 70),
-          opacity: controlTransition
-        }}
-      >
-        <TapGestureHandler {...undoHandler}>
-          <Animated.View style={styles.button}></Animated.View>
-        </TapGestureHandler>
+    useCode(
+      () => [
+        onChange(tapState, cond(eq(tapState, State.END), set(id, -1))),
+        onChange(id, cond(neq(id, -1), resetPositions)),
+        onChange(undoState, cond(eq(undoState, State.END), resetPositions))
+      ],
+      []
+    );
 
-        <TapGestureHandler {...confirmHandler}>
-          <Animated.View style={styles.button}></Animated.View>
-        </TapGestureHandler>
-      </Animated.View>
+    useCode(
+      () => [
+        cond(
+          and(eq(id, -1), not(transition), bin(active)),
+          call([], closeEditor)
+        )
+      ],
+      [active]
+    );
 
-      <Animated.View
-        style={{
-          ...styles.sliderContainer,
-          marginTop: bInterpolate(controlTransition, -10, 10),
-          opacity: controlTransition
-        }}
-      >
-        <Slider
-          style={{ width: EDITOR_SIZE - 50 }}
-          trackColor={backgroundColor}
-          value={hue}
-          range={[0, 360]}
-        />
-      </Animated.View>
+    const animatedEditorStyle = {
+      opacity: bin(active),
+      transform: [{ scale }],
+      top,
+      left,
+      height,
+      width,
+      borderRadius,
+      backgroundColor
+    };
 
-      <PanGestureHandler ref={indicatorPanRef} {...indicatorPanHandler}>
-        <Animated.View style={[styles.editor, animatedEditorStyle]}>
+    return (
+      <View style={styles.container} pointerEvents={active ? "auto" : "none"}>
+        <TapGestureHandler
+          ref={tapRef}
+          waitFor={indicatorPanRef}
+          {...tapHandler}
+        >
           <Animated.View
-            style={{
-              ...styles.indicator,
-              top: indicatorTop,
-              left: indicatorLeft,
-              transform: [
-                { translateX: -INDICATOR_SIZE / 2 },
-                { translateY: -INDICATOR_SIZE / 2 }
-              ]
-            }}
+            style={{ ...styles.background, opacity: backgroundOpacity }}
+          />
+        </TapGestureHandler>
+        <Animated.View
+          style={{
+            ...styles.buttonContainer,
+            marginTop: bInterpolate(controlTransition, -70, 70),
+            opacity: controlTransition
+          }}
+        >
+          <TapGestureHandler {...undoHandler}>
+            <Animated.View style={styles.button}></Animated.View>
+          </TapGestureHandler>
+
+          <TapGestureHandler {...confirmHandler}>
+            <Animated.View style={styles.button}></Animated.View>
+          </TapGestureHandler>
+        </Animated.View>
+
+        <Animated.View
+          style={{
+            ...styles.sliderContainer,
+            marginTop: bInterpolate(controlTransition, -10, 10),
+            opacity: controlTransition
+          }}
+        >
+          <Slider
+            style={{ width: EDITOR_SIZE - 50 }}
+            trackColor={backgroundColor}
+            value={hue}
+            range={[0, 360]}
           />
         </Animated.View>
-      </PanGestureHandler>
-    </View>
-  );
-};
+
+        <PanGestureHandler ref={indicatorPanRef} {...indicatorPanHandler}>
+          <Animated.View style={[styles.editor, animatedEditorStyle]}>
+            <Animated.View
+              style={{
+                ...styles.indicator,
+                opacity: transition,
+                top: indicatorTop,
+                left: indicatorLeft,
+                transform: [
+                  { translateX: -INDICATOR_SIZE / 2 },
+                  { translateY: -INDICATOR_SIZE / 2 }
+                ]
+              }}
+            />
+          </Animated.View>
+        </PanGestureHandler>
+      </View>
+    );
+  },
+  (p, n) => p.editing.active === n.editing.active
+);
 
 const styles = StyleSheet.create({
   container: {

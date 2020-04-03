@@ -31,3 +31,11 @@ export const numColors = createSelector(colors, colors => colors.length);
 export const angleIncrement = createSelector([numColors, p], (num, p) =>
   p.index ? ((2 * Math.PI) / num) * p.index : (2 * Math.PI) / num
 );
+
+export const editing = createSelector(s, state => state.editing);
+
+export const isEditing = createSelector([editing, p], (editing, props) => {
+  const { active, index, paletteId } = editing;
+
+  return active && index === props.index && paletteId === props.paletteId;
+});

@@ -54,14 +54,9 @@ const PaletteEditor = React.memo(
 
     const initialColorEditorState = useColorEditorState();
 
-    useEffect(() => {
-      modalRef.current?.open();
-    }, []);
-
     useImperativeHandle(ref, () => ({
       open: () => {
         modalRef.current?.open();
-        // setTimeout(() => textInputRef.current?.focus(), 300);
       },
       close: () => {
         modalRef.current?.close();

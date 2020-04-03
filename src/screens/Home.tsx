@@ -56,7 +56,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
       <Animated.ScrollView
         style={styles.container}
         onScroll={onScrollEvent({ y: scrollY })}
-        scrollEventThrottle={16}
+        scrollEventThrottle={1}
         contentContainerStyle={styles.contentContainer}
       >
         <Canvases

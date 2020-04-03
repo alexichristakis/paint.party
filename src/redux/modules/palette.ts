@@ -1,17 +1,17 @@
 import immer from "immer";
 import { createAction, ActionTypes, ActionUnion } from "../types";
-import { OuterWheel, InnerWheel } from "@lib";
+import { Palette1, Palette2 } from "@lib";
 
 export const DefaultPalettes: Palettes = {
   default: {
     id: "default",
     name: "Default",
-    colors: OuterWheel
+    colors: Palette1
   },
   default2: {
     id: "default2",
-    name: "Default 2",
-    colors: InnerWheel
+    name: "Pastel",
+    colors: Palette2
   }
 };
 
@@ -26,11 +26,21 @@ export type Palettes = { [id: string]: Palette };
 export type PaletteState = Readonly<{
   activePalette: string;
   palettes: Palettes;
+  editing: {
+    active: boolean;
+    paletteId: string;
+    index: number;
+  };
 }>;
 
 const initialState: PaletteState = {
   activePalette: "default",
-  palettes: DefaultPalettes
+  palettes: DefaultPalettes,
+  editing: {
+    active: false,
+    paletteId: "",
+    index: -1
+  }
 };
 
 export default (
@@ -42,13 +52,34 @@ export default (
       return { ...initialState };
     }
 
-    case ActionTypes.SET_COLOR: {
-      const { index, color, paletteId = state.activePalette } = action.payload;
+    case ActionTypes.EDIT_COLOR: {
+      const { index, paletteId } = action.payload;
 
       return immer(state, draft => {
-        draft.palettes[paletteId].colors[index] = color;
+        draft.editing.active = true;
+        draft.editing.paletteId = paletteId;
+        draft.editing.index = index;
+      });
+    }
 
-        return draft;
+    case ActionTypes.CLOSE_EDITOR: {
+      return immer(state, draft => {
+        draft.editing.active = false;
+        draft.editing.paletteId = "";
+        draft.editing.index = -1;
+      });
+    }
+
+    case ActionTypes.SET_COLOR: {
+      const { editing } = state;
+      let { color, index, paletteId = state.activePalette } = action.payload;
+
+      if (editing.active) {
+        ({ index, paletteId } = editing);
+      }
+
+      return immer(state, draft => {
+        draft.palettes[paletteId].colors[index!] = color;
       });
     }
 
@@ -57,8 +88,6 @@ export default (
 
       return immer(state, draft => {
         draft.palettes[paletteId].colors.push(color);
-
-        return draft;
       });
     }
 
@@ -68,8 +97,6 @@ export default (
       return immer(state, draft => {
         const { colors } = draft.palettes[paletteId];
         draft.palettes[paletteId].colors = colors.splice(index, 1);
-
-        return draft;
       });
     }
 
@@ -80,10 +107,16 @@ export default (
 
 export const PaletteActions = {
   reset: () => createAction(ActionTypes.RESET_COLORS),
-  set: (color: string, index: number, paletteId?: string) =>
+
+  closeEditor: () => createAction(ActionTypes.CLOSE_EDITOR),
+
+  edit: (index: number, paletteId: string) =>
+    createAction(ActionTypes.EDIT_COLOR, { index, paletteId }),
+  set: (color: string, index?: number, paletteId?: string) =>
     createAction(ActionTypes.SET_COLOR, { color, index, paletteId }),
   add: (color: string, paletteId: string) =>
     createAction(ActionTypes.ADD_COLOR, { color, paletteId }),
+
   remove: (index: number, paletteId: string) =>
     createAction(ActionTypes.REMOVE_COLOR, { index, paletteId })
 };
