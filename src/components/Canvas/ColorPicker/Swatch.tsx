@@ -17,7 +17,8 @@ import {
   onGestureEvent,
   bInterpolate,
   withSpringTransition,
-  withTransition
+  withTransition,
+  timing
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
@@ -57,7 +58,7 @@ export type SwatchConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState, props: SwatchProps) => ({
   fill: selectors.color(state, props),
-  rotate: selectors.angleIncrement(state) * props.index
+  rotate: selectors.angleIncrement(state, props)
 });
 
 const mapDispatchToProps = {
@@ -90,6 +91,12 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
       [State.UNDETERMINED, State.UNDETERMINED],
       []
     );
+
+    const { h, s, v, r, g, b } = useMemoOne(() => {
+      const c = tinycolor(fill);
+
+      return { ...c.toHsv(), ...c.toRgb() };
+    }, [fill]);
 
     const [activeTransition, editingTransition] = useMemoOne(
       () => [
@@ -158,12 +165,6 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
       []
     );
 
-    const { h, s, v, r, g, b } = useMemoOne(() => {
-      const c = tinycolor(fill);
-
-      return { ...c.toHsv(), ...c.toRgb() };
-    }, [fill]);
-
     const interpolatedColor = useMemoOne(
       () =>
         colorHSV(
@@ -191,6 +192,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
     );
 
     const backgroundColor = cond(editing, interpolatedColor, color(r, g, b));
+
     const borderRadius = bInterpolate(
       activeTransition,
       COLOR_SIZE / 2,

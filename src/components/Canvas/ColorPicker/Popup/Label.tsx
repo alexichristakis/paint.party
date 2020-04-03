@@ -31,9 +31,9 @@ const Label: React.FC<LabelProps & LabelConnectedProps> = ({
 
   const translateX = bInterpolate(activeTransition, 0, -width - 5);
   return (
-    <View pointerEvents={"none"} style={[styles.container]}>
+    <View pointerEvents={"none"} style={styles.container}>
       <Animated.View
-        style={[styles.animated, { transform: [{ translateX }] }]}
+        style={{ ...styles.animated, transform: [{ translateX }] }}
         onLayout={onLayout}
       >
         <Text style={styles.text} numberOfLines={2}>

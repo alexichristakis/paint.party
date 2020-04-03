@@ -2,24 +2,32 @@ import React from "react";
 import { StyleSheet, View, StyleProp, ViewStyle } from "react-native";
 import Animated, { useCode, Extrapolate } from "react-native-reanimated";
 import { PanGestureHandler, State } from "react-native-gesture-handler";
-import {
-  useValues,
-  onGestureEvent,
-  withOffset,
-  clamp
-} from "react-native-redash";
+import { useValues, onGestureEvent, clamp } from "react-native-redash";
 
 import { useOnLayout } from "@hooks";
 import { Colors } from "@lib";
-import { useMemoOne } from "use-memo-one";
 
-const { set, debug, cond, onChange, call, eq, interpolate } = Animated;
+const {
+  set,
+  add,
+  neq,
+  debug,
+  multiply,
+  cond,
+  onChange,
+  divide,
+  sub,
+  call,
+  eq,
+  interpolate
+} = Animated;
 
 export interface SliderProps {
-  onCompleteDrag: (val: number) => void;
+  onCompleteDrag?: (val: number) => void;
   range: [number, number];
   value: Animated.Value<number>;
-  style?: StyleProp<ViewStyle>;
+  trackColor?: Animated.Node<number | string | undefined> | string;
+  style?: StyleProp<Animated.AnimateStyle<ViewStyle>>;
 }
 
 const SLIDER_SIZE = 30;
@@ -27,39 +35,53 @@ const SLIDER_SIZE = 30;
 export const Slider: React.FC<SliderProps> = ({
   onCompleteDrag,
   value,
+  trackColor,
   range,
   style
 }) => {
   const { onLayout, width } = useOnLayout();
   const [state] = useValues([State.UNDETERMINED], []);
-  const [translationX, velocityX] = useValues([0, 0], []);
+  const [sliderPosition] = useValues<number>([0], []);
 
   const handler = onGestureEvent({
     state,
-    translationX,
-    velocityX
+    x: sliderPosition
   });
 
-  const translateX = useMemoOne(
-    () => clamp(withOffset(translationX, state), 0, width - SLIDER_SIZE),
-    [width]
+  const left = clamp(
+    sub(sliderPosition, SLIDER_SIZE / 2),
+    0,
+    width - SLIDER_SIZE
   );
 
   useCode(
     () => [
+      onChange(value, [
+        cond(neq(state, State.ACTIVE), [
+          set(
+            sliderPosition,
+            add(
+              multiply(width - SLIDER_SIZE, divide(value, range[1])),
+              SLIDER_SIZE / 2
+            )
+          )
+        ])
+      ]),
+
       set(
         value,
-        interpolate(translateX, {
+        interpolate(left, {
           inputRange: [0, width ? width - SLIDER_SIZE : width],
           outputRange: range,
           extrapolate: Extrapolate.CLAMP
         })
       ),
+
       onChange(
         state,
         cond(
           eq(state, State.END),
-          call([value], ([val]) => onCompleteDrag(val))
+          call([value], ([val]) => (onCompleteDrag ? onCompleteDrag(val) : {}))
         )
       )
     ],
@@ -67,24 +89,23 @@ export const Slider: React.FC<SliderProps> = ({
   );
 
   return (
-    <Animated.View style={[styles.container, style]} onLayout={onLayout}>
-      <View style={styles.track} />
-      <Animated.View
-        style={[
-          styles.track,
-          {
-            marginLeft: -width,
-            backgroundColor: Colors.blue,
-            transform: [{ translateX }]
-          }
-        ]}
-      />
-      <PanGestureHandler {...handler}>
-        <Animated.View
-          style={[styles.slider, { transform: [{ translateX }] }]}
-        />
-      </PanGestureHandler>
-    </Animated.View>
+    <PanGestureHandler {...handler}>
+      <Animated.View style={[styles.container, style]} onLayout={onLayout}>
+        <View style={styles.track}>
+          <Animated.View
+            style={[
+              styles.track,
+              {
+                backgroundColor: trackColor ? trackColor : Colors.lightblue,
+                marginLeft: -width,
+                left
+              }
+            ]}
+          />
+        </View>
+        <Animated.View style={[styles.slider, { left }]} />
+      </Animated.View>
+    </PanGestureHandler>
   );
 };
 
@@ -95,14 +116,16 @@ const styles = StyleSheet.create({
   },
   track: {
     position: "absolute",
+    overflow: "hidden",
     width: "100%",
-    height: 2,
+    height: 4,
+    borderRadius: 5,
     backgroundColor: Colors.lightGray
   },
   slider: {
     width: SLIDER_SIZE,
     height: SLIDER_SIZE,
     borderRadius: SLIDER_SIZE / 2,
-    backgroundColor: Colors.grayBlue
+    backgroundColor: Colors.lightGray
   }
 });

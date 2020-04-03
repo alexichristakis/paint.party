@@ -13,8 +13,9 @@ import { Canvases } from "@components/Canvases";
 
 import { StackParamList } from "../App";
 import { SB_HEIGHT, TextStyles } from "@lib";
-import { useValues, onScroll } from "react-native-redash";
+import { useValues, onScrollEvent } from "react-native-redash";
 import { NewCanvas } from "@components/NewCanvas";
+import PaletteEditor from "@components/PaletteEditor";
 
 const connector = connect(
   (state: RootState) => ({
@@ -54,7 +55,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
     <>
       <Animated.ScrollView
         style={styles.container}
-        onScroll={onScroll({ y: scrollY })}
+        onScroll={onScrollEvent({ y: scrollY })}
         scrollEventThrottle={16}
         contentContainerStyle={styles.contentContainer}
       >
@@ -65,6 +66,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
         />
       </Animated.ScrollView>
       <NewCanvas />
+      <PaletteEditor />
     </>
   );
 };

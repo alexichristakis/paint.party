@@ -57,11 +57,7 @@ export const InnerWheel = [
   Colors.orange,
   Colors.yellow,
   Colors.green,
-  Colors.blue,
-  Colors.purple,
-  Colors.pink,
-  Colors.grayBlue,
-  Colors.brown
+  Colors.blue
 ];
 
 const baseText: TextStyle = {

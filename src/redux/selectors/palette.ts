@@ -1,20 +1,33 @@
 import { createSelector } from "reselect";
 
 import { RootState } from "../types";
+import { FillColors } from "@lib";
 
 const p = (_: RootState, props: any) => props;
 const s = (state: RootState) => state.palette;
 
-export const colors = createSelector(s, state => state.colors);
+export const activePaletteId = createSelector([s, p], (state, props) =>
+  props ? props.paletteId ?? state.activePalette : state.activePalette
+);
+export const palettes = createSelector(s, state => state.palettes);
+
+export const activePalette = createSelector(
+  [palettes, activePaletteId],
+  (palettes, id) => palettes[id] ?? {}
+);
+
+export const colors = createSelector(
+  activePalette,
+  palette => palette.colors ?? FillColors
+);
 
 export const color = createSelector(
   [colors, p],
   (colors, props) => colors[props.index]
 );
 
-export const numColors = createSelector([colors], colors => colors.length);
+export const numColors = createSelector(colors, colors => colors.length);
 
-export const angleIncrement = createSelector(
-  numColors,
-  num => (2 * Math.PI) / num
+export const angleIncrement = createSelector([numColors, p], (num, p) =>
+  p.index ? ((2 * Math.PI) / num) * p.index : (2 * Math.PI) / num
 );

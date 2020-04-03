@@ -13,7 +13,9 @@ import {
 
 export enum PaletteActionTypes {
   RESET_COLORS = "palette/RESET",
-  SET_COLOR = "palette/SET"
+  SET_COLOR = "palette/SET",
+  ADD_COLOR = "palette/ADD",
+  REMOVE_COLOR = "palette/REMOVE"
 }
 
 export enum AppActionTypes {

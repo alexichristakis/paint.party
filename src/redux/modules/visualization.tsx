@@ -43,6 +43,11 @@ export default (
       return { ...state, enabled: true };
     }
 
+    case ActionTypes.OPEN_CANVAS_SUCCESS: {
+      const { id, live, cells } = action.payload;
+      return { ...state, id, live, cells };
+    }
+
     case ActionTypes.SELECT_CELL: {
       const { cell } = action.payload;
 
@@ -104,8 +109,8 @@ export default (
 
 export const VisualizationActions = {
   enableCanvas: () => createAction(ActionTypes.ENABLE_CANVAS),
-  openSuccess: (cells: Cells | null, live: Positions | null) =>
-    createAction(ActionTypes.OPEN_CANVAS_SUCCESS, { cells, live }),
+  openSuccess: (id: string, cells: Cells | null, live: Positions | null) =>
+    createAction(ActionTypes.OPEN_CANVAS_SUCCESS, { id, cells, live }),
 
   selectCell: (cell: number) => createAction(ActionTypes.SELECT_CELL, { cell }),
   selectColor: (color: string) =>

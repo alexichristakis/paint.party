@@ -19,18 +19,7 @@ import { RootState } from "@redux/types";
 
 import Swatch from "./Swatch";
 
-const {
-  debug,
-  and,
-  divide,
-  defined,
-  set,
-  eq,
-  sub,
-  cond,
-  add,
-  multiply
-} = Animated;
+const { and, divide, defined, set, eq, sub, cond, add, multiply } = Animated;
 
 const config = {
   damping: 40,
@@ -50,8 +39,8 @@ export interface ColorWheelProps {
 
 export type ColorWheelConnectedProps = ConnectedProps<typeof connector>;
 
-const mapStateToProps = (state: RootState) => ({
-  numColors: selectors.numColors(state),
+const mapStateToProps = (state: RootState, props: ColorWheelProps) => ({
+  numColors: selectors.numColors(state, props),
   enabled: selectors.canvasEnabled(state)
 });
 const mapDispatchToProps = {};
@@ -115,19 +104,6 @@ const ColorWheel: React.FC<ColorWheelProps &
         ),
 
         set(angle, rotate)
-
-        // set(
-        //   angle,
-        //   withDecay({
-        //     velocity: cond(editingColor, 0, velocity),
-        //     value: cond(defined(diff), diff, 0),
-        //     state: cond(
-        //       and(editingColor, eq(panState, State.ACTIVE)),
-        //       State.END,
-        //       panState
-        //     ) as Animated.Value<State>
-        //   })
-        // )
       ],
       []
     );

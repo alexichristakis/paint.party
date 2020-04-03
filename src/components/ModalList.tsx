@@ -18,7 +18,7 @@ import {
   bin,
   clamp,
   onGestureEvent,
-  onScroll,
+  onScrollEvent,
   spring,
   useValues,
   withSpring
@@ -68,7 +68,7 @@ export interface ModalListProps {
   children: React.ReactNode;
   title?: string;
   style?: StyleProp<ViewStyle>;
-  offsetY?: Animated.Value<number>;
+  yOffset?: Animated.Value<number>;
   onSnap?: (index: number) => void;
   onClose?: () => void;
 }
@@ -91,7 +91,7 @@ export const ModalList = React.memo(
         style,
         showHeader = true,
         children,
-        offsetY = new Animated.Value(0),
+        yOffset = new Animated.Value(0),
         scrollRef,
         onSnap,
         onClose
@@ -125,6 +125,7 @@ export const ModalList = React.memo(
         if (onSnap) onSnap(0);
         goDown.setValue(1);
       };
+
       useImperativeHandle(ref, () => ({
         open,
         openFully,
@@ -192,7 +193,7 @@ export const ModalList = React.memo(
       useCode(
         () =>
           block([
-            set(offsetY, translateY),
+            set(yOffset, translateY),
             cond(
               eq(translateY, SNAP_OPEN),
               call([], () => setLastSnap(SNAP_OPEN))
@@ -282,8 +283,8 @@ export const ModalList = React.memo(
                     ref={scrollRef}
                     bounces={false}
                     scrollEventThrottle={16}
-                    onScrollBeginDrag={onScroll({ y: lastScrollY })}
-                    onScroll={onScroll({ y: scrollY })}
+                    onScrollBeginDrag={onScrollEvent({ y: lastScrollY })}
+                    onScroll={onScrollEvent({ y: scrollY })}
                     contentContainerStyle={[
                       { paddingTop: showHeader ? 40 : 10, paddingBottom: 110 },
                       style

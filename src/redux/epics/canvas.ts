@@ -82,13 +82,15 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
 
               if (!data) {
                 return subscriber.next(
-                  VisualizationActions.openSuccess(null, null)
+                  VisualizationActions.openSuccess(id, null, null)
                 );
               }
 
               const { live, ...cells } = data;
 
-              subscriber.next(VisualizationActions.openSuccess(cells, live));
+              subscriber.next(
+                VisualizationActions.openSuccess(id, cells, live)
+              );
             });
         });
 

@@ -70,10 +70,10 @@ export interface PopupProps {
   };
 }
 
-const mapStateToProps = (state: RootState) => ({
+const mapStateToProps = (state: RootState, props: PopupProps) => ({
   cell: selectors.selectedCellLatestUpdate(state),
-  angleIncrement: selectors.angleIncrement(state),
-  numColors: selectors.numColors(state)
+  angleIncrement: selectors.angleIncrement(state, props),
+  numColors: selectors.numColors(state, props)
 });
 
 const mapDispatchToProps = {

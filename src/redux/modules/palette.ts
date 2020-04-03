@@ -1,13 +1,36 @@
 import immer from "immer";
 import { createAction, ActionTypes, ActionUnion } from "../types";
-import { FillColors } from "@lib";
+import { OuterWheel, InnerWheel } from "@lib";
+
+export const DefaultPalettes: Palettes = {
+  default: {
+    id: "default",
+    name: "Default",
+    colors: OuterWheel
+  },
+  default2: {
+    id: "default2",
+    name: "Default 2",
+    colors: InnerWheel
+  }
+};
+
+export type Palette = {
+  id: string;
+  name: string;
+  colors: string[];
+};
+
+export type Palettes = { [id: string]: Palette };
 
 export type PaletteState = Readonly<{
-  colors: string[];
+  activePalette: string;
+  palettes: Palettes;
 }>;
 
 const initialState: PaletteState = {
-  colors: FillColors
+  activePalette: "default",
+  palettes: DefaultPalettes
 };
 
 export default (
@@ -20,10 +43,33 @@ export default (
     }
 
     case ActionTypes.SET_COLOR: {
-      const { index, color } = action.payload;
+      const { index, color, paletteId = state.activePalette } = action.payload;
 
       return immer(state, draft => {
-        draft.colors[index] = color;
+        draft.palettes[paletteId].colors[index] = color;
+
+        return draft;
+      });
+    }
+
+    case ActionTypes.ADD_COLOR: {
+      const { color, paletteId } = action.payload;
+
+      return immer(state, draft => {
+        draft.palettes[paletteId].colors.push(color);
+
+        return draft;
+      });
+    }
+
+    case ActionTypes.REMOVE_COLOR: {
+      const { index, paletteId } = action.payload;
+
+      return immer(state, draft => {
+        const { colors } = draft.palettes[paletteId];
+        draft.palettes[paletteId].colors = colors.splice(index, 1);
+
+        return draft;
       });
     }
 
@@ -34,6 +80,10 @@ export default (
 
 export const PaletteActions = {
   reset: () => createAction(ActionTypes.RESET_COLORS),
-  set: (color: string, index: number) =>
-    createAction(ActionTypes.SET_COLOR, { color, index })
+  set: (color: string, index: number, paletteId?: string) =>
+    createAction(ActionTypes.SET_COLOR, { color, index, paletteId }),
+  add: (color: string, paletteId: string) =>
+    createAction(ActionTypes.ADD_COLOR, { color, paletteId }),
+  remove: (index: number, paletteId: string) =>
+    createAction(ActionTypes.REMOVE_COLOR, { index, paletteId })
 };
