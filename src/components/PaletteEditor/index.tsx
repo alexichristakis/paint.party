@@ -2,20 +2,17 @@ import React, { useRef, useEffect, useState, useImperativeHandle } from "react";
 import { StyleSheet, View } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 
-import Animated from "react-native-reanimated";
 import { useValues } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
-import { ModalList, ModalListRef } from "../ModalList";
-import { Colors } from "@lib";
-
-import Send from "@assets/svg/send.svg";
-import { useReduxAction, useColorEditorState } from "@hooks";
-import { CanvasActions } from "@redux/modules";
+import { Colors, TextSizes } from "@lib";
+import { useColorEditorState } from "@hooks";
 import { RootState } from "@redux/types";
 
 import Palette from "./Palette";
 import ColorEditor, { ColorEditorContext } from "./ColorEditor";
+import { Input } from "../universal";
+import { ModalList, ModalListRef } from "../ModalList";
 
 export interface PaletteEditorProps {}
 
@@ -58,6 +55,15 @@ const PaletteEditor = React.memo(
           yOffset={yOffset}
           style={styles.container}
         >
+          <Input
+            maxLength={30}
+            autoCapitalize="none"
+            placeholder="new palette name"
+            size={TextSizes.title}
+            style={{ marginHorizontal: 10 }}
+            // value={name}
+            // onChangeText={setName}
+          />
           <ColorEditorContext.Provider value={initialColorEditorState}>
             {Object.values(palettes).map((palette, index) => (
               <React.Fragment key={index}>
@@ -78,7 +84,6 @@ const styles = StyleSheet.create({
     flex: 1
   },
   separator: {
-    marginVertical: 10,
     height: StyleSheet.hairlineWidth,
     backgroundColor: Colors.lightGray
   },

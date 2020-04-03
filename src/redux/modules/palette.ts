@@ -52,6 +52,15 @@ export default (
       return { ...initialState };
     }
 
+    case ActionTypes.ENABLE_PALETTE: {
+      const { paletteId } = action.payload;
+
+      return {
+        ...state,
+        activePalette: paletteId
+      };
+    }
+
     case ActionTypes.EDIT_COLOR: {
       const { index, paletteId } = action.payload;
 
@@ -109,6 +118,9 @@ export const PaletteActions = {
   reset: () => createAction(ActionTypes.RESET_COLORS),
 
   closeEditor: () => createAction(ActionTypes.CLOSE_EDITOR),
+
+  enablePalette: (paletteId: string) =>
+    createAction(ActionTypes.ENABLE_PALETTE, { paletteId }),
 
   edit: (index: number, paletteId: string) =>
     createAction(ActionTypes.EDIT_COLOR, { index, paletteId }),

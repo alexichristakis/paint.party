@@ -7,8 +7,16 @@ const p = (_: RootState, props: any) => props;
 const s = (state: RootState) => state.palette;
 
 export const activePaletteId = createSelector([s, p], (state, props) =>
-  props ? props.paletteId ?? state.activePalette : state.activePalette
+  props
+    ? (props.paletteId as string) ?? state.activePalette
+    : state.activePalette
 );
+
+export const isActivePalette = createSelector(
+  [s, p],
+  (state, props) => state.activePalette === props.palette.id
+);
+
 export const palettes = createSelector(s, state => state.palettes);
 
 export const activePalette = createSelector(
@@ -33,6 +41,8 @@ export const angleIncrement = createSelector([numColors, p], (num, p) =>
 );
 
 export const editing = createSelector(s, state => state.editing);
+
+export const editingActive = createSelector(editing, editing => editing.active);
 
 export const isEditing = createSelector([editing, p], (editing, props) => {
   const { active, index, paletteId } = editing;

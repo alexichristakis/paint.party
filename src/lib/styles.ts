@@ -6,6 +6,7 @@ export const Colors = {
   gray: "rgb(120,120,120)",
   mediumGray: "rgb(210,210,210)",
   lightGray: "rgb(230, 230, 230)",
+  lightGreen: "#DEFFD4",
   background: "rgb(242, 242, 242)",
   blue: "#007FFF",
   orange: "#FA6400",
@@ -38,34 +39,64 @@ export const FillColors = [
 ];
 
 export const Palette1 = [
-  Colors.red,
-  Colors.orange,
-  Colors.yellow,
-  Colors.green,
-  Colors.blue,
-  Colors.purple,
-  Colors.pink,
-  Colors.grayBlue,
-  Colors.white,
-  Colors.lightGray,
-  Colors.gray,
-  Colors.brown
+  "#2D1908",
+  "#E02020",
+  "#FA6400",
+  "#FFD60A",
+  "#49E020",
+  "#255517",
+  "#007FFF",
+  "#2F2DDE",
+  "#FF5495",
+  "#7C217D",
+  "#000000",
+  "#FFFFFF"
 ];
 
 export const Palette2 = [
-  Colors.red,
-  Colors.orange,
-  Colors.yellow,
-  Colors.green,
-  Colors.blue,
-  Colors.purple,
-  Colors.pink,
-  Colors.grayBlue,
-  Colors.white,
-  Colors.lightGray,
-  Colors.gray,
-  Colors.brown
+  "#7E5431",
+  "#E56464",
+  "#F68D47",
+  "#FAE26D",
+  "#AEF29B",
+  "#83C871",
+  "#FFFFFF",
+  "#D6EAFF",
+  "#6E95BD",
+  "#5B5AAA",
+  "#FF6AA3",
+  "#EC6CED"
 ];
+
+// export const Palette1 = [
+//   Colors.red,
+//   Colors.orange,
+//   Colors.yellow,
+//   Colors.green,
+//   Colors.blue,
+//   Colors.purple,
+//   Colors.pink,
+//   Colors.grayBlue,
+//   Colors.white,
+//   Colors.lightGray,
+//   Colors.gray,
+//   Colors.brown
+// ];
+
+// export const Palette2 = [
+//   Colors.red,
+//   Colors.orange,
+//   Colors.yellow,
+//   Colors.green,
+//   Colors.blue,
+//   Colors.purple,
+//   Colors.pink,
+//   Colors.grayBlue,
+//   Colors.white,
+//   Colors.lightGray,
+//   Colors.gray,
+//   Colors.brown
+// ];
 
 const baseText: TextStyle = {
   fontFamily: "Sofia Pro"

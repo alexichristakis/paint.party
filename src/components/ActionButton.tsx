@@ -1,27 +1,11 @@
-import React, { useImperativeHandle, useRef, useState } from "react";
-import {
-  StyleProp,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle
-} from "react-native";
-import {
-  NativeViewGestureHandler,
-  PanGestureHandler,
-  State,
-  TapGestureHandler
-} from "react-native-gesture-handler";
+import React from "react";
+import { StyleSheet } from "react-native";
+import { State, TapGestureHandler } from "react-native-gesture-handler";
 import Haptics from "react-native-haptic-feedback";
-import Animated, { Extrapolate, concat, Easing } from "react-native-reanimated";
+import Animated, { Easing } from "react-native-reanimated";
 import {
-  bin,
-  clamp,
   onGestureEvent,
-  spring,
   useValues,
-  withSpring,
   withSpringTransition,
   bInterpolate,
   withTransition
@@ -32,27 +16,7 @@ import Plus from "@assets/svg/plus.svg";
 import Grid from "@assets/svg/grid.svg";
 import Dots from "@assets/svg/dots.svg";
 
-const {
-  interpolate,
-  onChange,
-  or,
-  useCode,
-  cond,
-  and,
-  debug,
-  abs,
-  eq,
-  not,
-  call,
-  block,
-  set,
-  clockRunning,
-  sub,
-  Clock,
-  Value
-} = Animated;
-
-const { UNDETERMINED } = State;
+const { onChange, or, useCode, cond, eq, not, call, set } = Animated;
 
 const config = {
   damping: 50,
@@ -79,11 +43,6 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
     const handler = onGestureEvent({ state });
     const action1Handler = onGestureEvent({ state: action1State });
     const action2Handler = onGestureEvent({ state: action2State });
-
-    // const openTransition = useMemoOne(
-    //   () => withSpringTransition(open, config),
-    //   []
-    // );
 
     const [
       mainPressedTransition,
