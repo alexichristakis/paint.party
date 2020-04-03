@@ -18,7 +18,7 @@ import { connect, ConnectedProps } from "react-redux";
 import * as selectors from "@redux/selectors";
 import { coordinatesToIndex } from "@lib";
 import { RootState } from "@redux/types";
-import { CanvasActions } from "@redux/modules";
+import { CanvasActions, VisualizationActions } from "@redux/modules";
 
 import Grid from "./Grid";
 import CellHighlight from "./CellHighlight";
@@ -31,7 +31,7 @@ const mapStateToProps = (state: RootState) => ({
   backgroundColor: selectors.activeCanvasBackgroundColor(state)
 });
 const mapDispatchToProps = {
-  selectCell: CanvasActions.selectCell
+  selectCell: VisualizationActions.selectCell
 };
 
 export type VisualizationReduxProps = ConnectedProps<typeof connector>;

@@ -4,6 +4,7 @@ export const Colors = {
   transGray: "rgba(0, 0, 0, 0.7)",
   nearBlack: "rgb(10, 10, 10)",
   gray: "rgb(120,120,120)",
+  mediumGray: "rgb(210,210,210)",
   lightGray: "rgb(230, 230, 230)",
   background: "rgb(242, 242, 242)",
   blue: "#007FFF",
@@ -22,6 +23,36 @@ export const Colors = {
 };
 
 export const FillColors = [
+  Colors.red,
+  Colors.orange,
+  Colors.yellow,
+  Colors.green,
+  Colors.blue,
+  Colors.purple,
+  Colors.pink,
+  Colors.grayBlue,
+  Colors.white,
+  Colors.lightGray,
+  Colors.gray,
+  Colors.brown
+];
+
+export const Palette1 = [
+  Colors.red,
+  Colors.orange,
+  Colors.yellow,
+  Colors.green,
+  Colors.blue,
+  Colors.purple,
+  Colors.pink,
+  Colors.grayBlue,
+  Colors.white,
+  Colors.lightGray,
+  Colors.gray,
+  Colors.brown
+];
+
+export const Palette2 = [
   Colors.red,
   Colors.orange,
   Colors.yellow,

@@ -7,7 +7,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { useValues } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
-import { CanvasActions } from "@redux/modules";
+import { CanvasActions, VisualizationActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { Visualization, ColorPicker, LiveUsers } from "@components/Canvas";
 import { Countdown, LoadingOverlay } from "@components/universal";
@@ -16,7 +16,8 @@ import {
   SCREEN_WIDTH,
   Colors,
   SB_HEIGHT,
-  canvasUrl
+  canvasUrl,
+  OuterWheel
 } from "@lib";
 
 import X from "@assets/svg/X.svg";
@@ -31,8 +32,7 @@ const mapStateToProps = (state: RootState) => ({
   canvasActiveAt: selectors.canvasActiveAt(state)
 });
 const mapDispatchToProps = {
-  selectColor: CanvasActions.selectColor,
-  enable: CanvasActions.enableCanvas,
+  enable: VisualizationActions.enableCanvas,
   close: CanvasActions.close,
   open: CanvasActions.open
 };
@@ -45,7 +45,6 @@ export interface CanvasProps {
 
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
-  selectColor,
   loadingCanvas,
   canvasActiveAt,
   canvas,
@@ -72,11 +71,6 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     pickerVisible.setValue(0);
   };
 
-  const handleOnChooseColor = useCallback((color: string) => {
-    pickerVisible.setValue(0);
-    selectColor(color);
-  }, []);
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -95,7 +89,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
         pickerVisible={pickerVisible}
         positionsVisible={positionsVisible}
       />
-      <ColorPicker visible={pickerVisible} onChoose={handleOnChooseColor} />
+      <ColorPicker visible={pickerVisible} />
       <LoadingOverlay loading={loadingCanvas} />
     </View>
   );

@@ -1,12 +1,7 @@
-import {
-  createSelector,
-  // createSelectorCreator,
-  defaultMemoize
-} from "reselect";
+import { createSelector } from "reselect";
 import values from "lodash/values";
 import sortBy from "lodash/sortBy";
 import omit from "lodash/omit";
-import isEqual from "lodash/isEqual";
 
 import { RootState } from "../types";
 import { uid } from "./app";
@@ -39,45 +34,9 @@ export const canvasActiveAt = createSelector(
   entity => entity.nextDrawAt ?? 0
 );
 
-export const canvas = createSelector(s, state => state.canvas);
-
-export const canvasEnabled = createSelector(canvas, state => state.enabled);
-
-export const selectedCell = createSelector(canvas, state => state.selectedCell);
-
-export const selectedColor = createSelector(
-  canvas,
-  state => state.selectedColor
-);
-
-export const cellColor = createSelector(
-  [canvas, (_: RootState, i: number) => i],
-  (canvas, index) => {
-    const cells = canvas.cells ?? {};
-    const updates = values(cells[index]) ?? [];
-
-    if (updates.length) {
-      const sorted = sortBy(updates, o => o.time);
-
-      return sorted[updates.length - 1].color;
-    }
-  }
-);
-
-export const live = createSelector(canvas, canvas => canvas.live);
-
 export const isCreatingCanvas = createSelector(
   s,
   state => state.creatingCanvas
-);
-
-export const livePositions = createSelector([live, uid], (live, uid) =>
-  Object.values(omit(live ?? {}, uid ?? ""))
-);
-
-export const numLiveUsers = createSelector(
-  livePositions,
-  positions => positions.length
 );
 
 export const isLoadingCanvas = createSelector(s, state => state.loadingCanvas);

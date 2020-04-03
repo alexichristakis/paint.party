@@ -1,27 +1,18 @@
-import { combineEpics } from "redux-observable";
 import { combineReducers } from "redux";
 
-import AppReducer, {
-  Actions as AppActions,
-  ActionTypes as AppActionTypes
-} from "./app";
-
-import CanvasReducer, {
-  Actions as CanvasActions,
-  ActionTypes as CanvasActionTypes
-} from "./canvas";
-
-import { RootState, ActionsUnion } from "../types";
+import AppReducer from "./app";
+import CanvasReducer from "./canvas";
+import PaletteReducer from "./palette";
+import VisualizationReducer from "./visualization";
 
 export const rootReducer = combineReducers({
   app: AppReducer,
-  canvas: CanvasReducer
+  canvas: CanvasReducer,
+  palette: PaletteReducer,
+  visualization: VisualizationReducer
 });
 
-//
-
-export type Actions = ActionsUnion<typeof AppActions & typeof CanvasActions>;
-
-export const ActionTypes = { ...AppActionTypes, ...CanvasActionTypes };
-export type ActionTypes = AppActionTypes & CanvasActionTypes;
-export { AppActions, CanvasActions };
+export * from "./app";
+export * from "./canvas";
+export * from "./palette";
+export * from "./visualization";
