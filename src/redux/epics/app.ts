@@ -20,8 +20,13 @@ import { AppState, Linking } from "react-native";
 
 import * as selectors from "@redux/selectors";
 
-import { Actions, ActionTypes, AppActions, CanvasActions } from "../modules";
-import { RootState, ExtractActionFromActionCreator } from "../types";
+import { AppActions, CanvasActions } from "../modules";
+import {
+  RootState,
+  ActionTypes,
+  ActionUnion as Actions,
+  ExtractActionFromActionCreator
+} from "../types";
 
 const appStateEpic: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(

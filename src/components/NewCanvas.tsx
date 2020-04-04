@@ -19,7 +19,6 @@ import {
   bin,
   clamp,
   onGestureEvent,
-  onScroll,
   spring,
   useValues,
   withSpring,
@@ -28,14 +27,6 @@ import {
 } from "react-native-redash";
 
 import Plus from "@assets/svg/plus.svg";
-import CloseIcon from "@assets/svg/close.svg";
-import {
-  Colors,
-  SB_HEIGHT,
-  TextStyles,
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH
-} from "@lib";
 import { CreateCanvasRef, CreateCanvas } from "./CreateCanvas";
 import { useMemoOne } from "use-memo-one";
 

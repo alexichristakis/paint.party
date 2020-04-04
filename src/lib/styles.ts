@@ -37,6 +37,36 @@ export const FillColors = [
   Colors.brown
 ];
 
+export const Palette1 = [
+  Colors.red,
+  Colors.orange,
+  Colors.yellow,
+  Colors.green,
+  Colors.blue,
+  Colors.purple,
+  Colors.pink,
+  Colors.grayBlue,
+  Colors.white,
+  Colors.lightGray,
+  Colors.gray,
+  Colors.brown
+];
+
+export const Palette2 = [
+  Colors.red,
+  Colors.orange,
+  Colors.yellow,
+  Colors.green,
+  Colors.blue,
+  Colors.purple,
+  Colors.pink,
+  Colors.grayBlue,
+  Colors.white,
+  Colors.lightGray,
+  Colors.gray,
+  Colors.brown
+];
+
 const baseText: TextStyle = {
   fontFamily: "Sofia Pro"
 };

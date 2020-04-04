@@ -18,9 +18,13 @@ import database, {
 import firestore from "@react-native-firebase/firestore";
 
 import * as selectors from "../selectors";
-import { Actions, ActionTypes, CanvasActions } from "../modules";
-import { Canvas, CanvasViz, initialCanvasViz } from "../modules/canvas";
-import { RootState } from "../types";
+import {
+  CanvasActions,
+  VisualizationActions,
+  VisualizationState
+} from "../modules";
+import { Canvas } from "../modules/canvas";
+import { RootState, ActionUnion as Actions, ActionTypes } from "../types";
 import { Notifications } from "react-native-notifications";
 import { DRAW_INTERVAL, canvasUrl } from "@lib";
 
@@ -40,7 +44,9 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
           "child_added",
           (change: FirebaseDatabaseTypes.DataSnapshot) => {
             if (loaded) {
-              subscriber.next(CanvasActions.update(+change.key!, change.val()));
+              subscriber.next(
+                VisualizationActions.update(+change.key!, change.val())
+              );
             }
           }
           //   error => console.log("ERROR", error)
@@ -53,12 +59,12 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
               const id = change.key;
               if (id === "live") {
                 return subscriber.next(
-                  CanvasActions.setLivePositions(change.val())
+                  VisualizationActions.setLivePositions(change.val())
                 );
               }
 
               return subscriber.next(
-                CanvasActions.update(+change.key!, change.val())
+                VisualizationActions.update(+change.key!, change.val())
               );
             }
           }
@@ -67,27 +73,23 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
 
         ref.once("value").then(val => {
           const data = val.val();
-
-          let loadedCanvasPayload: CanvasViz = {
-            ...initialCanvasViz,
-            id
-          };
-
-          if (data) {
-            const { live, ...rest } = data;
-            loadedCanvasPayload = {
-              ...loadedCanvasPayload,
-              live,
-              cells: rest
-            };
-          }
-
           ref
             .child(`live/${uid}`)
             .set(-1)
             .then(() => {
               loaded = true;
-              subscriber.next(CanvasActions.openSuccess(loadedCanvasPayload));
+
+              if (!data) {
+                return subscriber.next(
+                  VisualizationActions.openSuccess(id, null, null)
+                );
+              }
+
+              const { live, ...cells } = data;
+
+              subscriber.next(
+                VisualizationActions.openSuccess(id, cells, live)
+              );
             });
         });
 
@@ -102,18 +104,19 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
         takeUntil(action$.pipe(filter(isOfType(ActionTypes.CLOSE_CANVAS))))
       );
     }),
-    catchError(error => Promise.resolve(CanvasActions.updateFailure(error)))
+    catchError(error =>
+      Promise.resolve(VisualizationActions.updateFailure(error))
+    )
   );
 
 const drawOnCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
-    filter(isOfType(ActionTypes.SELECT_COLOR)),
-    switchMap(async ({ payload }) => {
-      const { color } = payload;
-
+    filter(isOfType(ActionTypes.DRAW)),
+    switchMap(async () => {
       const uid = selectors.uid(state$.value);
       const activeCanvas = selectors.activeCanvas(state$.value);
       const cellId = selectors.selectedCell(state$.value);
+      const color = selectors.selectedColor(state$.value);
 
       await database()
         .ref(activeCanvas)
@@ -134,7 +137,7 @@ const drawOnCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
         link: canvasUrl(activeCanvas)
       });
 
-      return CanvasActions.drawSuccess(nextDrawAt.unix());
+      return VisualizationActions.drawSuccess(activeCanvas, nextDrawAt.unix());
     })
   );
 
@@ -216,7 +219,7 @@ const closeCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
     filter(isOfType(ActionTypes.CLOSE_CANVAS)),
     tap(async () => {
       const uid = selectors.uid(state$.value);
-      const { id } = selectors.canvas(state$.value);
+      const id = selectors.canvasVizId(state$.value);
 
       await database()
         .ref(id)
