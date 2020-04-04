@@ -73,7 +73,6 @@ const openCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
 
         ref.once("value").then(val => {
           const data = val.val();
-
           ref
             .child(`live/${uid}`)
             .set(-1)

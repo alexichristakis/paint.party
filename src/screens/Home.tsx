@@ -17,6 +17,13 @@ import ActionButton from "@components/ActionButton";
 import { Canvases } from "@components/Canvases";
 
 import { StackParamList } from "../App";
+<<<<<<< HEAD
+=======
+import { SB_HEIGHT, TextStyles } from "@lib";
+import { useValues, onScrollEvent } from "react-native-redash";
+import { NewCanvas } from "@components/NewCanvas";
+import PaletteEditor from "@components/PaletteEditor";
+>>>>>>> master
 
 const connector = connect(
   (state: RootState) => ({
@@ -72,12 +79,17 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
           canvases={values(canvases)}
         />
       </Animated.ScrollView>
+<<<<<<< HEAD
       <ActionButton
         onPressAction1={openCanvasCreator}
         onPressAction2={openPaletteEditor}
       />
       <CreateCanvas ref={createCanvasRef} />
       <PaletteEditor ref={paletteEditorRef} />
+=======
+      <NewCanvas />
+      <PaletteEditor />
+>>>>>>> master
     </>
   );
 };

@@ -29,7 +29,6 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = {};
 
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
-
 const PaletteEditor = React.memo(
   React.forwardRef<PaletteEditorRef, Props>(({ palettes }, ref) => {
     const modalRef = useRef<ModalListRef>(null);
