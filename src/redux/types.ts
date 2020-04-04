@@ -17,7 +17,8 @@ export enum PaletteActionTypes {
   CLOSE_EDITOR = "palette/CLOSE_EDITOR",
   SET_COLOR = "palette/SET",
   ADD_COLOR = "palette/ADD",
-  REMOVE_COLOR = "palette/REMOVE"
+  REMOVE_COLOR = "palette/REMOVE",
+  ENABLE_PALETTE = "palette/ENABLE"
 }
 
 export enum AppActionTypes {

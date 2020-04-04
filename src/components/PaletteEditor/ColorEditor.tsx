@@ -17,7 +17,8 @@ import {
   COLOR_BORDER_WIDTH,
   Colors,
   SCREEN_HEIGHT,
-  colorHSV
+  colorHSV,
+  SPRING_CONFIG
 } from "@lib";
 import {
   useValues,
@@ -33,6 +34,8 @@ import tinycolor from "tinycolor2";
 import { useMemoOne } from "use-memo-one";
 
 import { Slider } from "@components/universal";
+import Check from "@assets/svg/check_line.svg";
+import Undo from "@assets/svg/undo.svg";
 
 const {
   onChange,
@@ -79,7 +82,7 @@ export type ColorEditorConnectedProps = ConnectedProps<typeof connector>;
 export interface ColorEditorProps extends ColorEditorState {}
 
 const mapStateToProps = (state: RootState) => ({
-  editing: selectors.editing(state)
+  active: selectors.editingActive(state)
 });
 
 const mapDispatchToProps = {
@@ -93,15 +96,13 @@ const LEFT = (SCREEN_WIDTH - EDITOR_SIZE) / 2;
 const TOP = (SCREEN_HEIGHT - EDITOR_SIZE) / 2;
 const INDICATOR_MIN = INDICATOR_SIZE / 2;
 const INDICATOR_MAX = EDITOR_SIZE - INDICATOR_SIZE + 5;
-const TRANSITION_DURATION = 200;
+const TRANSITION_DURATION = 300;
 
 const ColorEditor: React.FC<ColorEditorProps &
   ColorEditorConnectedProps> = React.memo(
-  ({ id, color, setColor, closeEditor, editing, layout }) => {
+  ({ id, color, setColor, closeEditor, active, layout }) => {
     const indicatorPanRef = useRef<PanGestureHandler>(null);
     const tapRef = useRef<TapGestureHandler>(null);
-
-    const { active } = editing;
 
     const [_, setRenderKey] = useState(0);
     const [tapState, undoState, confirmState, indicatorPanState] = useValues(
@@ -134,29 +135,28 @@ const ColorEditor: React.FC<ColorEditorProps &
     const undoHandler = onGestureEvent({ state: undoState });
     const confirmHandler = onGestureEvent({ state: confirmState });
 
-    const [transition, pressInTransition] = useMemoOne(
+    const [
+      transition,
+      pressInTransition,
+      undoPressIn,
+      confirmPressIn
+    ] = useMemoOne(
       () => [
         withTransition(and(neq(id, -1), bin(active)), {
           duration: TRANSITION_DURATION,
           easing: Easing.inOut(Easing.ease)
         }),
-        withSpringTransition(eq(tapState, State.BEGAN))
+        withSpringTransition(eq(tapState, State.BEGAN)),
+        withSpringTransition(eq(undoState, State.BEGAN)),
+        withSpringTransition(eq(confirmState, State.BEGAN))
       ],
       [active]
     );
 
     const [controlTransition] = useMemoOne(
-      () => [withSpringTransition(eq(transition, 1))],
+      () => [withSpringTransition(eq(transition, 1), SPRING_CONFIG)],
       [active]
     );
-
-    const left = bInterpolate(transition, layout.x, LEFT);
-    const top = bInterpolate(transition, layout.y, TOP);
-    const width = bInterpolate(transition, layout.width, EDITOR_SIZE);
-    const height = bInterpolate(transition, layout.height, EDITOR_SIZE);
-    const borderRadius = bInterpolate(transition, divide(layout.height, 2), 30);
-    const backgroundOpacity = bInterpolate(transition, 0, 0.7);
-    const scale = bInterpolate(pressInTransition, 1, 0.95);
 
     const indicatorLeft = clamp(indicatorPosX, INDICATOR_MIN, INDICATOR_MAX);
     const indicatorTop = clamp(indicatorPosY, INDICATOR_MIN, INDICATOR_MAX);
@@ -221,14 +221,18 @@ const ColorEditor: React.FC<ColorEditorProps &
 
     const animatedEditorStyle = {
       opacity: bin(active),
-      transform: [{ scale }],
-      top,
-      left,
-      height,
-      width,
-      borderRadius,
+      transform: [{ scale: bInterpolate(pressInTransition, 1, 0.95) }],
+      top: bInterpolate(transition, layout.y, TOP),
+      left: bInterpolate(transition, layout.x, LEFT),
+      height: bInterpolate(transition, layout.height, EDITOR_SIZE),
+      width: bInterpolate(transition, layout.width, EDITOR_SIZE),
+      borderRadius: bInterpolate(transition, divide(layout.height, 2), 30),
       backgroundColor
     };
+
+    const scale = (transition: Animated.Node<number>) => ({
+      scale: bInterpolate(transition, 1, 0.8)
+    });
 
     return (
       <View style={styles.container} pointerEvents={active ? "auto" : "none"}>
@@ -238,7 +242,10 @@ const ColorEditor: React.FC<ColorEditorProps &
           {...tapHandler}
         >
           <Animated.View
-            style={{ ...styles.background, opacity: backgroundOpacity }}
+            style={{
+              ...styles.background,
+              opacity: bInterpolate(transition, 0, 0.7)
+            }}
           />
         </TapGestureHandler>
         <Animated.View
@@ -249,11 +256,15 @@ const ColorEditor: React.FC<ColorEditorProps &
           }}
         >
           <TapGestureHandler {...undoHandler}>
-            <Animated.View style={styles.button}></Animated.View>
+            <Animated.View style={{ transform: [scale(undoPressIn)] }}>
+              <Undo width={40} height={40} />
+            </Animated.View>
           </TapGestureHandler>
 
           <TapGestureHandler {...confirmHandler}>
-            <Animated.View style={styles.button}></Animated.View>
+            <Animated.View style={{ transform: [scale(confirmPressIn)] }}>
+              <Check width={40} height={40} />
+            </Animated.View>
           </TapGestureHandler>
         </Animated.View>
 
@@ -291,7 +302,7 @@ const ColorEditor: React.FC<ColorEditorProps &
       </View>
     );
   },
-  (p, n) => p.editing.active === n.editing.active
+  (p, n) => p.active === n.active
 );
 
 const styles = StyleSheet.create({
@@ -323,11 +334,6 @@ const styles = StyleSheet.create({
     width: EDITOR_SIZE,
     top: TOP + EDITOR_SIZE,
     flexDirection: "row"
-  },
-  button: {
-    width: 50,
-    height: 50,
-    backgroundColor: Colors.lightblue
   },
   indicator: {
     width: INDICATOR_SIZE,

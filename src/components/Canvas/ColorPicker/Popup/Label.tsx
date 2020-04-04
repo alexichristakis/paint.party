@@ -53,7 +53,8 @@ const styles = StyleSheet.create({
     left: 0
   },
   animated: {
-    marginLeft: POPUP_SIZE + 5,
+    marginLeft: POPUP_SIZE + 10,
+    minHeight: POPUP_SIZE + 6,
     paddingRight: 15,
     backgroundColor: Colors.mediumGray,
     borderBottomRightRadius: 20,

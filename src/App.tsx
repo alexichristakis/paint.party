@@ -59,6 +59,8 @@ const App: React.FC = () => {
   const store = createStore();
   const persistor = persistStore(store);
 
+  // persistor.purge();
+
   useNotificationEvents();
 
   return (
