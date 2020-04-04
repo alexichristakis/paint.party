@@ -3,7 +3,13 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import Animated from "react-native-reanimated";
 import { PanGestureHandler, State } from "react-native-gesture-handler";
 import { useMemoOne } from "use-memo-one";
-import { onGestureEvent, useValues, withDecay } from "react-native-redash";
+import {
+  onGestureEvent,
+  useValues,
+  withDecay,
+  useTransition,
+  bInterpolateColor
+} from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
 
@@ -66,11 +72,18 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = ({
     enable(paletteId);
   };
 
+  const activeTransition = useTransition(active);
+  const backgroundColor = bInterpolateColor(
+    activeTransition,
+    Colors.white,
+    Colors.lightGreen
+  );
+
   return (
     <TouchableHighlight
       enabled={!active}
       waitFor={panRef}
-      style={{ backgroundColor: active ? Colors.lightGreen : "transparent" }}
+      style={{ backgroundColor }}
       onPress={enablePalette}
     >
       <PanGestureHandler {...panHandler}>
