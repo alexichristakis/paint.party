@@ -12,7 +12,7 @@ const persistConfig = {
   key: "root",
   storage: AsyncStorage,
   migrate: createMigrate(migrations as any, { debug: __DEV__ }),
-  version: 0
+  version: 1
 };
 
 export default () => {
