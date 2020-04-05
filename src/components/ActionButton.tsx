@@ -7,8 +7,8 @@ import {
   onGestureEvent,
   useValues,
   withSpringTransition,
-  bInterpolate,
-  withTransition
+  mix,
+  withTransition,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 
@@ -24,7 +24,7 @@ const config = {
   stiffness: 500,
   overshootClamping: false,
   restSpeedThreshold: 0.1,
-  restDisplacementThreshold: 0.1
+  restDisplacementThreshold: 0.1,
 };
 
 export interface ActionButtonProps {
@@ -48,7 +48,7 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
       mainPressedTransition,
       activeTransition,
       action1PressedTransition,
-      action2PressedTransition
+      action2PressedTransition,
     ] = useMemoOne(
       () => [
         withSpringTransition(
@@ -57,7 +57,7 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
         ),
         withTransition(active, { easing: Easing.elastic(1), duration: 400 }),
         withTransition(eq(action1State, State.BEGAN)),
-        withTransition(eq(action2State, State.BEGAN))
+        withTransition(eq(action2State, State.BEGAN)),
       ],
       []
     );
@@ -70,7 +70,7 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
             set(active, not(active)),
             call([], () => {
               Haptics.trigger("impactLight");
-            })
+            }),
           ])
         ),
         onChange(
@@ -92,16 +92,16 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
               onPressAction2();
             })
           )
-        )
+        ),
       ],
       []
     );
 
     const scale = (transition: Animated.Node<number>) => ({
-      scale: bInterpolate(transition, 1, 0.8)
+      scale: mix(transition, 1, 0.8),
     });
 
-    const translate = bInterpolate(activeTransition, 0, -90);
+    const translate = mix(activeTransition, 0, -90);
     return (
       <Animated.View style={styles.buttonContainer}>
         <TapGestureHandler {...action1Handler}>
@@ -111,9 +111,9 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
               {
                 transform: [
                   { translateY: translate },
-                  scale(action1PressedTransition)
-                ]
-              }
+                  scale(action1PressedTransition),
+                ],
+              },
             ]}
           >
             <Grid width={50} height={50} />
@@ -127,9 +127,9 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
               {
                 transform: [
                   { translateX: translate },
-                  scale(action2PressedTransition)
-                ]
-              }
+                  scale(action2PressedTransition),
+                ],
+              },
             ]}
           >
             <Dots width={50} height={50} />
@@ -141,8 +141,8 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
             style={{
               transform: [
                 scale(mainPressedTransition),
-                { rotate: bInterpolate(activeTransition, 0, Math.PI / 4) }
-              ]
+                { rotate: mix(activeTransition, 0, Math.PI / 4) },
+              ],
             }}
           >
             <Plus width={75} height={75} />
@@ -155,15 +155,15 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
 
 const styles = StyleSheet.create({
   button: {
-    position: "absolute"
+    position: "absolute",
   },
   buttonContainer: {
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
     right: 20,
-    bottom: 40
-  }
+    bottom: 40,
+  },
 });
 
 export default ActionButton;

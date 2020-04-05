@@ -24,7 +24,7 @@ export type PaletteEditorRef = {
 export type PaletteEditorConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState) => ({
-  palettes: selectors.palettes(state)
+  palettes: selectors.palettes(state),
 });
 const mapDispatchToProps = {};
 
@@ -43,7 +43,7 @@ const PaletteEditor = React.memo(
       },
       close: () => {
         modalRef.current?.close();
-      }
+      },
     }));
 
     return (
@@ -80,21 +80,21 @@ const PaletteEditor = React.memo(
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.lightGray
+    backgroundColor: Colors.lightGray,
   },
   sendButton: {
     position: "absolute",
     top: 10,
     right: 10,
-    alignSelf: "center"
-  }
+    alignSelf: "center",
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps, null, {
-  forwardRef: true
+  forwardRef: true,
 });
 export default connector(PaletteEditor);

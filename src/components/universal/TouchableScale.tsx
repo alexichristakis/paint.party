@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { BaseButton } from "react-native-gesture-handler";
 import Animated, { Easing } from "react-native-reanimated";
-import { bInterpolate, useValues } from "react-native-redash";
+import { mix, useValues } from "react-native-redash";
 
 import { TapHandler } from "./TapHandler";
 
@@ -18,10 +18,10 @@ export const TouchableScale: React.FC<TouchableScaleProps> = ({
   dependencies = [],
   style,
   toScale = 0.95,
-  onPress
+  onPress,
 }) => {
   const [value] = useValues([0], []);
-  const scale = bInterpolate(value, 1, toScale);
+  const scale = mix(value, 1, toScale);
 
   const handleOnPress = () => (onPress ? onPress() : null);
 

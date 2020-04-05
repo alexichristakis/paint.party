@@ -1,4 +1,5 @@
 import { createSelector } from "reselect";
+import isUndefined from "lodash/isUndefined";
 
 import { RootState } from "../types";
 import { FillColors } from "@lib";
@@ -37,7 +38,7 @@ export const color = createSelector(
 export const numColors = createSelector(colors, colors => colors.length);
 
 export const angleIncrement = createSelector([numColors, p], (num, p) =>
-  p.index ? ((2 * Math.PI) / num) * p.index : (2 * Math.PI) / num
+  !isUndefined(p.index) ? ((2 * Math.PI) / num) * p.index : (2 * Math.PI) / num
 );
 
 export const editing = createSelector(s, state => state.editing);

@@ -29,6 +29,7 @@ const config = {
 };
 
 export interface ColorPickerProps {
+  onPressEdit: () => void;
   visible: Animated.Value<0 | 1>;
 }
 
@@ -38,7 +39,7 @@ const mapStateToProps = (_: RootState) => ({});
 const mapDispatchToProps = {};
 
 const ColorPicker: React.FC<ColorPickerProps &
-  ColorPickerConnectedProps> = React.memo(({ visible }) => {
+  ColorPickerConnectedProps> = React.memo(({ visible, onPressEdit }) => {
   const [tapState, popupDragState] = useValues<State>(
     [State.UNDETERMINED, State.UNDETERMINED],
     []
@@ -64,9 +65,11 @@ const ColorPicker: React.FC<ColorPickerProps &
         state={tapState}
         visible={visible}
         openTransition={openTransition}
+        onPress={onPressEdit}
       />
       <ColorWheel
         angle={rotation}
+        isDragging={eq(popupDragState, State.ACTIVE)}
         {...{ activeIndex, openTransition, closeTransition }}
       />
       <Popup

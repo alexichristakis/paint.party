@@ -5,10 +5,10 @@ import { State, TapGestureHandler } from "react-native-gesture-handler";
 import {
   useValues,
   onGestureEvent,
-  bInterpolate,
+  mix,
   withTransition,
   useSpringTransition,
-  bin
+  bin,
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
@@ -17,8 +17,8 @@ import isNull from "lodash/isNull";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
-import { CanvasActions, VisualizationActions } from "@redux/modules";
-import CloseIcon from "@assets/svg/close.svg";
+import { VisualizationActions } from "@redux/modules";
+import EditIcon from "@assets/svg/edit.svg";
 import CheckIcon from "@assets/svg/check.svg";
 
 const { set, or, eq, cond, call } = Animated;
@@ -29,10 +29,11 @@ const config = {
   stiffness: 300,
   overshootClamping: false,
   restSpeedThreshold: 0.1,
-  restDisplacementThreshold: 0.1
+  restDisplacementThreshold: 0.1,
 };
 
 export interface ButtonProps {
+  onPress: () => void;
   state: Animated.Value<State>;
   visible: Animated.Value<0 | 1>;
   openTransition: Animated.Node<number>;
@@ -41,14 +42,14 @@ export interface ButtonProps {
 export type ButtonConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState) => ({
-  isColorSelected: !isNull(selectors.selectedColor(state))
+  isColorSelected: !isNull(selectors.selectedColor(state)),
 });
 const mapDispatchToProps = {
-  draw: VisualizationActions.draw
+  draw: VisualizationActions.draw,
 };
 
 const Button: React.FC<ButtonProps & ButtonConnectedProps> = React.memo(
-  ({ state, visible, openTransition, isColorSelected, draw }) => {
+  ({ state, onPress, visible, openTransition, isColorSelected, draw }) => {
     const [isColorSelectedValue] = useValues<State>([bin(isColorSelected)], []);
 
     useEffect(() => {
@@ -59,7 +60,7 @@ const Button: React.FC<ButtonProps & ButtonConnectedProps> = React.memo(
       () =>
         withTransition(or(eq(state, State.ACTIVE), eq(state, State.BEGAN)), {
           duration: 200,
-          easing: Easing.inOut(Easing.ease)
+          easing: Easing.inOut(Easing.ease),
         }),
       []
     );
@@ -72,19 +73,20 @@ const Button: React.FC<ButtonProps & ButtonConnectedProps> = React.memo(
           state,
           cond(eq(state, State.END), [
             call([], () => Haptics.trigger("impactLight")),
-            set(visible, 0),
             cond(
               isColorSelectedValue,
               [
                 //
-                call([], () => draw())
+                set(visible, 0),
+                call([], () => draw()),
               ],
               [
                 //
+                call([], () => onPress()),
               ]
-            )
+            ),
           ])
-        )
+        ),
       ],
       []
     );
@@ -99,26 +101,24 @@ const Button: React.FC<ButtonProps & ButtonConnectedProps> = React.memo(
           style={{
             ...styles.button,
             transform: [
-              { scale: bInterpolate(pressInTransition, 1, 0.9) },
-              { translateY: bInterpolate(openTransition, 100, -10) }
-            ]
+              { scale: mix(pressInTransition, 1, 0.9) },
+              { translateY: mix(openTransition, 100, -10) },
+            ],
           }}
         >
           <Animated.View
             style={{
               position: "absolute",
-              transform: [
-                { scale: bInterpolate(colorSelectedTransition, 1, 0.5) }
-              ]
+              transform: [{ scale: mix(colorSelectedTransition, 1, 0.5) }],
             }}
           >
-            <CloseIcon width={70} height={70} />
+            <EditIcon width={70} height={70} />
           </Animated.View>
           <Animated.View
             style={{
               position: "absolute",
               opacity: colorSelectedTransition,
-              transform: [{ scale: colorSelectedTransition }]
+              transform: [{ scale: colorSelectedTransition }],
             }}
           >
             <CheckIcon width={70} height={70} />
@@ -135,8 +135,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
-    bottom: 60
-  }
+    bottom: 60,
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

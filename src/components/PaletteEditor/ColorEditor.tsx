@@ -9,7 +9,7 @@ import { PaletteActions } from "@redux/modules";
 import {
   TapGestureHandler,
   PanGestureHandler,
-  State
+  State,
 } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
 import {
@@ -18,17 +18,17 @@ import {
   Colors,
   SCREEN_HEIGHT,
   colorHSV,
-  SPRING_CONFIG
+  SPRING_CONFIG,
 } from "@lib";
 import {
   useValues,
   bin,
   onGestureEvent,
   withSpringTransition,
-  bInterpolate,
+  mix,
   withTransition,
   clamp,
-  useSpringTransition
+  useSpringTransition,
 } from "react-native-redash";
 import tinycolor from "tinycolor2";
 import { useMemoOne } from "use-memo-one";
@@ -55,7 +55,7 @@ const {
   add,
   sub,
   divide,
-  modulo
+  modulo,
 } = Animated;
 
 export type ColorEditorState = {
@@ -82,12 +82,12 @@ export type ColorEditorConnectedProps = ConnectedProps<typeof connector>;
 export interface ColorEditorProps extends ColorEditorState {}
 
 const mapStateToProps = (state: RootState) => ({
-  active: selectors.editingActive(state)
+  active: selectors.editingActive(state),
 });
 
 const mapDispatchToProps = {
   closeEditor: PaletteActions.closeEditor,
-  setColor: PaletteActions.set
+  setColor: PaletteActions.set,
 };
 
 const EDITOR_SIZE = SCREEN_WIDTH - 50;
@@ -98,8 +98,9 @@ const INDICATOR_MIN = INDICATOR_SIZE / 2;
 const INDICATOR_MAX = EDITOR_SIZE - INDICATOR_SIZE + 5;
 const TRANSITION_DURATION = 300;
 
-const ColorEditor: React.FC<ColorEditorProps &
-  ColorEditorConnectedProps> = React.memo(
+const ColorEditor: React.FC<
+  ColorEditorProps & ColorEditorConnectedProps
+> = React.memo(
   ({ id, color, setColor, closeEditor, active, layout }) => {
     const indicatorPanRef = useRef<PanGestureHandler>(null);
     const tapRef = useRef<TapGestureHandler>(null);
@@ -110,7 +111,7 @@ const ColorEditor: React.FC<ColorEditorProps &
         State.UNDETERMINED,
         State.UNDETERMINED,
         State.UNDETERMINED,
-        State.UNDETERMINED
+        State.UNDETERMINED,
       ],
       []
     );
@@ -120,7 +121,7 @@ const ColorEditor: React.FC<ColorEditorProps &
       indicatorDragY,
       indicatorPosX,
       indicatorPosY,
-      hue
+      hue,
     ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0, 0], []);
 
     const indicatorPanHandler = onGestureEvent({
@@ -128,7 +129,7 @@ const ColorEditor: React.FC<ColorEditorProps &
       translationX: indicatorDragX,
       translationY: indicatorDragY,
       x: indicatorPosX,
-      y: indicatorPosY
+      y: indicatorPosY,
     });
 
     const tapHandler = onGestureEvent({ state: tapState });
@@ -139,16 +140,16 @@ const ColorEditor: React.FC<ColorEditorProps &
       transition,
       pressInTransition,
       undoPressIn,
-      confirmPressIn
+      confirmPressIn,
     ] = useMemoOne(
       () => [
         withTransition(and(neq(id, -1), bin(active)), {
           duration: TRANSITION_DURATION,
-          easing: Easing.inOut(Easing.ease)
+          easing: Easing.inOut(Easing.ease),
         }),
         withSpringTransition(eq(tapState, State.BEGAN)),
-        withSpringTransition(eq(undoState, State.BEGAN)),
-        withSpringTransition(eq(confirmState, State.BEGAN))
+        withTransition(eq(undoState, State.BEGAN)),
+        withTransition(eq(confirmState, State.BEGAN)),
       ],
       [active]
     );
@@ -175,9 +176,9 @@ const ColorEditor: React.FC<ColorEditorProps &
 
     const resetPositions = [
       set(hue, color.h),
-      set(indicatorPosX, bInterpolate(color.s, INDICATOR_MIN, INDICATOR_MAX)),
-      set(indicatorPosY, bInterpolate(color.v, INDICATOR_MIN, INDICATOR_MAX)),
-      call([], () => setRenderKey(prevState => prevState + 1))
+      set(indicatorPosX, mix(color.s, INDICATOR_MIN, INDICATOR_MAX)),
+      set(indicatorPosY, mix(color.v, INDICATOR_MIN, INDICATOR_MAX)),
+      call([], () => setRenderKey((prevState) => prevState + 1)),
     ];
 
     useCode(
@@ -192,10 +193,10 @@ const ColorEditor: React.FC<ColorEditorProps &
 
                 setColor(newColor);
               }),
-              set(id, -1)
-            ]
+              set(id, -1),
+            ],
           ])
-        )
+        ),
       ],
       []
     );
@@ -204,7 +205,7 @@ const ColorEditor: React.FC<ColorEditorProps &
       () => [
         onChange(tapState, cond(eq(tapState, State.END), set(id, -1))),
         onChange(id, cond(neq(id, -1), resetPositions)),
-        onChange(undoState, cond(eq(undoState, State.END), resetPositions))
+        onChange(undoState, cond(eq(undoState, State.END), resetPositions)),
       ],
       []
     );
@@ -214,24 +215,24 @@ const ColorEditor: React.FC<ColorEditorProps &
         cond(
           and(eq(id, -1), not(transition), bin(active)),
           call([], closeEditor)
-        )
+        ),
       ],
       [active]
     );
 
     const animatedEditorStyle = {
       opacity: bin(active),
-      transform: [{ scale: bInterpolate(pressInTransition, 1, 0.95) }],
-      top: bInterpolate(transition, layout.y, TOP),
-      left: bInterpolate(transition, layout.x, LEFT),
-      height: bInterpolate(transition, layout.height, EDITOR_SIZE),
-      width: bInterpolate(transition, layout.width, EDITOR_SIZE),
-      borderRadius: bInterpolate(transition, divide(layout.height, 2), 30),
-      backgroundColor
+      transform: [{ scale: mix(pressInTransition, 1, 0.95) }],
+      top: mix(transition, layout.y, TOP),
+      left: mix(transition, layout.x, LEFT),
+      height: mix(transition, layout.height, EDITOR_SIZE),
+      width: mix(transition, layout.width, EDITOR_SIZE),
+      borderRadius: mix(transition, divide(layout.height, 2), 30),
+      backgroundColor,
     };
 
     const scale = (transition: Animated.Node<number>) => ({
-      scale: bInterpolate(transition, 1, 0.8)
+      scale: mix(transition, 1, 0.8),
     });
 
     return (
@@ -244,15 +245,15 @@ const ColorEditor: React.FC<ColorEditorProps &
           <Animated.View
             style={{
               ...styles.background,
-              opacity: bInterpolate(transition, 0, 0.7)
+              opacity: mix(transition, 0, 0.7),
             }}
           />
         </TapGestureHandler>
         <Animated.View
           style={{
             ...styles.buttonContainer,
-            marginTop: bInterpolate(controlTransition, -70, 70),
-            opacity: controlTransition
+            marginTop: mix(controlTransition, -70, 70),
+            opacity: controlTransition,
           }}
         >
           <TapGestureHandler {...undoHandler}>
@@ -271,8 +272,8 @@ const ColorEditor: React.FC<ColorEditorProps &
         <Animated.View
           style={{
             ...styles.sliderContainer,
-            marginTop: bInterpolate(controlTransition, -10, 10),
-            opacity: controlTransition
+            marginTop: mix(controlTransition, -10, 10),
+            opacity: controlTransition,
           }}
         >
           <Slider
@@ -293,8 +294,8 @@ const ColorEditor: React.FC<ColorEditorProps &
                 left: indicatorLeft,
                 transform: [
                   { translateX: -INDICATOR_SIZE / 2 },
-                  { translateY: -INDICATOR_SIZE / 2 }
-                ]
+                  { translateY: -INDICATOR_SIZE / 2 },
+                ],
               }}
             />
           </Animated.View>
@@ -309,16 +310,16 @@ const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   background: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.gray
+    backgroundColor: Colors.gray,
   },
   editor: {
     overflow: "hidden",
     position: "absolute",
-    borderWidth: COLOR_BORDER_WIDTH
+    borderWidth: COLOR_BORDER_WIDTH,
   },
   sliderContainer: {
     position: "absolute",
@@ -326,22 +327,22 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 15,
     borderRadius: 17,
-    backgroundColor: Colors.mediumGray
+    backgroundColor: Colors.mediumGray,
   },
   buttonContainer: {
     position: "absolute",
     justifyContent: "space-around",
     width: EDITOR_SIZE,
     top: TOP + EDITOR_SIZE,
-    flexDirection: "row"
+    flexDirection: "row",
   },
   indicator: {
     width: INDICATOR_SIZE,
     height: INDICATOR_SIZE,
     borderRadius: INDICATOR_SIZE / 2,
     borderColor: Colors.white,
-    borderWidth: 4
-  }
+    borderWidth: 4,
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

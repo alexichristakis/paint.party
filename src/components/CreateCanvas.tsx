@@ -3,17 +3,13 @@ import {
   TextInput,
   StyleSheet,
   ActivityIndicator,
-  Keyboard
+  Keyboard,
 } from "react-native";
 import { useSelector } from "react-redux";
 
 import moment from "moment";
 import Animated from "react-native-reanimated";
-import {
-  useValues,
-  useSpringTransition,
-  bInterpolate
-} from "react-native-redash";
+import { useValues, useSpringTransition, mix } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
 import { NewCanvas } from "@redux/modules/canvas";
@@ -54,7 +50,7 @@ const CreateCanvas = React.memo(
       close: () => {
         modalRef.current?.close();
         setTimeout(() => textInputRef.current?.blur(), 100);
-      }
+      },
     }));
 
     const handleOnSnap = (index: number) => {
@@ -118,11 +114,11 @@ const CreateCanvas = React.memo(
                 {
                   transform: [
                     {
-                      scale: bInterpolate(createCanvasButtonTransition, 1, 0)
-                    }
+                      scale: mix(createCanvasButtonTransition, 1, 0),
+                    },
                   ],
-                  opacity: bInterpolate(createCanvasButtonTransition, 1, 0)
-                }
+                  opacity: mix(createCanvasButtonTransition, 1, 0),
+                },
               ]}
             >
               <ActivityIndicator
@@ -139,7 +135,7 @@ const CreateCanvas = React.memo(
               <Animated.View
                 style={{
                   transform: [{ scale: createCanvasButtonTransition }],
-                  opacity: createCanvasButtonTransition
+                  opacity: createCanvasButtonTransition,
                 }}
               >
                 <Send height={50} width={50} />
@@ -157,14 +153,14 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     color: Colors.gray,
     marginBottom: 20,
-    ...TextStyles.small
+    ...TextStyles.small,
   },
   sendButton: {
     position: "absolute",
     top: 10,
     right: 10,
-    alignSelf: "center"
-  }
+    alignSelf: "center",
+  },
 });
 
 export default CreateCanvas;

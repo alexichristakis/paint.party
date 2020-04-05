@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import Animated from "react-native-reanimated";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
-import { bInterpolate, useTransition } from "react-native-redash";
+import { mix, useTransition } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 
 import { FillColors } from "@lib";
@@ -24,7 +24,7 @@ const Color: React.FC<ColorProps> = ({ color, selected, onChoose }) => {
 
   const handleOnChoose = useCallback(() => onChoose(color), []);
 
-  const borderWidth = useMemoOne(() => bInterpolate(transition, 0, 4), []);
+  const borderWidth = useMemoOne(() => mix(transition, 0, 4), []);
 
   return (
     <TouchableScale onPress={handleOnChoose}>
@@ -33,8 +33,8 @@ const Color: React.FC<ColorProps> = ({ color, selected, onChoose }) => {
           styles.color,
           {
             borderWidth,
-            backgroundColor: color
-          }
+            backgroundColor: color,
+          },
         ]}
       />
     </TouchableScale>
@@ -51,7 +51,7 @@ export const BackgroundColorPicker: React.FC<BackgruondColorPickerProps> = React
             {...{
               selected: selected === color,
               color,
-              onChoose: () => onChoose(color)
+              onChoose: () => onChoose(color),
             }}
           />
         ))}
@@ -66,11 +66,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
-    bottom: 0
+    bottom: 0,
   },
   color: {
     height: 60,
     width: 60,
-    margin: 2
-  }
+    margin: 2,
+  },
 });

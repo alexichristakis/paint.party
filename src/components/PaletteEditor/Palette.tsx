@@ -8,7 +8,7 @@ import {
   useValues,
   withDecay,
   useTransition,
-  bInterpolateColor
+  bInterpolateColor,
 } from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
@@ -20,6 +20,7 @@ import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN } from "@lib";
 import { TouchableHighlight } from "@components/universal";
 
 import Color from "./Color";
+import { ColorEditorState } from "./ColorEditor";
 
 const { modulo } = Animated;
 
@@ -31,16 +32,16 @@ export type PaletteConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState, props: PaletteProps) => ({
   palettes: selectors.palettes(state),
-  active: selectors.isActivePalette(state, props)
+  active: selectors.isActivePalette(state, props),
 });
 const mapDispatchToProps = {
-  enable: PaletteActions.enablePalette
+  enable: PaletteActions.enablePalette,
 };
 
 const Palette: React.FC<PaletteProps & PaletteConnectedProps> = ({
   enable,
   palette,
-  active
+  active,
 }) => {
   const { id: paletteId, name, colors } = palette;
 
@@ -51,7 +52,7 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = ({
   const panHandler = onGestureEvent({
     state: panState,
     translationX,
-    velocityX
+    velocityX,
   });
 
   const translateX = useMemoOne(
@@ -60,7 +61,7 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = ({
         withDecay({
           value: translationX,
           state: panState,
-          velocity: velocityX
+          velocity: velocityX,
         }),
         -colors.length * (COLOR_SIZE + COLOR_MARGIN)
       ),
@@ -108,19 +109,19 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = ({
 const styles = StyleSheet.create({
   container: {
     paddingTop: 10,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   name: {
     ...TextStyles.medium,
     paddingHorizontal: 10,
     marginBottom: 10,
-    textTransform: "uppercase"
+    textTransform: "uppercase",
   },
   colorContainer: {
     marginTop: 10,
     height: COLOR_SIZE,
-    flexDirection: "row"
-  }
+    flexDirection: "row",
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

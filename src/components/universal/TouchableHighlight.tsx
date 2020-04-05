@@ -4,15 +4,15 @@ import Animated, { useCode, onChange } from "react-native-reanimated";
 import {
   TapGestureHandler,
   LongPressGestureHandler,
-  State
+  State,
 } from "react-native-gesture-handler";
 import {
   useValues,
   onGestureEvent,
   bInterpolateColor,
-  bInterpolate,
+  mix,
   bin,
-  withTransition
+  withTransition,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 
@@ -35,7 +35,7 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
   onPress,
   onLongPress,
   style,
-  children
+  children,
 }) => {
   const { onLayout, height } = useOnLayout();
 
@@ -52,7 +52,7 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
   const [longPressHandler, tapHandler] = useMemoOne(
     () => [
       onGestureEvent({ state: longPressState }),
-      onGestureEvent({ state: tapState, x, y })
+      onGestureEvent({ state: tapState, x, y }),
     ],
     []
   );
@@ -66,7 +66,7 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
           eq(longPressState, State.ACTIVE),
           call([], onLongPress ? onLongPress : onPress)
         )
-      )
+      ),
     ],
     []
   );
@@ -89,11 +89,11 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
     Colors.grayBlue
   );
 
-  const fillBorderRadius = bInterpolate(onPressIn, height, 0);
-  const fillWidth = bInterpolate(onPressIn, 0, SCREEN_WIDTH);
-  const fillHeight = bInterpolate(onPressIn, 0, height);
-  const fillTop = bInterpolate(onPressIn, y, 0);
-  const fillLeft = bInterpolate(onPressIn, x, 0);
+  const fillBorderRadius = mix(onPressIn, height, 0);
+  const fillWidth = mix(onPressIn, 0, SCREEN_WIDTH);
+  const fillHeight = mix(onPressIn, 0, height);
+  const fillTop = mix(onPressIn, y, 0);
+  const fillLeft = mix(onPressIn, x, 0);
 
   return (
     <TapGestureHandler
@@ -113,8 +113,8 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
               top: fillTop,
               left: fillLeft,
               width: fillWidth,
-              height: fillHeight
-            }
+              height: fillHeight,
+            },
           ]}
         />
         <LongPressGestureHandler
@@ -131,23 +131,23 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 10
+    paddingBottom: 10,
   },
   row: {
     alignItems: "center",
     justifyContent: "space-between",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   fill: {
-    position: "absolute"
+    position: "absolute",
   },
   title: {
-    ...TextStyles.title
+    ...TextStyles.title,
   },
   subtitle: {
     ...TextStyles.medium,
     marginTop: 5,
 
-    color: Colors.gray
-  }
+    color: Colors.gray,
+  },
 });

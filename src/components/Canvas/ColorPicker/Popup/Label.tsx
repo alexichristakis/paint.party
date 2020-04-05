@@ -1,6 +1,6 @@
 import React from "react";
 import Animated from "react-native-reanimated";
-import { bInterpolate } from "react-native-redash";
+import { mix } from "react-native-redash";
 import { StyleSheet, View, Text } from "react-native";
 import { ConnectedProps, connect } from "react-redux";
 import moment from "moment";
@@ -17,19 +17,19 @@ export interface LabelProps {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  cell: selectors.selectedCellLatestUpdate(state)
+  cell: selectors.selectedCellLatestUpdate(state),
 });
 
 const mapDispatchToProps = {};
 
 const Label: React.FC<LabelProps & LabelConnectedProps> = ({
   activeTransition,
-  cell
+  cell,
 }) => {
   const { time, color } = cell;
   const { width, onLayout } = useOnLayout();
 
-  const translateX = bInterpolate(activeTransition, 0, -width - 5);
+  const translateX = mix(activeTransition, 0, -width);
   return (
     <View pointerEvents={"none"} style={styles.container}>
       <Animated.View
@@ -50,21 +50,21 @@ const styles = StyleSheet.create({
   container: {
     position: "absolute",
     overflow: "hidden",
-    left: 0
+    borderRadius: 25,
+    left: 0,
   },
   animated: {
-    marginLeft: POPUP_SIZE + 10,
-    minHeight: POPUP_SIZE + 6,
+    borderRadius: 25,
+    paddingLeft: POPUP_SIZE + 10,
+    minHeight: POPUP_SIZE + 10,
     paddingRight: 15,
     backgroundColor: Colors.mediumGray,
-    borderBottomRightRadius: 20,
-    borderTopRightRadius: 20,
-    justifyContent: "center"
+    justifyContent: "center",
   },
   text: {
     ...TextStyles.medium,
-    textAlign: "left"
-  }
+    textAlign: "left",
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

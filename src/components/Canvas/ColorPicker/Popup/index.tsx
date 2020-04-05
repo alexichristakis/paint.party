@@ -4,11 +4,11 @@ import { State, PanGestureHandler } from "react-native-gesture-handler";
 import {
   onGestureEvent,
   withSpringTransition,
-  bInterpolate,
+  mix,
   useValues,
   withSpring,
   withTransition,
-  canvas2Polar
+  canvas2Polar,
 } from "react-native-redash";
 import { StyleSheet } from "react-native";
 import { ConnectedProps, connect } from "react-redux";
@@ -23,9 +23,7 @@ import {
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
   COLOR_WHEEL_RADIUS,
-  Colors,
   POPUP_SIZE,
-  POPUP_BORDER_RADIUS
 } from "@lib";
 import { PaletteActions } from "@redux/modules";
 
@@ -33,6 +31,7 @@ import Label from "./Label";
 
 const {
   onChange,
+  neq,
   greaterOrEq,
   add,
   round,
@@ -45,7 +44,7 @@ const {
   and,
   lessOrEq,
   greaterThan,
-  call
+  call,
 } = Animated;
 
 const config = {
@@ -54,7 +53,7 @@ const config = {
   stiffness: 300,
   overshootClamping: false,
   restSpeedThreshold: 0.1,
-  restDisplacementThreshold: 0.1
+  restDisplacementThreshold: 0.1,
 };
 
 export type PopupConnectedProps = ConnectedProps<typeof connector>;
@@ -73,11 +72,11 @@ export interface PopupProps {
 const mapStateToProps = (state: RootState, props: PopupProps) => ({
   cell: selectors.selectedCellLatestUpdate(state),
   angleIncrement: selectors.angleIncrement(state, props),
-  numColors: selectors.numColors(state, props)
+  numColors: selectors.numColors(state, props),
 });
 
 const mapDispatchToProps = {
-  setColor: PaletteActions.set
+  setColor: PaletteActions.set,
 };
 
 const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
@@ -89,7 +88,7 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
   angleIncrement,
   numColors,
   cell,
-  state
+  state,
 }) => {
   const [dragX, dragY, velocityX, velocityY] = useValues<number>(
     [0, 0, 0, 0],
@@ -103,7 +102,7 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
     translationY: dragY,
     velocityX,
     velocityY,
-    state
+    state,
   });
 
   const active = eq(state, State.ACTIVE);
@@ -117,15 +116,15 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
         velocity: velocityX,
         state,
         snapPoints: [0],
-        config
+        config,
       }),
       withSpring({
         value: dragY,
         velocity: velocityY,
         state,
         snapPoints: [0],
-        config
-      })
+        config,
+      }),
     ],
     []
   );
@@ -148,17 +147,24 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
             }),
             set(activeIndex, -1),
             set(position.x, 0),
-            set(position.y, 0)
+            set(position.y, 0),
           ],
           [set(position.x, 0), set(position.y, 0)]
         )
-      )
+      ),
     ],
     [cell.color]
   );
 
   useCode(
     () => [
+      onChange(
+        activeIndex,
+        cond(
+          neq(activeIndex, -1),
+          call([], () => Haptics.trigger("impactLight"))
+        )
+      ),
       cond(
         and(
           lessOrEq(radius, COLOR_WHEEL_RADIUS + COLOR_SIZE),
@@ -180,32 +186,38 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
               )
             )
           ),
-          call([], () => Haptics.trigger("impactLight"))
         ],
         [set(activeIndex, -1)]
-      )
+      ),
     ],
     [angleIncrement, numColors]
   );
 
-  const scale = bInterpolate(activeSpringTransition, 1, 1.8);
-  const borderWidth = bInterpolate(activeTransition, 0, COLOR_BORDER_WIDTH);
+  const width = mix(activeSpringTransition, POPUP_SIZE, COLOR_SIZE);
+  const height = mix(activeSpringTransition, POPUP_SIZE, COLOR_SIZE);
+  const borderRadius = divide(height, 2);
+  const borderWidth = mix(activeTransition, 0, COLOR_BORDER_WIDTH);
+  const translate = mix(activeTransition, 0, -(COLOR_SIZE - POPUP_SIZE) / 2);
   return (
     <PanGestureHandler {...handler}>
       <Animated.View
         style={{
           ...styles.container,
           opacity: openTransition,
-          transform: [{ translateX }, { translateY }]
+          transform: [{ translateX }, { translateY }],
         }}
       >
         <Label {...{ activeTransition }} />
         <Animated.View
           style={{
-            ...styles.color,
+            position: "absolute",
+            left: 5,
+            borderRadius,
             borderWidth,
+            width,
+            height,
             backgroundColor: cell.color,
-            transform: [{ scale }]
+            transform: [{ translateX: translate }],
           }}
         />
       </Animated.View>
@@ -218,18 +230,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: Colors.mediumGray,
-    borderTopLeftRadius: 20,
-    borderBottomLeftRadius: 20,
-    paddingRight: 10,
-    padding: 3,
-    left: 5
+    left: 5,
   },
-  color: {
-    borderRadius: POPUP_BORDER_RADIUS,
-    height: POPUP_SIZE,
-    width: POPUP_SIZE
-  }
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

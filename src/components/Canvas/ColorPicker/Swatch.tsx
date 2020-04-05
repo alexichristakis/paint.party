@@ -3,22 +3,22 @@ import Animated, {
   Easing,
   useCode,
   interpolate,
-  Extrapolate
+  Extrapolate,
 } from "react-native-reanimated";
 import { StyleSheet, Text } from "react-native";
 import tinycolor from "tinycolor2";
 import {
   State,
   TapGestureHandler,
-  LongPressGestureHandler
+  LongPressGestureHandler,
 } from "react-native-gesture-handler";
 import {
   useValues,
   onGestureEvent,
-  bInterpolate,
+  mix,
   withSpringTransition,
   withTransition,
-  timing
+  timing,
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
@@ -31,13 +31,13 @@ import {
   SCREEN_HEIGHT,
   COLOR_WHEEL_RADIUS,
   COLOR_BORDER_WIDTH,
-  COLOR_SIZE
+  COLOR_SIZE,
 } from "@lib";
 import { RootState } from "@redux/types";
 import {
   PaletteActions,
   CanvasActions,
-  VisualizationActions
+  VisualizationActions,
 } from "@redux/modules";
 
 const { color, onChange, set, or, eq, sub, cond, add, call } = Animated;
@@ -58,12 +58,12 @@ export type SwatchConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState, props: SwatchProps) => ({
   fill: selectors.color(state, props),
-  rotate: selectors.angleIncrement(state, props)
+  rotate: selectors.angleIncrement(state, { index: props.index }),
 });
 
 const mapDispatchToProps = {
   setColor: PaletteActions.set,
-  selectColor: VisualizationActions.selectColor
+  selectColor: VisualizationActions.selectColor,
 };
 
 const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
@@ -80,7 +80,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
     fill,
     panRef,
     openTransition,
-    selectColor
+    selectColor,
   }) => {
     const tapRef = useRef<TapGestureHandler>(null);
     const longPressRef = useRef<LongPressGestureHandler>(null);
@@ -109,10 +109,10 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
           ),
           {
             duration: 200,
-            easing: Easing.inOut(Easing.ease)
+            easing: Easing.inOut(Easing.ease),
           }
         ),
-        withSpringTransition(or(editing, active))
+        withSpringTransition(or(editing, active)),
       ],
       []
     );
@@ -135,7 +135,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
             [
               set(editing, 1),
               set(editingColor, 1),
-              call([], () => Haptics.trigger("impactMedium"))
+              call([], () => Haptics.trigger("impactMedium")),
             ],
             cond(eq(longPressState, State.END), [
               call([interpolatedColor], ([color]) => {
@@ -149,10 +149,10 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
               set(editingColor, 0),
               set(x, 0),
               set(y, 0),
-              set(editing, 0)
+              set(editing, 0),
             ])
           )
-        )
+        ),
       ],
       [fill]
     );
@@ -160,7 +160,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
     const [longPressHandler, tapHandler] = useMemoOne(
       () => [
         onGestureEvent({ state: longPressState }),
-        onGestureEvent({ state: tapState })
+        onGestureEvent({ state: tapState }),
       ],
       []
     );
@@ -173,19 +173,19 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
             inputRange: [
               sub(s, SCREEN_WIDTH / 2, x0),
               s,
-              add(s, sub(SCREEN_WIDTH / 2, x0))
+              add(s, sub(SCREEN_WIDTH / 2, x0)),
             ],
             outputRange: [0.1, s, 1],
-            extrapolate: Extrapolate.CLAMP
+            extrapolate: Extrapolate.CLAMP,
           }),
           interpolate(add(v, y), {
             inputRange: [
               sub(v, SCREEN_HEIGHT, sub(absoluteY, y)),
               v,
-              add(v, sub(absoluteY, y))
+              add(v, sub(absoluteY, y)),
             ],
             outputRange: [0.1, v, 1],
-            extrapolate: Extrapolate.CLAMP
+            extrapolate: Extrapolate.CLAMP,
           })
         ),
       [fill]
@@ -193,18 +193,14 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
 
     const backgroundColor = cond(editing, interpolatedColor, color(r, g, b));
 
-    const borderRadius = bInterpolate(
-      activeTransition,
-      COLOR_SIZE / 2,
-      COLOR_SIZE / 4
-    );
+    const borderRadius = mix(activeTransition, COLOR_SIZE / 2, COLOR_SIZE / 4);
     const colorTransform = [
-      { scale: bInterpolate(activeTransition, 1, 1.3) },
-      { scale: bInterpolate(editingTransition, 1, 1.45) }
+      { scale: mix(activeTransition, 1, 1.3) },
+      { scale: mix(editingTransition, 1, 1.45) },
     ];
     const colorContainerTransform = [
       { rotate },
-      { translateX: bInterpolate(openTransition, 0, COLOR_WHEEL_RADIUS) }
+      { translateX: mix(openTransition, 0, COLOR_WHEEL_RADIUS) },
     ];
 
     return (
@@ -218,7 +214,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
         <Animated.View
           style={{
             ...styles.container,
-            transform: colorContainerTransform
+            transform: colorContainerTransform,
           }}
         >
           <LongPressGestureHandler
@@ -230,7 +226,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
                 ...styles.color,
                 backgroundColor,
                 borderRadius,
-                transform: colorTransform
+                transform: colorTransform,
               }}
             />
           </LongPressGestureHandler>
@@ -244,14 +240,14 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   color: {
     position: "absolute",
     borderWidth: COLOR_BORDER_WIDTH,
     height: COLOR_SIZE,
-    width: COLOR_SIZE
-  }
+    width: COLOR_SIZE,
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

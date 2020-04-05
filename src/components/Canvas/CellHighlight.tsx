@@ -8,9 +8,9 @@ import {
   loop,
   useValues,
   useClocks,
-  bInterpolate,
+  mix,
   useTransition,
-  bInterpolateColor
+  bInterpolateColor,
 } from "react-native-redash";
 import { connect, ConnectedProps } from "react-redux";
 import isNull from "lodash/isNull";
@@ -27,7 +27,7 @@ const config = {
   stiffness: 300,
   overshootClamping: false,
   restSpeedThreshold: 0.1,
-  restDisplacementThreshold: 0.1
+  restDisplacementThreshold: 0.1,
 };
 
 export type CellHighlightConnectedProps = ConnectedProps<typeof connector>;
@@ -40,8 +40,9 @@ export interface CellHighlightProps {
 
 const BORDER_WIDTH = 3;
 
-export const CellHighlight: React.FC<CellHighlightProps &
-  CellHighlightConnectedProps> = React.memo(
+export const CellHighlight: React.FC<
+  CellHighlightProps & CellHighlightConnectedProps
+> = React.memo(
   ({ borderColor = Colors.nearBlack, color, cell, visible }) => {
     const [top, left] = useValues<number>([0, 0], []);
     const [clock] = useClocks(1, []);
@@ -49,8 +50,18 @@ export const CellHighlight: React.FC<CellHighlightProps &
     const { x, y } = coordinatesFromIndex(cell);
     useCode(
       () => [
-        set(top, spring({ to: y - BORDER_WIDTH, from: top, config })),
-        set(left, spring({ to: x - BORDER_WIDTH, from: left, config }))
+        set(
+          top,
+          spring({ to: y - BORDER_WIDTH, from: top, config }) as Animated.Node<
+            number
+          >
+        ),
+        set(
+          left,
+          spring({ to: x - BORDER_WIDTH, from: left, config }) as Animated.Node<
+            number
+          >
+        ),
       ],
       [cell]
     );
@@ -62,9 +73,9 @@ export const CellHighlight: React.FC<CellHighlightProps &
           duration: 550,
           easing: Easing.inOut(Easing.ease),
           boomerang: true,
-          autoStart: true
+          autoStart: true,
         }),
-        withTimingTransition(visible)
+        withTimingTransition(visible),
       ],
       []
     );
@@ -76,7 +87,7 @@ export const CellHighlight: React.FC<CellHighlightProps &
       color as string
     );
 
-    const scale = bInterpolate(loopValue, 0.9, 1.1);
+    const scale = mix(loopValue, 0.9, 1.1);
     if (cell > -1)
       return (
         <Animated.View
@@ -88,8 +99,8 @@ export const CellHighlight: React.FC<CellHighlightProps &
               top,
               left,
               backgroundColor,
-              transform: [{ scale }]
-            }
+              transform: [{ scale }],
+            },
           ]}
         />
       );
@@ -105,14 +116,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: CELL_SIZE + 2 * BORDER_WIDTH,
     height: CELL_SIZE + 2 * BORDER_WIDTH,
-    borderWidth: BORDER_WIDTH
-  }
+    borderWidth: BORDER_WIDTH,
+  },
 });
 
 // default export inject user's selected cell
 const mapStateToProps = (state: RootState) => ({
   cell: selectors.selectedCell(state),
-  color: selectors.selectedColor(state)
+  color: selectors.selectedColor(state),
 });
 
 const connector = connect(mapStateToProps, {});

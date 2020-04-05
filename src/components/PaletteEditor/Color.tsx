@@ -4,19 +4,11 @@ import Animated, {
   useCode,
   interpolate,
   onChange,
-  multiply
 } from "react-native-reanimated";
 import { connect, ConnectedProps } from "react-redux";
 import { TapGestureHandler, State } from "react-native-gesture-handler";
-import {
-  useValues,
-  onGestureEvent,
-  withSpringTransition,
-  bInterpolate,
-  bin
-} from "react-native-redash";
+import { useValues, onGestureEvent, bin } from "react-native-redash";
 import tinycolor from "tinycolor2";
-import { useMemoOne } from "use-memo-one";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
@@ -27,7 +19,7 @@ import {
   SCREEN_WIDTH,
   COLOR_BORDER_WIDTH,
   COLOR_MARGIN,
-  SPRING_CONFIG
+  SPRING_CONFIG,
 } from "@lib";
 
 import { ColorEditorContext } from "./ColorEditor";
@@ -46,12 +38,12 @@ export interface ColorProps {
 
 const mapStateToProps = (state: RootState, props: ColorProps) => ({
   palettes: selectors.palettes(state),
-  isEditing: selectors.isEditing(state, props)
+  isEditing: selectors.isEditing(state, props),
 });
 
 const mapDispatchToProps = {
   edit: PaletteActions.edit,
-  set: PaletteActions.set
+  set: PaletteActions.set,
 };
 
 const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
@@ -62,7 +54,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
     isEditing,
     edit,
     xOffset,
-    color: backgroundColor
+    color: backgroundColor,
   }) => {
     const ref = useRef<Animated.View>(null);
     const [state] = useValues([State.UNDETERMINED], []);
@@ -71,38 +63,25 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
 
     const [h, s, v] = useValues<number>([hsv.h, hsv.s, hsv.v], []);
 
-    const colorEditorState = useContext(ColorEditorContext);
-
     const handler = onGestureEvent({ state });
 
     const colorId = hash(paletteId, index);
 
-    const activeTransition = useMemoOne(
-      () => withSpringTransition(eq(state, State.BEGAN), SPRING_CONFIG),
-      []
-    );
-
-    const scale = bInterpolate(activeTransition, 1, 1.5);
-    const zIndex = bInterpolate(activeTransition, 0, 100);
+    const colorEditorState = useContext(ColorEditorContext);
 
     useCode(() => [set(h, hsv.h), set(s, hsv.s), set(v, hsv.v)], [
-      backgroundColor
+      backgroundColor,
     ]);
 
     useCode(
       () => [
         cond(eq(colorEditorState.id, colorId), [
-          set(
-            colorEditorState.layout.x,
-            sub(translateX, multiply(sub(scale, 1), COLOR_SIZE / 2))
-          ),
-          set(colorEditorState.layout.width, multiply(scale, COLOR_SIZE)),
-          set(colorEditorState.layout.height, multiply(scale, COLOR_SIZE)),
+          set(colorEditorState.layout.x, translateX),
           cond(
             not(bin(isEditing)),
             call([], () => edit(index, paletteId))
-          )
-        ])
+          ),
+        ]),
       ],
       [isEditing]
     );
@@ -113,21 +92,25 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
           state,
           cond(eq(state, State.END), [
             call([h, s, v], ([h, s, v]) => {
-              ref.current?.getNode().measure((_, __, width, ___, ____, y) => {
-                const { id, layout, color } = colorEditorState;
+              ref.current
+                ?.getNode()
+                .measure((_, __, width, height, ____, y) => {
+                  const { id, layout, color } = colorEditorState;
 
-                // set values
-                id.setValue(colorId);
+                  // set values
+                  id.setValue(colorId);
 
-                color.h.setValue(h);
-                color.s.setValue(s);
-                color.v.setValue(v);
+                  color.h.setValue(h);
+                  color.s.setValue(s);
+                  color.v.setValue(v);
 
-                layout.y.setValue(y + (width - COLOR_SIZE) / 2);
-              });
-            })
+                  layout.y.setValue(y + (width - COLOR_SIZE) / 2);
+                  layout.height.setValue(height);
+                  layout.width.setValue(width);
+                });
+            }),
           ])
-        )
+        ),
       ],
       []
     );
@@ -142,7 +125,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
             MIN,
             MIN + SCREEN_WIDTH - DIST_FROM_FRONT,
             MIN + SCREEN_WIDTH - DIST_FROM_FRONT,
-            0
+            0,
           ]
         : [MIN, -DIST_FROM_FRONT - WIDTH, -DIST_FROM_FRONT - WIDTH, 0];
 
@@ -153,13 +136,13 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
             DIST_FROM_FRONT,
             SCREEN_WIDTH + DIST_FROM_FRONT,
             -WIDTH,
-            DIST_FROM_FRONT
+            DIST_FROM_FRONT,
           ];
 
     const translateX = add(
       interpolate(xOffset, {
         inputRange,
-        outputRange
+        outputRange,
       }),
       COLOR_MARGIN
     );
@@ -168,9 +151,8 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
       <Animated.View
         style={{
           ...styles.container,
-          zIndex,
           opacity: not(bin(isEditing)),
-          transform: [{ translateX }]
+          transform: [{ translateX }],
         }}
       >
         <TapGestureHandler maxDist={50} {...handler}>
@@ -179,7 +161,6 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
             style={{
               ...styles.color,
               backgroundColor,
-              transform: [{ scale }]
             }}
           />
         </TapGestureHandler>
@@ -195,14 +176,14 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    left: 0
+    left: 0,
   },
   color: {
     borderWidth: COLOR_BORDER_WIDTH,
     width: COLOR_SIZE,
     height: COLOR_SIZE,
-    borderRadius: COLOR_SIZE / 2
-  }
+    borderRadius: COLOR_SIZE / 2,
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

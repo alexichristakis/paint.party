@@ -2,7 +2,7 @@ import React from "react";
 import Animated, { useCode } from "react-native-reanimated";
 import { ConnectedProps, connect } from "react-redux";
 import { StyleSheet } from "react-native";
-import { bInterpolate, withTransition } from "react-native-redash";
+import { mix, withTransition } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import random from "lodash/random";
 
@@ -18,8 +18,9 @@ export interface PositionsOverlayProps {
 
 export type PositionsOverlayConnectedProps = ConnectedProps<typeof connector>;
 
-const PositionsOverlay: React.FC<PositionsOverlayProps &
-  PositionsOverlayConnectedProps> = React.memo(
+const PositionsOverlay: React.FC<
+  PositionsOverlayProps & PositionsOverlayConnectedProps
+> = React.memo(
   ({ visible, positions }) => {
     const visibleTransition = useMemoOne(() => withTransition(visible), []);
 
@@ -27,13 +28,13 @@ const PositionsOverlay: React.FC<PositionsOverlayProps &
 
     const randomColor = () => FillColors[random(FillColors.length)];
 
-    const opacity = bInterpolate(visibleTransition, 0, 0.6);
+    const opacity = mix(visibleTransition, 0, 0.6);
     return (
       <Animated.View
         pointerEvents={"none"}
         style={[
           { opacity, backgroundColor: Colors.gray },
-          StyleSheet.absoluteFill
+          StyleSheet.absoluteFill,
         ]}
       >
         {positions.map((cell, i) => (
@@ -50,7 +51,7 @@ const PositionsOverlay: React.FC<PositionsOverlayProps &
 
 // default export inject user's selected cell
 const mapStateToProps = (state: RootState) => ({
-  positions: selectors.livePositions(state)
+  positions: selectors.livePositions(state),
 });
 
 const connector = connect(mapStateToProps, {});

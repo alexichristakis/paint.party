@@ -5,10 +5,10 @@ import { State, PanGestureHandler } from "react-native-gesture-handler";
 import {
   useValues,
   onGestureEvent,
-  bInterpolate,
+  mix,
   withDecay,
   useSpringTransition,
-  atan2
+  atan2,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
@@ -27,7 +27,7 @@ const config = {
   stiffness: 300,
   overshootClamping: false,
   restSpeedThreshold: 0.1,
-  restDisplacementThreshold: 0.1
+  restDisplacementThreshold: 0.1,
 };
 
 export interface ColorWheelProps {
@@ -35,25 +35,28 @@ export interface ColorWheelProps {
   activeIndex: Animated.Value<number>;
   openTransition: Animated.Node<number>;
   closeTransition: Animated.Node<number>;
+  isDragging: Animated.Node<0 | 1>;
 }
 
 export type ColorWheelConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState, props: ColorWheelProps) => ({
   numColors: selectors.numColors(state, props),
-  enabled: selectors.canvasEnabled(state)
+  enabled: selectors.canvasEnabled(state),
 });
 const mapDispatchToProps = {};
 
-const ColorWheel: React.FC<ColorWheelProps &
-  ColorWheelConnectedProps> = React.memo(
+const ColorWheel: React.FC<
+  ColorWheelProps & ColorWheelConnectedProps
+> = React.memo(
   ({
     numColors,
     enabled,
     activeIndex,
     angle,
     openTransition,
-    closeTransition
+    closeTransition,
+    isDragging,
   }) => {
     const enabledTransition = useSpringTransition(enabled, config);
 
@@ -70,7 +73,7 @@ const ColorWheel: React.FC<ColorWheelProps &
       velocityY,
       velocity,
       absoluteY,
-      editingColor
+      editingColor,
     ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []);
 
     const [panState] = useValues<State>([State.UNDETERMINED], []);
@@ -85,7 +88,7 @@ const ColorWheel: React.FC<ColorWheelProps &
           velocityX,
           velocityY,
           translationX,
-          translationY
+          translationY,
         }),
       []
     );
@@ -103,7 +106,7 @@ const ColorWheel: React.FC<ColorWheelProps &
           )
         ),
 
-        set(angle, rotate)
+        cond(isDragging, set(angle, rotate)),
       ],
       []
     );
@@ -118,22 +121,22 @@ const ColorWheel: React.FC<ColorWheelProps &
             and(editingColor, eq(panState, State.ACTIVE)),
             State.END,
             panState
-          ) as Animated.Value<State>
+          ) as Animated.Value<State>,
         }),
       []
     );
 
     const containerAnimatedStyle = {
-      transform: [{ translateY: bInterpolate(openTransition, 75, 10) }]
+      transform: [{ translateY: mix(openTransition, 75, 10) }],
     };
 
     const animatedStyle = {
-      opacity: bInterpolate(enabledTransition, 0.5, 1),
+      opacity: mix(enabledTransition, 0.5, 1),
       transform: [
         { rotate },
-        { rotate: bInterpolate(openTransition, -Math.PI / 4, 0) },
-        { scale: bInterpolate(closeTransition, 1, 0.9) }
-      ]
+        { rotate: mix(openTransition, -Math.PI / 4, 0) },
+        { scale: mix(closeTransition, 1, 0.9) },
+      ],
     };
 
     return (
@@ -143,7 +146,7 @@ const ColorWheel: React.FC<ColorWheelProps &
             pointerEvents={enabled ? "auto" : "none"}
             style={[styles.container, animatedStyle]}
           >
-            {times(numColors, index => (
+            {times(numColors, (index) => (
               <Swatch
                 key={index}
                 active={eq(activeIndex, index)}
@@ -155,7 +158,7 @@ const ColorWheel: React.FC<ColorWheelProps &
                   x: translationX,
                   y: translationY,
                   editingColor,
-                  openTransition
+                  openTransition,
                 }}
               />
             ))}
@@ -171,8 +174,8 @@ const styles = StyleSheet.create({
   container: {
     position: "absolute",
     alignItems: "center",
-    bottom: 0
-  }
+    bottom: 0,
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

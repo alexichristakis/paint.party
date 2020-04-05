@@ -5,8 +5,8 @@ import {
   useValues,
   loop,
   useClocks,
-  bInterpolate,
-  onGestureEvent
+  mix,
+  onGestureEvent,
 } from "react-native-redash";
 import { connect, ConnectedProps } from "react-redux";
 
@@ -22,14 +22,15 @@ export interface LiveUsersProps {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  numUsers: selectors.numLiveUsers(state)
+  numUsers: selectors.numLiveUsers(state),
 });
 const mapDispatchToProps = {};
 
 export type LiveUsersConnectedProps = ConnectedProps<typeof connector>;
 
-const LiveUsers: React.FC<LiveUsersProps &
-  LiveUsersConnectedProps> = React.memo(
+const LiveUsers: React.FC<
+  LiveUsersProps & LiveUsersConnectedProps
+> = React.memo(
   ({ numUsers, onPress }) => {
     const [clock] = useClocks(1, []);
     const [value, state] = useValues([0, State.UNDETERMINED], []);
@@ -46,14 +47,14 @@ const LiveUsers: React.FC<LiveUsersProps &
             duration: 550,
             easing: Easing.inOut(Easing.ease),
             boomerang: true,
-            autoStart: true
+            autoStart: true,
           })
-        )
+        ),
       ],
       []
     );
 
-    const opacity = bInterpolate(value, 0.5, 1);
+    const opacity = mix(value, 0.5, 1);
 
     if (!numUsers) return null;
 
@@ -72,7 +73,7 @@ const LiveUsers: React.FC<LiveUsersProps &
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   },
   indicator: {
     marginTop: 3,
@@ -80,11 +81,11 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: Colors.red
+    backgroundColor: Colors.red,
   },
   text: {
-    ...TextStyles.medium
-  }
+    ...TextStyles.medium,
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

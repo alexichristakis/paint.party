@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { StyleSheet, View, Share } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
@@ -10,14 +10,14 @@ import * as selectors from "@redux/selectors";
 import { CanvasActions, VisualizationActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { Visualization, ColorPicker, LiveUsers } from "@components/Canvas";
+import PaletteEditor, { PaletteEditorRef } from "@components/PaletteEditor";
 import { Countdown, LoadingOverlay } from "@components/universal";
 import {
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
   Colors,
   SB_HEIGHT,
-  canvasUrl,
-  OuterWheel
+  canvasUrl
 } from "@lib";
 
 import X from "@assets/svg/X.svg";
@@ -53,6 +53,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   close
 }) => {
   const [positionsVisible, pickerVisible] = useValues<0 | 1>([0, 0], []);
+  const paletteEditorRef = useRef<PaletteEditorRef>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -69,6 +70,10 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   const handleOnPressUsers = () => {
     positionsVisible.setValue(1);
     pickerVisible.setValue(0);
+  };
+
+  const handleOnPressEdit = () => {
+    paletteEditorRef.current?.open();
   };
 
   return (
@@ -89,8 +94,9 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
         pickerVisible={pickerVisible}
         positionsVisible={positionsVisible}
       />
-      <ColorPicker visible={pickerVisible} />
+      <ColorPicker visible={pickerVisible} onPressEdit={handleOnPressEdit} />
       <LoadingOverlay loading={loadingCanvas} />
+      <PaletteEditor ref={paletteEditorRef} />
     </View>
   );
 };
