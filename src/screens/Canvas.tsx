@@ -17,7 +17,7 @@ import {
   SCREEN_WIDTH,
   Colors,
   SB_HEIGHT,
-  canvasUrl
+  canvasUrl,
 } from "@lib";
 
 import X from "@assets/svg/X.svg";
@@ -29,12 +29,12 @@ const mapStateToProps = (state: RootState) => ({
   activeCanvas: selectors.activeCanvas(state),
   loadingCanvas: selectors.isLoadingCanvas(state),
   canvas: selectors.activeCanvasEntity(state),
-  canvasActiveAt: selectors.canvasActiveAt(state)
+  canvasActiveAt: selectors.canvasActiveAt(state),
 });
 const mapDispatchToProps = {
   enable: VisualizationActions.enableCanvas,
   close: CanvasActions.close,
-  open: CanvasActions.open
+  open: CanvasActions.open,
 };
 
 export type CanvasReduxProps = ConnectedProps<typeof connector>;
@@ -50,7 +50,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   canvas,
   enable,
   open,
-  close
+  close,
 }) => {
   const [positionsVisible, pickerVisible] = useValues<0 | 1>([0, 0], []);
   const paletteEditorRef = useRef<PaletteEditorRef>(null);
@@ -64,7 +64,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   const handleOnPressShare = () =>
     Share.share({
       title: `share ${canvas.name}`,
-      message: canvasUrl(activeCanvas)
+      message: canvasUrl(activeCanvas),
     });
 
   const handleOnPressUsers = () => {
@@ -108,21 +108,21 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     backgroundColor: Colors.lightGray,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   header: {
     alignItems: "center",
     position: "absolute",
     left: 12,
     right: 12,
-    top: SB_HEIGHT + 5
+    top: SB_HEIGHT + 5,
   },
   headerRow: {
     alignSelf: "stretch",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

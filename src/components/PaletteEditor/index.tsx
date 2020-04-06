@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useImperativeHandle } from "react";
+import React, { useRef, useState, useImperativeHandle } from "react";
 import { StyleSheet, View } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 
@@ -35,6 +35,7 @@ type Props = PaletteEditorProps & PaletteEditorConnectedProps;
 const PaletteEditor = React.memo(
   React.forwardRef<PaletteEditorRef, Props>(({ palettes, create }, ref) => {
     const [name, setName] = useState("");
+    const [open, setOpen] = useState(false);
     const modalRef = useRef<ModalListRef>(null);
 
     const [yOffset] = useValues<number>([0], []);
@@ -44,6 +45,7 @@ const PaletteEditor = React.memo(
     useImperativeHandle(ref, () => ({
       open: () => {
         modalRef.current?.open();
+        setOpen(true);
       },
       close: () => {
         modalRef.current?.close();
@@ -61,6 +63,7 @@ const PaletteEditor = React.memo(
           ref={modalRef}
           showHeader={false}
           yOffset={yOffset}
+          onClose={() => setOpen(false)}
           style={styles.container}
         >
           <Input
@@ -73,15 +76,17 @@ const PaletteEditor = React.memo(
             onChangeText={setName}
           />
           <ColorEditorContext.Provider value={initialColorEditorState}>
-            {Object.values(palettes).map((palette, index) => (
-              <React.Fragment key={index}>
-                {index ? <View style={styles.separator} /> : null}
-                <Palette
-                  palette={palette}
-                  colorEditorState={initialColorEditorState}
-                />
-              </React.Fragment>
-            ))}
+            {open
+              ? Object.values(palettes).map((palette, index) => (
+                  <React.Fragment key={index}>
+                    {index ? <View style={styles.separator} /> : null}
+                    <Palette
+                      palette={palette}
+                      colorEditorState={initialColorEditorState}
+                    />
+                  </React.Fragment>
+                ))
+              : null}
           </ColorEditorContext.Provider>
           <CreateButton
             dependencies={[name]}

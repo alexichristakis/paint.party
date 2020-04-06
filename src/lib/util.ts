@@ -66,13 +66,13 @@ export const pluralize = (text: string, ls: number | any[]) => {
 };
 
 export const hash = (val: string, i: number) => {
-  var hash = i;
+  let hash = i;
   if (val.length == 0) {
     return hash;
   }
 
   for (var i = 0; i < val.length; i++) {
-    var char = val.charCodeAt(i);
+    const char = val.charCodeAt(i);
     hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32bit integer
   }

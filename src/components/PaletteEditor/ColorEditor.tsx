@@ -79,7 +79,7 @@ export const ColorEditorContext = React.createContext<ColorEditorState>(
 
 export type ColorEditorConnectedProps = ConnectedProps<typeof connector>;
 
-export interface ColorEditorProps extends ColorEditorState {}
+export type ColorEditorProps = ColorEditorState
 
 const mapStateToProps = (state: RootState) => ({
   active: selectors.editingActive(state),
