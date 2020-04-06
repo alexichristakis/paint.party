@@ -5,8 +5,6 @@ import merge from "lodash/merge";
 
 import { createAction, ActionUnion, ActionTypes } from "../types";
 
-import { REHYDRATE } from "redux-persist";
-
 export type Canvas = {
   id: string;
   name: string;
@@ -35,7 +33,7 @@ const initialState: CanvasState = {
   fetchingCanvases: false,
   loadingCanvas: false,
   joiningCanvas: false,
-  canvases: {}
+  canvases: {},
 };
 
 export default (
@@ -50,14 +48,12 @@ export default (
     case ActionTypes.FETCH_CANVASES_SUCCESS: {
       const { canvases } = action.payload;
 
-      return immer(state, draft => {
-        const newCanvases = keyBy(canvases, o => o.id);
+      return immer(state, (draft) => {
+        const newCanvases = keyBy(canvases, (o) => o.id);
 
         draft.fetchingCanvases = false;
         draft.creatingCanvas = false;
         draft.canvases = merge(draft.canvases, newCanvases);
-
-        return draft;
       });
     }
 
@@ -70,7 +66,7 @@ export default (
     case ActionTypes.OPEN_CANVAS_SUCCESS: {
       return {
         ...state,
-        loadingCanvas: false
+        loadingCanvas: false,
       };
     }
 
@@ -86,14 +82,12 @@ export default (
     case ActionTypes.CREATE_CANVAS_SUCCESS: {
       const { canvas } = action.payload;
 
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         draft.activeCanvas = canvas.id;
         draft.canvases[canvas.id] = canvas;
         draft.loadingCanvas = false;
         draft.creatingCanvas = false;
         draft.joiningCanvas = false;
-
-        return draft;
       });
     }
 
@@ -103,7 +97,7 @@ export default (
         "hmmm it appears that canvas doesn't exist"
       );
 
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         draft.joiningCanvas = false;
       });
     }
@@ -111,7 +105,7 @@ export default (
     case ActionTypes.DRAW_SUCCESS: {
       const { id, nextDrawAt } = action.payload;
 
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         draft.canvases[id].nextDrawAt = nextDrawAt;
 
         return draft;
@@ -131,9 +125,10 @@ export const CanvasActions = {
   fetch: () => createAction(ActionTypes.FETCH_CANVASES),
   fetchSuccess: (canvases: Canvas[]) =>
     createAction(ActionTypes.FETCH_CANVASES_SUCCESS, { canvases }),
-  open: (id: string) => createAction(ActionTypes.OPEN_CANVAS, { id }),
+
   create: (canvas: NewCanvas) =>
     createAction(ActionTypes.CREATE_CANVAS, { canvas }),
+
   createSuccess: (canvas: Canvas) =>
     createAction(ActionTypes.CREATE_CANVAS_SUCCESS, { canvas }),
 
@@ -142,5 +137,6 @@ export const CanvasActions = {
     createAction(ActionTypes.JOIN_CANVAS_SUCCESS, { canvas }),
   joinFailure: () => createAction(ActionTypes.JOIN_CANVAS_FAILURE),
 
-  close: () => createAction(ActionTypes.CLOSE_CANVAS)
+  open: (id: string) => createAction(ActionTypes.OPEN_CANVAS, { id }),
+  close: () => createAction(ActionTypes.CLOSE_CANVAS),
 };

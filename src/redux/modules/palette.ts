@@ -131,7 +131,8 @@ export default (
 export const PaletteActions = {
   reset: () => createAction(ActionTypes.RESET_COLORS),
 
-  create: (name: string) => createAction(ActionTypes.CREATE_PALETTE, { name }),
+  createPalette: (name: string) =>
+    createAction(ActionTypes.CREATE_PALETTE, { name }),
 
   closeEditor: () => createAction(ActionTypes.CLOSE_EDITOR),
 

@@ -28,7 +28,7 @@ const mapStateToProps = (state: RootState) => ({
   palettes: selectors.palettes(state),
 });
 const mapDispatchToProps = {
-  create: PaletteActions.create,
+  create: PaletteActions.createPalette,
 };
 
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
