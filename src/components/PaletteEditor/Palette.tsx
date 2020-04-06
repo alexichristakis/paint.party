@@ -19,13 +19,14 @@ import { RootState } from "@redux/types";
 import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN } from "@lib";
 import { TouchableHighlight } from "@components/universal";
 
-import Color from "./Color";
 import { ColorEditorState } from "./ColorEditor";
+import Color from "./Color";
 
 const { modulo } = Animated;
 
 export interface PaletteProps {
   palette: PaletteType;
+  colorEditorState: ColorEditorState;
 }
 
 export type PaletteConnectedProps = ConnectedProps<typeof connector>;
@@ -38,73 +39,75 @@ const mapDispatchToProps = {
   enable: PaletteActions.enablePalette,
 };
 
-const Palette: React.FC<PaletteProps & PaletteConnectedProps> = ({
-  enable,
-  palette,
-  active,
-}) => {
-  const { id: paletteId, name, colors } = palette;
+const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
+  ({ enable, colorEditorState, palette, active }) => {
+    const { id: paletteId, name, colors } = palette;
 
-  const panRef = useRef<PanGestureHandler>(null);
-  const [panState] = useValues([State.UNDETERMINED], []);
-  const [translationX, velocityX] = useValues<number>([0, 0], []);
+    // console.log("render palette", paletteId);
 
-  const panHandler = onGestureEvent({
-    state: panState,
-    translationX,
-    velocityX,
-  });
+    const panRef = useRef<PanGestureHandler>(null);
+    const [panState] = useValues([State.UNDETERMINED], []);
+    const [translationX, velocityX] = useValues<number>([0, 0], []);
 
-  const translateX = useMemoOne(
-    () =>
-      modulo(
-        withDecay({
-          value: translationX,
-          state: panState,
-          velocity: velocityX,
-        }),
-        -colors.length * (COLOR_SIZE + COLOR_MARGIN)
-      ),
-    []
-  );
+    const panHandler = onGestureEvent({
+      state: panState,
+      translationX,
+      velocityX,
+    });
 
-  const enablePalette = () => {
-    Haptics.trigger("impactMedium");
-    enable(paletteId);
-  };
+    const translateX = useMemoOne(
+      () =>
+        modulo(
+          withDecay({
+            value: translationX,
+            state: panState,
+            velocity: velocityX,
+          }),
+          -colors.length * (COLOR_SIZE + COLOR_MARGIN)
+        ),
+      []
+    );
 
-  const activeTransition = useTransition(active);
-  const backgroundColor = bInterpolateColor(
-    activeTransition,
-    Colors.white,
-    Colors.lightGreen
-  );
+    const enablePalette = () => {
+      Haptics.trigger("impactMedium");
+      enable(paletteId);
+    };
 
-  return (
-    <TouchableHighlight
-      enabled={!active}
-      waitFor={panRef}
-      style={{ backgroundColor }}
-      onPress={enablePalette}
-    >
-      <PanGestureHandler {...panHandler}>
-        <Animated.View style={styles.container}>
-          <Text style={styles.name}>{name}</Text>
-          <View style={styles.colorContainer}>
-            {colors.map((color, index) => (
-              <Color
-                key={index}
-                numColors={colors.length}
-                xOffset={translateX}
-                {...{ color, index, paletteId }}
-              />
-            ))}
-          </View>
-        </Animated.View>
-      </PanGestureHandler>
-    </TouchableHighlight>
-  );
-};
+    const activeTransition = useTransition(active);
+    const backgroundColor = bInterpolateColor(
+      activeTransition,
+      Colors.white,
+      Colors.lightGreen
+    );
+
+    return (
+      <TouchableHighlight
+        enabled={!active}
+        waitFor={panRef}
+        style={{ backgroundColor }}
+        onPress={enablePalette}
+      >
+        <PanGestureHandler {...panHandler}>
+          <Animated.View style={styles.container}>
+            <Text style={styles.name}>{name}</Text>
+            <View style={styles.colorContainer}>
+              {colors.map((color, index) => (
+                <Color
+                  key={index}
+                  numColors={colors.length}
+                  xOffset={translateX}
+                  colorEditorState={colorEditorState}
+                  {...{ color, index, paletteId }}
+                />
+              ))}
+            </View>
+          </Animated.View>
+        </PanGestureHandler>
+      </TouchableHighlight>
+    );
+  }
+  // (p, n) => p.active === n.active
+);
 
 const styles = StyleSheet.create({
   container: {

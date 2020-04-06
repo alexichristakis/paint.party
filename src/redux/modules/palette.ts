@@ -1,4 +1,8 @@
 import immer from "immer";
+
+// @ts-ignore
+import uuid from "uuid/v1";
+
 import { createAction, ActionTypes, ActionUnion } from "../types";
 import { Palette1, Palette2 } from "@lib";
 
@@ -6,13 +10,13 @@ export const DefaultPalettes: Palettes = {
   default: {
     id: "default",
     name: "Default",
-    colors: Palette1
+    colors: Palette1,
   },
   default2: {
     id: "default2",
     name: "Pastel",
-    colors: Palette2
-  }
+    colors: Palette2,
+  },
 };
 
 export type Palette = {
@@ -39,8 +43,8 @@ const initialState: PaletteState = {
   editing: {
     active: false,
     paletteId: "",
-    index: -1
-  }
+    index: -1,
+  },
 };
 
 export default (
@@ -52,19 +56,29 @@ export default (
       return { ...initialState };
     }
 
+    case ActionTypes.CREATE_PALETTE: {
+      const { name } = action.payload;
+
+      const id = uuid();
+
+      return immer(state, (draft) => {
+        draft.palettes[id] = { id, name, colors: Palette1 };
+      });
+    }
+
     case ActionTypes.ENABLE_PALETTE: {
       const { paletteId } = action.payload;
 
       return {
         ...state,
-        activePalette: paletteId
+        activePalette: paletteId,
       };
     }
 
     case ActionTypes.EDIT_COLOR: {
       const { index, paletteId } = action.payload;
 
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         draft.editing.active = true;
         draft.editing.paletteId = paletteId;
         draft.editing.index = index;
@@ -72,7 +86,7 @@ export default (
     }
 
     case ActionTypes.CLOSE_EDITOR: {
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         draft.editing.active = false;
         draft.editing.paletteId = "";
         draft.editing.index = -1;
@@ -87,7 +101,7 @@ export default (
         ({ index, paletteId } = editing);
       }
 
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         draft.palettes[paletteId].colors[index!] = color;
       });
     }
@@ -95,7 +109,7 @@ export default (
     case ActionTypes.ADD_COLOR: {
       const { color, paletteId } = action.payload;
 
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         draft.palettes[paletteId].colors.push(color);
       });
     }
@@ -103,7 +117,7 @@ export default (
     case ActionTypes.REMOVE_COLOR: {
       const { index, paletteId } = action.payload;
 
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         const { colors } = draft.palettes[paletteId];
         draft.palettes[paletteId].colors = colors.splice(index, 1);
       });
@@ -116,6 +130,8 @@ export default (
 
 export const PaletteActions = {
   reset: () => createAction(ActionTypes.RESET_COLORS),
+
+  create: (name: string) => createAction(ActionTypes.CREATE_PALETTE, { name }),
 
   closeEditor: () => createAction(ActionTypes.CLOSE_EDITOR),
 
@@ -130,5 +146,5 @@ export const PaletteActions = {
     createAction(ActionTypes.ADD_COLOR, { color, paletteId }),
 
   remove: (index: number, paletteId: string) =>
-    createAction(ActionTypes.REMOVE_COLOR, { index, paletteId })
+    createAction(ActionTypes.REMOVE_COLOR, { index, paletteId }),
 };

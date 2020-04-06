@@ -8,17 +8,18 @@ import {
   AppActions,
   CanvasActions,
   PaletteActions,
-  VisualizationActions
+  VisualizationActions,
 } from "./modules";
 
 export enum PaletteActionTypes {
   RESET_COLORS = "palette/RESET",
   EDIT_COLOR = "palette/EDIT",
   CLOSE_EDITOR = "palette/CLOSE_EDITOR",
+  CREATE_PALETTE = "palette/CREATE",
   SET_COLOR = "palette/SET",
   ADD_COLOR = "palette/ADD",
   REMOVE_COLOR = "palette/REMOVE",
-  ENABLE_PALETTE = "palette/ENABLE"
+  ENABLE_PALETTE = "palette/ENABLE",
 }
 
 export enum AppActionTypes {
@@ -27,7 +28,7 @@ export enum AppActionTypes {
   LOGOUT = "app/LOGOUT",
   LOGOUT_SUCCESS = "app/LOGOUT_SUCCESS",
   SET_APP_STATUS = "app/SET_STATUS",
-  AUTH_ERROR = "app/AUTH_ERROR"
+  AUTH_ERROR = "app/AUTH_ERROR",
 }
 
 export enum CanvasActionTypes {
@@ -40,7 +41,7 @@ export enum CanvasActionTypes {
   JOIN_CANVAS = "canvas/JOIN",
   JOIN_CANVAS_SUCCESS = "canvas/JOIN_SUCCESS",
   JOIN_CANVAS_FAILURE = "canvas/JOIN_FAILURE",
-  CLOSE_CANVAS = "canvas/CLOSE"
+  CLOSE_CANVAS = "canvas/CLOSE",
 }
 
 export enum VisualizationActionTypes {
@@ -53,7 +54,7 @@ export enum VisualizationActionTypes {
   SET_LIVE_POSITIONS = "viz/SET_LIVE_POSITIONS",
   UPDATE_CANVAS = "viz/UPDATE",
   UPDATE_CANVAS_SUCCESS = "viz/UPDATE_SUCCESS",
-  UPDATE_CANVAS_FAILURE = "viz/UPDATE_FAILURE"
+  UPDATE_CANVAS_FAILURE = "viz/UPDATE_FAILURE",
 }
 
 export type RootState = {
@@ -74,7 +75,7 @@ export const ActionTypes = {
   ...AppActionTypes,
   ...CanvasActionTypes,
   ...PaletteActionTypes,
-  ...VisualizationActionTypes
+  ...VisualizationActionTypes,
 };
 
 interface Action<T extends string> {

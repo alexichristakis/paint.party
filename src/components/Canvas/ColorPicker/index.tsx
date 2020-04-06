@@ -4,7 +4,7 @@ import { State } from "react-native-gesture-handler";
 import {
   useValues,
   withSpringTransition,
-  withTransition
+  withTransition,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
@@ -25,7 +25,7 @@ const config = {
   stiffness: 300,
   overshootClamping: false,
   restSpeedThreshold: 0.1,
-  restDisplacementThreshold: 0.1
+  restDisplacementThreshold: 0.1,
 };
 
 export interface ColorPickerProps {
@@ -38,8 +38,9 @@ export type ColorPickerConnectedProps = ConnectedProps<typeof connector>;
 const mapStateToProps = (_: RootState) => ({});
 const mapDispatchToProps = {};
 
-const ColorPicker: React.FC<ColorPickerProps &
-  ColorPickerConnectedProps> = React.memo(({ visible, onPressEdit }) => {
+const ColorPicker: React.FC<
+  ColorPickerProps & ColorPickerConnectedProps
+> = React.memo(({ visible, onPressEdit }) => {
   const [tapState, popupDragState] = useValues<State>(
     [State.UNDETERMINED, State.UNDETERMINED],
     []
@@ -54,13 +55,13 @@ const ColorPicker: React.FC<ColorPickerProps &
       withTransition(
         or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
         { duration: 200, easing: Easing.inOut(Easing.ease) }
-      )
+      ),
     ],
     []
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} pointerEvents={"box-none"}>
       <Button
         state={tapState}
         visible={visible}
@@ -88,8 +89,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: "center",
-    height: COLOR_WHEEL_RADIUS + COLOR_SIZE + 20
-  }
+    height: COLOR_WHEEL_RADIUS + COLOR_SIZE,
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

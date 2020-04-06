@@ -198,6 +198,7 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
   const borderRadius = divide(height, 2);
   const borderWidth = mix(activeTransition, 0, COLOR_BORDER_WIDTH);
   const translate = mix(activeTransition, 0, -(COLOR_SIZE - POPUP_SIZE) / 2);
+
   return (
     <PanGestureHandler {...handler}>
       <Animated.View

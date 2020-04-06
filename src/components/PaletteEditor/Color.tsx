@@ -22,13 +22,14 @@ import {
   SPRING_CONFIG,
 } from "@lib";
 
-import { ColorEditorContext } from "./ColorEditor";
+import { ColorEditorContext, ColorEditorState } from "./ColorEditor";
 
 const { cond, call, sub, not, eq, set, add } = Animated;
 
 export type ColorConnectedProps = ConnectedProps<typeof connector>;
 
 export interface ColorProps {
+  colorEditorState: ColorEditorState;
   index: number;
   paletteId: string;
   numColors: number;
@@ -37,7 +38,6 @@ export interface ColorProps {
 }
 
 const mapStateToProps = (state: RootState, props: ColorProps) => ({
-  palettes: selectors.palettes(state),
   isEditing: selectors.isEditing(state, props),
 });
 
@@ -48,6 +48,7 @@ const mapDispatchToProps = {
 
 const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
   ({
+    colorEditorState,
     paletteId,
     index,
     numColors,
@@ -56,23 +57,21 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
     xOffset,
     color: backgroundColor,
   }) => {
+    // const colorEditorState = useContext(ColorEditorContext);
+    // console.log("render color", backgroundColor);
+
     const ref = useRef<Animated.View>(null);
     const [state] = useValues([State.UNDETERMINED], []);
 
     const hsv = tinycolor(backgroundColor).toHsv();
-
     const [h, s, v] = useValues<number>([hsv.h, hsv.s, hsv.v], []);
-
-    const handler = onGestureEvent({ state });
-
-    const colorId = hash(paletteId, index);
-
-    const colorEditorState = useContext(ColorEditorContext);
 
     useCode(() => [set(h, hsv.h), set(s, hsv.s), set(v, hsv.v)], [
       backgroundColor,
     ]);
 
+    const handler = onGestureEvent({ state });
+    const colorId = hash(paletteId, index);
     useCode(
       () => [
         cond(eq(colorEditorState.id, colorId), [
@@ -167,10 +166,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = React.memo(
       </Animated.View>
     );
   },
-  (p, n) =>
-    p.isEditing === n.isEditing &&
-    p.color === n.color &&
-    p.numColors === n.numColors
+  (p, n) => p.isEditing === n.isEditing && p.color === n.color
 );
 
 const styles = StyleSheet.create({

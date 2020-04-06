@@ -14,7 +14,12 @@ import { useValues, useSpringTransition, mix } from "react-native-redash";
 import * as selectors from "@redux/selectors";
 import { NewCanvas } from "@redux/modules/canvas";
 import { ModalList, ModalListRef } from "./ModalList";
-import { Input, Slider, BackgroundColorPicker } from "./universal";
+import {
+  Input,
+  Slider,
+  CreateButton,
+  BackgroundColorPicker,
+} from "./universal";
 import { TextStyles, TextSizes, Colors } from "@lib";
 
 import { TouchableScale } from "./universal/TouchableScale";
@@ -70,10 +75,6 @@ const CreateCanvas = React.memo(
     const handleOnPressCreateCanvas = () =>
       createCanvas({ name, expiresAt: expiry.unix(), backgroundColor });
 
-    const createCanvasButtonTransition = useSpringTransition(
-      isValidCanvas() && !loading
-    );
-
     const range = [1, 5] as [number, number];
     return (
       <>
@@ -106,42 +107,12 @@ const CreateCanvas = React.memo(
             selected={backgroundColor}
             onChoose={setBackgroundColor}
           />
-
-          {loading ? (
-            <Animated.View
-              style={[
-                styles.sendButton,
-                {
-                  transform: [
-                    {
-                      scale: mix(createCanvasButtonTransition, 1, 0),
-                    },
-                  ],
-                  opacity: mix(createCanvasButtonTransition, 1, 0),
-                },
-              ]}
-            >
-              <ActivityIndicator
-                size="large"
-                style={{ width: 50, height: 50 }}
-              />
-            </Animated.View>
-          ) : (
-            <TouchableScale
-              onPress={handleOnPressCreateCanvas}
-              dependencies={[name, expiry.fromNow(), backgroundColor]}
-              style={styles.sendButton}
-            >
-              <Animated.View
-                style={{
-                  transform: [{ scale: createCanvasButtonTransition }],
-                  opacity: createCanvasButtonTransition,
-                }}
-              >
-                <Send height={50} width={50} />
-              </Animated.View>
-            </TouchableScale>
-          )}
+          <CreateButton
+            dependencies={[name, expiry, backgroundColor]}
+            loading={loading}
+            valid={isValidCanvas()}
+            onPress={handleOnPressCreateCanvas}
+          />
         </ModalList>
       </>
     );

@@ -1,25 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { View } from "react-native";
 import Animated, { useCode, Easing } from "react-native-reanimated";
 import { connect, ConnectedProps } from "react-redux";
-
-import * as selectors from "@redux/selectors";
-import { RootState } from "@redux/types";
-import { PaletteActions } from "@redux/modules";
 import {
   TapGestureHandler,
   PanGestureHandler,
   State,
 } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
-import {
-  SCREEN_WIDTH,
-  COLOR_BORDER_WIDTH,
-  Colors,
-  SCREEN_HEIGHT,
-  colorHSV,
-  SPRING_CONFIG,
-} from "@lib";
 import {
   useValues,
   bin,
@@ -28,10 +16,22 @@ import {
   mix,
   withTransition,
   clamp,
-  useSpringTransition,
+  hsv2color,
 } from "react-native-redash";
 import tinycolor from "tinycolor2";
 import { useMemoOne } from "use-memo-one";
+
+import * as selectors from "@redux/selectors";
+import { RootState } from "@redux/types";
+import { PaletteActions } from "@redux/modules";
+import {
+  SCREEN_WIDTH,
+  COLOR_BORDER_WIDTH,
+  Colors,
+  SCREEN_HEIGHT,
+  colorHSV,
+  SPRING_CONFIG,
+} from "@lib";
 
 import { Slider } from "@components/universal";
 import Check from "@assets/svg/check_line.svg";
@@ -102,6 +102,8 @@ const ColorEditor: React.FC<
   ColorEditorProps & ColorEditorConnectedProps
 > = React.memo(
   ({ id, color, setColor, closeEditor, active, layout }) => {
+    // console.log("render color editor");
+
     const indicatorPanRef = useRef<PanGestureHandler>(null);
     const tapRef = useRef<TapGestureHandler>(null);
 
@@ -124,40 +126,46 @@ const ColorEditor: React.FC<
       hue,
     ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0, 0], []);
 
-    const indicatorPanHandler = onGestureEvent({
-      state: indicatorPanState,
-      translationX: indicatorDragX,
-      translationY: indicatorDragY,
-      x: indicatorPosX,
-      y: indicatorPosY,
-    });
-
-    const tapHandler = onGestureEvent({ state: tapState });
-    const undoHandler = onGestureEvent({ state: undoState });
-    const confirmHandler = onGestureEvent({ state: confirmState });
-
     const [
-      transition,
-      pressInTransition,
-      undoPressIn,
-      confirmPressIn,
+      indicatorPanHandler,
+      tapHandler,
+      undoHandler,
+      confirmHandler,
     ] = useMemoOne(
       () => [
-        withTransition(and(neq(id, -1), bin(active)), {
-          duration: TRANSITION_DURATION,
-          easing: Easing.inOut(Easing.ease),
+        onGestureEvent({
+          state: indicatorPanState,
+          translationX: indicatorDragX,
+          translationY: indicatorDragY,
+          x: indicatorPosX,
+          y: indicatorPosY,
         }),
-        withSpringTransition(eq(tapState, State.BEGAN)),
+        onGestureEvent({ state: tapState }),
+        onGestureEvent({ state: undoState }),
+        onGestureEvent({ state: confirmState }),
+      ],
+      []
+    );
+
+    const [pressInTransition, undoPressIn, confirmPressIn] = useMemoOne(
+      () => [
+        withTransition(eq(tapState, State.BEGAN)),
         withTransition(eq(undoState, State.BEGAN)),
         withTransition(eq(confirmState, State.BEGAN)),
       ],
-      [active]
+      []
     );
 
-    const [controlTransition] = useMemoOne(
-      () => [withSpringTransition(eq(transition, 1), SPRING_CONFIG)],
-      [active]
-    );
+    const [transition, controlTransition] = useMemoOne(() => {
+      const t = withTransition(and(neq(id, -1), bin(active)), {
+        duration: TRANSITION_DURATION,
+        easing: Easing.inOut(Easing.ease),
+      });
+
+      const t2 = withSpringTransition(eq(t, 1), SPRING_CONFIG);
+
+      return [t, t2];
+    }, [active]);
 
     const indicatorLeft = clamp(indicatorPosX, INDICATOR_MIN, INDICATOR_MAX);
     const indicatorTop = clamp(indicatorPosY, INDICATOR_MIN, INDICATOR_MAX);
@@ -172,6 +180,8 @@ const ColorEditor: React.FC<
       INDICATOR_MAX - INDICATOR_MIN
     );
 
+    // doesnt seem to work yet?
+    // const backgroundColor = hsv2color(hue, s, v);
     const backgroundColor = colorHSV(hue, s, v);
 
     const resetPositions = [
@@ -221,7 +231,6 @@ const ColorEditor: React.FC<
     );
 
     const animatedEditorStyle = {
-      opacity: bin(active),
       transform: [{ scale: mix(pressInTransition, 1, 0.95) }],
       top: mix(transition, layout.y, TOP),
       left: mix(transition, layout.x, LEFT),
@@ -236,7 +245,10 @@ const ColorEditor: React.FC<
     });
 
     return (
-      <View style={styles.container} pointerEvents={active ? "auto" : "none"}>
+      <View
+        style={[styles.container, { opacity: active ? 1 : 0 }]}
+        pointerEvents={active ? "auto" : "none"}
+      >
         <TapGestureHandler
           ref={tapRef}
           waitFor={indicatorPanRef}
@@ -249,6 +261,7 @@ const ColorEditor: React.FC<
             }}
           />
         </TapGestureHandler>
+
         <Animated.View
           style={{
             ...styles.buttonContainer,
