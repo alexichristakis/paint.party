@@ -50,18 +50,8 @@ export const CellHighlight: React.FC<
     const { x, y } = coordinatesFromIndex(cell);
     useCode(
       () => [
-        set(
-          top,
-          spring({ to: y - BORDER_WIDTH, from: top, config }) as Animated.Node<
-            number
-          >
-        ),
-        set(
-          left,
-          spring({ to: x - BORDER_WIDTH, from: left, config }) as Animated.Node<
-            number
-          >
-        ),
+        set(top, spring({ to: y - BORDER_WIDTH, from: top, config })),
+        set(left, spring({ to: x - BORDER_WIDTH, from: left, config })),
       ],
       [cell]
     );

@@ -9,7 +9,8 @@ import { useValues } from "react-native-redash";
 import * as selectors from "@redux/selectors";
 import { CanvasActions, VisualizationActions } from "@redux/modules";
 import { RootState } from "@redux/types";
-import { Visualization, ColorPicker, LiveUsers } from "@components/Canvas";
+import { Visualization, LiveUsers } from "@components/Canvas";
+import ColorPicker from "@components/ColorPicker";
 import PaletteEditor, { PaletteEditorRef } from "@components/PaletteEditor";
 import { Countdown, LoadingOverlay } from "@components/universal";
 import {
@@ -67,14 +68,14 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
       message: canvasUrl(activeCanvas),
     });
 
-  const handleOnPressUsers = () => {
+  const handleOnPressUsers = useCallback(() => {
     positionsVisible.setValue(1);
     pickerVisible.setValue(0);
-  };
+  }, []);
 
-  const handleOnPressEdit = () => {
+  const handleOnPressEdit = useCallback(() => {
     paletteEditorRef.current?.open();
-  };
+  }, []);
 
   return (
     <View style={styles.container}>

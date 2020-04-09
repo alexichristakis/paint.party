@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, StyleProp, ViewStyle } from "react-native";
-import Animated, { useCode, Extrapolate } from "react-native-reanimated";
+import Animated, { useCode } from "react-native-reanimated";
 import { PanGestureHandler, State } from "react-native-gesture-handler";
 import { useValues, onGestureEvent, clamp } from "react-native-redash";
 
@@ -19,7 +19,7 @@ const {
   sub,
   call,
   eq,
-  interpolate
+  interpolate,
 } = Animated;
 
 export interface SliderProps {
@@ -37,7 +37,7 @@ export const Slider: React.FC<SliderProps> = ({
   value,
   trackColor,
   range,
-  style
+  style,
 }) => {
   const { onLayout, width } = useOnLayout();
   const [state] = useValues([State.UNDETERMINED], []);
@@ -45,7 +45,7 @@ export const Slider: React.FC<SliderProps> = ({
 
   const handler = onGestureEvent({
     state,
-    x: sliderPosition
+    x: sliderPosition,
   });
 
   const left = clamp(
@@ -64,8 +64,8 @@ export const Slider: React.FC<SliderProps> = ({
               multiply(width - SLIDER_SIZE, divide(value, range[1])),
               SLIDER_SIZE / 2
             )
-          )
-        ])
+          ),
+        ]),
       ]),
 
       set(
@@ -73,7 +73,6 @@ export const Slider: React.FC<SliderProps> = ({
         interpolate(left, {
           inputRange: [0, width ? width - SLIDER_SIZE : width],
           outputRange: range,
-          extrapolate: Extrapolate.CLAMP
         })
       ),
 
@@ -83,7 +82,7 @@ export const Slider: React.FC<SliderProps> = ({
           eq(state, State.END),
           call([value], ([val]) => (onCompleteDrag ? onCompleteDrag(val) : {}))
         )
-      )
+      ),
     ],
     [value, width]
   );
@@ -98,8 +97,8 @@ export const Slider: React.FC<SliderProps> = ({
               {
                 backgroundColor: trackColor ? trackColor : Colors.lightblue,
                 marginLeft: -width,
-                left
-              }
+                left,
+              },
             ]}
           />
         </View>
@@ -112,7 +111,7 @@ export const Slider: React.FC<SliderProps> = ({
 const styles = StyleSheet.create({
   container: {
     overflow: "hidden",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   track: {
     position: "absolute",
@@ -120,12 +119,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 4,
     borderRadius: 5,
-    backgroundColor: Colors.lightGray
+    backgroundColor: Colors.lightGray,
   },
   slider: {
     width: SLIDER_SIZE,
     height: SLIDER_SIZE,
     borderRadius: SLIDER_SIZE / 2,
-    backgroundColor: Colors.lightGray
-  }
+    backgroundColor: Colors.lightGray,
+  },
 });

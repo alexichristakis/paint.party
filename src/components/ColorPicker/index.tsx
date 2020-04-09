@@ -40,47 +40,50 @@ const mapDispatchToProps = {};
 
 const ColorPicker: React.FC<
   ColorPickerProps & ColorPickerConnectedProps
-> = React.memo(({ visible, onPressEdit }) => {
-  const [tapState, popupDragState] = useValues<State>(
-    [State.UNDETERMINED, State.UNDETERMINED],
-    []
-  );
-  const [popupPositionX, popupPositionY, rotation, activeIndex] = useValues<
-    number
-  >([0, 0, 0, -1], []);
+> = React.memo(
+  ({ visible, onPressEdit }) => {
+    const [tapState, popupDragState] = useValues<State>(
+      [State.UNDETERMINED, State.UNDETERMINED],
+      []
+    );
+    const [popupPositionX, popupPositionY, rotation, activeIndex] = useValues<
+      number
+    >([0, 0, 0, -1], []);
 
-  const [openTransition, closeTransition] = useMemoOne(
-    () => [
-      withSpringTransition(visible, config),
-      withTransition(
-        or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
-        { duration: 200, easing: Easing.inOut(Easing.ease) }
-      ),
-    ],
-    []
-  );
+    const [openTransition, closeTransition] = useMemoOne(
+      () => [
+        withSpringTransition(visible, config),
+        withTransition(
+          or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
+          { duration: 200, easing: Easing.inOut(Easing.ease) }
+        ),
+      ],
+      []
+    );
 
-  return (
-    <View style={styles.container} pointerEvents={"box-none"}>
-      <Button
-        state={tapState}
-        visible={visible}
-        openTransition={openTransition}
-        onPress={onPressEdit}
-      />
-      <ColorWheel
-        angle={rotation}
-        isDragging={eq(popupDragState, State.ACTIVE)}
-        {...{ activeIndex, openTransition, closeTransition }}
-      />
-      <Popup
-        state={popupDragState}
-        position={{ x: popupPositionX, y: popupPositionY }}
-        {...{ rotation, activeIndex, openTransition }}
-      />
-    </View>
-  );
-});
+    return (
+      <View style={styles.container} pointerEvents={"box-none"}>
+        <Button
+          state={tapState}
+          visible={visible}
+          openTransition={openTransition}
+          onPress={onPressEdit}
+        />
+        <ColorWheel
+          angle={rotation}
+          isDragging={eq(popupDragState, State.ACTIVE)}
+          {...{ activeIndex, openTransition, closeTransition }}
+        />
+        <Popup
+          state={popupDragState}
+          position={{ x: popupPositionX, y: popupPositionY }}
+          {...{ rotation, activeIndex, openTransition }}
+        />
+      </View>
+    );
+  },
+  () => true
+);
 
 const styles = StyleSheet.create({
   container: {

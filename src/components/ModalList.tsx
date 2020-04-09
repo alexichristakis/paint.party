@@ -210,7 +210,7 @@ export const ModalList = React.memo(
                   from: offset,
                   to: SNAP_OPEN,
                   config,
-                }) as Animated.Node<number>
+                })
               ),
               call([], () => setIsOpen(true)),
               cond(not(clockRunning(clock)), [set(goUp, 0)]),
@@ -223,7 +223,7 @@ export const ModalList = React.memo(
                   from: offset,
                   to: FULLY_OPEN,
                   config,
-                }) as Animated.Node<number>
+                })
               ),
               cond(not(clockRunning(clock)), [
                 set(goUpFully, 0),
@@ -241,7 +241,7 @@ export const ModalList = React.memo(
                   from: offset,
                   to: CLOSED,
                   config,
-                }) as Animated.Node<number>
+                })
               ),
               cond(not(clockRunning(clock)), [
                 set(goDown, 0),

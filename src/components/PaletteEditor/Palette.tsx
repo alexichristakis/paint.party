@@ -1,14 +1,11 @@
-import React, { useRef } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import React from "react";
+import { StyleSheet, Text } from "react-native";
 import Animated from "react-native-reanimated";
-import { PanGestureHandler, State } from "react-native-gesture-handler";
-import { useMemoOne } from "use-memo-one";
 import {
-  onGestureEvent,
   useValues,
-  withDecay,
   useTransition,
   bInterpolateColor,
+  onScrollEvent,
 } from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
@@ -19,10 +16,9 @@ import { RootState } from "@redux/types";
 import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN } from "@lib";
 import { TouchableHighlight } from "@components/universal";
 
-import { ColorEditorState } from "./ColorEditor";
+import { ColorEditorState } from "../ColorEditor";
 import Color from "./Color";
-
-const { modulo } = Animated;
+import times from "lodash/times";
 
 export interface PaletteProps {
   palette: PaletteType;
@@ -43,30 +39,9 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
   ({ enable, colorEditorState, palette, active }) => {
     const { id: paletteId, name, colors } = palette;
 
-    // console.log("render palette", paletteId);
+    const numColors = colors.length;
 
-    const panRef = useRef<PanGestureHandler>(null);
-    const [panState] = useValues([State.UNDETERMINED], []);
-    const [translationX, velocityX] = useValues<number>([0, 0], []);
-
-    const panHandler = onGestureEvent({
-      state: panState,
-      translationX,
-      velocityX,
-    });
-
-    const translateX = useMemoOne(
-      () =>
-        modulo(
-          withDecay({
-            value: translationX,
-            state: panState,
-            velocity: velocityX,
-          }),
-          -colors.length * (COLOR_SIZE + COLOR_MARGIN)
-        ),
-      []
-    );
+    const [xOffset] = useValues<number>([0, 0], []);
 
     const enablePalette = () => {
       Haptics.trigger("impactMedium");
@@ -83,36 +58,38 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
     return (
       <TouchableHighlight
         enabled={!active}
-        waitFor={panRef}
-        style={{ backgroundColor }}
+        style={{ ...styles.container, backgroundColor }}
         onPress={enablePalette}
       >
-        <PanGestureHandler {...panHandler}>
-          <Animated.View style={styles.container}>
-            <Text style={styles.name}>{name}</Text>
-            <View style={styles.colorContainer}>
-              {colors.map((color, index) => (
-                <Color
-                  key={index}
-                  numColors={colors.length}
-                  xOffset={translateX}
-                  colorEditorState={colorEditorState}
-                  {...{ color, index, paletteId }}
-                />
-              ))}
-            </View>
-          </Animated.View>
-        </PanGestureHandler>
+        <Text style={styles.name}>{name}</Text>
+        <Animated.ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          onScroll={onScrollEvent({ x: xOffset })}
+          scrollEventThrottle={16}
+          contentContainerStyle={styles.colorContainer}
+        >
+          {times(numColors, (index) => (
+            <Color
+              key={index}
+              {...{
+                index,
+                xOffset,
+                colorEditorState,
+                paletteId,
+              }}
+            />
+          ))}
+        </Animated.ScrollView>
       </TouchableHighlight>
     );
-  }
-  // (p, n) => p.active === n.active
+  },
+  (p, n) => p.active === n.active
 );
 
 const styles = StyleSheet.create({
   container: {
     paddingTop: 10,
-    paddingBottom: 20,
   },
   name: {
     ...TextStyles.medium,
@@ -121,9 +98,10 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   colorContainer: {
-    marginTop: 10,
     height: COLOR_SIZE,
+    paddingHorizontal: COLOR_MARGIN,
     flexDirection: "row",
+    paddingBottom: 20,
   },
 });
 

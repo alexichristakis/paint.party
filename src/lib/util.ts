@@ -1,4 +1,4 @@
-import Animated from "react-native-reanimated";
+import Animated, { Value } from "react-native-reanimated";
 import { State } from "react-native-gesture-handler";
 
 import { URL_PREFIX, CELL_SIZE, CANVAS_DIMENSIONS } from "./constants";
@@ -22,9 +22,10 @@ const {
   round,
   interpolate,
   divide,
+  onChange,
   sub,
   color,
-  Extrapolate
+  Extrapolate,
 } = Animated;
 
 export const coordinatesToIndex = (x: number, y: number) =>
@@ -47,10 +48,15 @@ export const onGestureEnd = proc(
       cond(eq(prevVal, State.UNDETERMINED), set(prevVal, val)),
       cond(neq(val, prevVal), [
         set(prevVal, val),
-        cond(eq(val, State.END), action)
-      ])
+        cond(eq(val, State.END), action),
+      ]),
     ])
 );
+
+export const onPress = (
+  state: Animated.Value<State>,
+  block: Animated.Adaptable<any>
+) => onChange(state, cond(eq(state, State.END), block));
 
 export const canvasUrl = (canvasId: string) =>
   URL_PREFIX + "canvas/" + canvasId;
@@ -137,6 +143,6 @@ export const colorHSV = (
     colorRGB(0, x, c),
     lessThan(h, 300),
     colorRGB(x, 0, c),
-    colorRGB(c, 0, x) /* else */
+    colorRGB(c, 0, x) /* else */,
   ]) as Animated.Node<number>;
 };

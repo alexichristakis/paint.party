@@ -11,7 +11,7 @@ import { RootState } from "@redux/types";
 import { PaletteActions } from "@redux/modules";
 
 import Palette from "./Palette";
-import ColorEditor, { ColorEditorContext } from "./ColorEditor";
+import ColorEditor from "../ColorEditor";
 import { Input, CreateButton } from "../universal";
 import { ModalList, ModalListRef } from "../ModalList";
 
@@ -25,7 +25,7 @@ export type PaletteEditorRef = {
 export type PaletteEditorConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState) => ({
-  palettes: selectors.palettes(state),
+  palettes: Object.values(selectors.palettes(state)),
 });
 const mapDispatchToProps = {
   create: PaletteActions.createPalette,
@@ -75,19 +75,17 @@ const PaletteEditor = React.memo(
             value={name}
             onChangeText={setName}
           />
-          <ColorEditorContext.Provider value={initialColorEditorState}>
-            {open
-              ? Object.values(palettes).map((palette, index) => (
-                  <React.Fragment key={index}>
-                    {index ? <View style={styles.separator} /> : null}
-                    <Palette
-                      palette={palette}
-                      colorEditorState={initialColorEditorState}
-                    />
-                  </React.Fragment>
-                ))
-              : null}
-          </ColorEditorContext.Provider>
+          {open
+            ? palettes.map((palette, index) => (
+                <React.Fragment key={index}>
+                  {index ? <View style={styles.separator} /> : null}
+                  <Palette
+                    palette={palette}
+                    colorEditorState={initialColorEditorState}
+                  />
+                </React.Fragment>
+              ))
+            : null}
           <CreateButton
             dependencies={[name]}
             valid={!!name.length}
@@ -97,7 +95,8 @@ const PaletteEditor = React.memo(
         <ColorEditor {...initialColorEditorState} />
       </>
     );
-  })
+  }),
+  (p, n) => p.palettes.length === n.palettes.length
 );
 
 const styles = StyleSheet.create({
