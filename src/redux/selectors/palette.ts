@@ -62,3 +62,5 @@ export const isEditing = createSelector([editing, p], (editing, props) => {
 
   return active && index === props.index && paletteId === props.paletteId;
 });
+
+export const showPaletteEditor = createSelector(s, (state) => state.showEditor);

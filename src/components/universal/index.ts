@@ -5,3 +5,4 @@ export * from "./BackgroundColorPicker";
 export * from "./LoadingOverlay";
 export * from "./TouchableHighlight";
 export * from "./CreateButton";
+export { default as HorizontalScroll } from "./HorizontalScroll";

@@ -1,19 +1,19 @@
-import React, { useRef, useState, useImperativeHandle } from "react";
+import React, { useLayoutEffect } from "react";
+import Animated, { interpolate, Extrapolate } from "react-native-reanimated";
 import { StyleSheet, View } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
-
-import { useValues } from "react-native-redash";
+import { useValues, bin } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
-import { Colors, TextSizes } from "@lib";
+import { Colors, SCREEN_HEIGHT } from "@lib";
 import { useColorEditorState } from "@hooks";
 import { RootState } from "@redux/types";
-import { PaletteActions } from "@redux/modules";
 
 import Palette from "./Palette";
 import ColorEditor from "../ColorEditor";
-import { Input, CreateButton } from "../universal";
-import { ModalList, ModalListRef } from "../ModalList";
+import { ModalList } from "../ModalList";
+import CreatePalette from "./CreatePalette";
+import { AppActions, PaletteActions } from "@redux/modules";
 
 export interface PaletteEditorProps {}
 
@@ -26,77 +26,64 @@ export type PaletteEditorConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState) => ({
   palettes: Object.values(selectors.palettes(state)),
+  showPalettes: state.palette.showEditor,
 });
 const mapDispatchToProps = {
-  create: PaletteActions.createPalette,
+  toggleShow: PaletteActions.toggleEditor,
 };
 
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
-const PaletteEditor = React.memo(
-  React.forwardRef<PaletteEditorRef, Props>(({ palettes, create }, ref) => {
-    const [name, setName] = useState("");
-    const [open, setOpen] = useState(false);
-    const modalRef = useRef<ModalListRef>(null);
+const PaletteEditor: React.FC<Props> = React.memo(
+  ({ palettes, showPalettes, toggleShow }) => {
+    console.log("render palette editor");
 
-    const [yOffset] = useValues<number>([0], []);
+    const [open] = useValues<0 | 1>([0], []);
+    const [yOffset] = useValues<number>([SCREEN_HEIGHT], []);
+
+    useLayoutEffect(() => {
+      open.setValue(bin(showPalettes));
+    }, [showPalettes]);
 
     const initialColorEditorState = useColorEditorState();
 
-    useImperativeHandle(ref, () => ({
-      open: () => {
-        modalRef.current?.open();
-        setOpen(true);
-      },
-      close: () => {
-        modalRef.current?.close();
-      },
-    }));
-
-    const handleOnPressCreate = () => {
-      create(name);
-      setName("");
-    };
+    const opacity = interpolate(yOffset, {
+      inputRange: [0, SCREEN_HEIGHT],
+      outputRange: [0.8, 0],
+      extrapolate: Extrapolate.CLAMP,
+    });
 
     return (
       <>
+        <Animated.View
+          onTouchEndCapture={toggleShow}
+          pointerEvents={showPalettes ? "auto" : "none"}
+          style={[styles.overlay, { opacity }]}
+        />
+
         <ModalList
-          ref={modalRef}
-          showHeader={false}
+          open={open}
+          onClose={toggleShow}
           yOffset={yOffset}
-          onClose={() => setOpen(false)}
           style={styles.container}
         >
-          <Input
-            maxLength={30}
-            autoCapitalize="none"
-            placeholder="new palette name"
-            size={TextSizes.title}
-            style={{ marginHorizontal: 10 }}
-            value={name}
-            onChangeText={setName}
-          />
-          {open
-            ? palettes.map((palette, index) => (
-                <React.Fragment key={index}>
-                  {index ? <View style={styles.separator} /> : null}
-                  <Palette
-                    palette={palette}
-                    colorEditorState={initialColorEditorState}
-                  />
-                </React.Fragment>
-              ))
-            : null}
-          <CreateButton
-            dependencies={[name]}
-            valid={!!name.length}
-            onPress={handleOnPressCreate}
-          />
+          <CreatePalette />
+          {palettes.map((palette, index) => (
+            <React.Fragment key={index}>
+              {index ? <View style={styles.separator} /> : null}
+              <Palette
+                palette={palette}
+                colorEditorState={initialColorEditorState}
+              />
+            </React.Fragment>
+          ))}
         </ModalList>
-        <ColorEditor {...initialColorEditorState} />
+
+        {showPalettes ? <ColorEditor {...initialColorEditorState} /> : null}
       </>
     );
-  }),
-  (p, n) => p.palettes.length === n.palettes.length
+  },
+  (p, n) =>
+    p.palettes.length === n.palettes.length && p.showPalettes === n.showPalettes
 );
 
 const styles = StyleSheet.create({
@@ -113,9 +100,11 @@ const styles = StyleSheet.create({
     right: 10,
     alignSelf: "center",
   },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.nearBlack,
+  },
 });
 
-const connector = connect(mapStateToProps, mapDispatchToProps, null, {
-  forwardRef: true,
-});
+const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(PaletteEditor);

@@ -13,7 +13,7 @@ export type AppState = Readonly<{
 const initialState: AppState = {
   isAuthenticated: false,
   isAuthenticating: false,
-  status: "active"
+  status: "active",
 };
 
 export default (
@@ -35,14 +35,14 @@ export default (
         ...state,
         isAuthenticated: true,
         isAuthenticating: false,
-        user
+        user,
       };
     }
 
     case ActionTypes.LOGOUT: {
       return {
         ...state,
-        isAuthenticating: true
+        isAuthenticating: true,
       };
     }
 
@@ -61,5 +61,5 @@ export const AppActions = {
   setStatus: (status: AppStateStatus) =>
     createAction(ActionTypes.SET_APP_STATUS, { status }),
 
-  authError: (error: string) => createAction(ActionTypes.AUTH_ERROR, { error })
+  authError: (error: string) => createAction(ActionTypes.AUTH_ERROR, { error }),
 };

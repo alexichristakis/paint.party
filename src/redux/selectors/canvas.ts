@@ -12,12 +12,12 @@ const s = (state: RootState) => state.canvas || {};
 
 export const activeCanvas = createSelector(
   s,
-  state => state.activeCanvas ?? ""
+  (state) => state.activeCanvas ?? ""
 );
 
-export const canvases = createSelector(s, state => state.canvases);
+export const canvases = createSelector(s, (state) => state.canvases);
 
-export const canvasList = createSelector(canvases, c => values(c));
+export const canvasList = createSelector(canvases, (c) => values(c));
 
 export const activeCanvasEntity = createSelector(
   [activeCanvas, canvases],
@@ -26,17 +26,25 @@ export const activeCanvasEntity = createSelector(
 
 export const activeCanvasBackgroundColor = createSelector(
   activeCanvasEntity,
-  entity => entity.backgroundColor ?? "#FFFFFF"
+  (entity) => entity.backgroundColor ?? "#FFFFFF"
 );
 
 export const canvasActiveAt = createSelector(
   activeCanvasEntity,
-  entity => entity.nextDrawAt ?? 0
+  (entity) => entity.nextDrawAt ?? 0
 );
 
 export const isCreatingCanvas = createSelector(
   s,
-  state => state.creatingCanvas
+  (state) => state.creatingCanvas
 );
 
-export const isLoadingCanvas = createSelector(s, state => state.loadingCanvas);
+export const isLoadingCanvas = createSelector(
+  s,
+  (state) => state.loadingCanvas
+);
+
+export const showCanvasCreator = createSelector(
+  s,
+  (state) => state.showCreator
+);

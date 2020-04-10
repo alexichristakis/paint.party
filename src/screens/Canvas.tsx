@@ -11,7 +11,6 @@ import { CanvasActions, VisualizationActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { Visualization, LiveUsers } from "@components/Canvas";
 import ColorPicker from "@components/ColorPicker";
-import PaletteEditor, { PaletteEditorRef } from "@components/PaletteEditor";
 import { Countdown, LoadingOverlay } from "@components/universal";
 import {
   SCREEN_HEIGHT,
@@ -54,7 +53,6 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   close,
 }) => {
   const [positionsVisible, pickerVisible] = useValues<0 | 1>([0, 0], []);
-  const paletteEditorRef = useRef<PaletteEditorRef>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -71,10 +69,6 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   const handleOnPressUsers = useCallback(() => {
     positionsVisible.setValue(1);
     pickerVisible.setValue(0);
-  }, []);
-
-  const handleOnPressEdit = useCallback(() => {
-    paletteEditorRef.current?.open();
   }, []);
 
   return (
@@ -95,9 +89,8 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
         pickerVisible={pickerVisible}
         positionsVisible={positionsVisible}
       />
-      <ColorPicker visible={pickerVisible} onPressEdit={handleOnPressEdit} />
+      <ColorPicker visible={pickerVisible} />
       <LoadingOverlay loading={loadingCanvas} />
-      <PaletteEditor ref={paletteEditorRef} />
     </View>
   );
 };

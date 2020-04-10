@@ -9,16 +9,16 @@ import {
 } from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
+import times from "lodash/times";
 
 import * as selectors from "@redux/selectors";
 import { Palette as PaletteType, PaletteActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN } from "@lib";
-import { TouchableHighlight } from "@components/universal";
+import { TouchableHighlight, HorizontalScroll } from "@components/universal";
 
 import { ColorEditorState } from "../ColorEditor";
 import Color from "./Color";
-import times from "lodash/times";
 
 export interface PaletteProps {
   palette: PaletteType;
@@ -28,6 +28,7 @@ export interface PaletteProps {
 export type PaletteConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState, props: PaletteProps) => ({
+  show: selectors.showPaletteEditor(state),
   palettes: selectors.palettes(state),
   active: selectors.isActivePalette(state, props),
 });
@@ -37,11 +38,13 @@ const mapDispatchToProps = {
 
 const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
   ({ enable, colorEditorState, palette, active }) => {
+    console.log("render palette");
+
     const { id: paletteId, name, colors } = palette;
 
     const numColors = colors.length;
 
-    const [xOffset] = useValues<number>([0, 0], []);
+    const [xOffset] = useValues<number>([0], []);
 
     const enablePalette = () => {
       Haptics.trigger("impactMedium");

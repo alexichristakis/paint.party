@@ -28,6 +28,7 @@ import {
 import { PaletteActions } from "@redux/modules";
 
 import Label from "./Label";
+import Indicator from "./Indicator";
 
 const {
   onChange,
@@ -70,161 +71,119 @@ export interface PopupProps {
 }
 
 const mapStateToProps = (state: RootState, props: PopupProps) => ({
-  cell: selectors.selectedCellLatestUpdate(state),
   angleIncrement: selectors.angleIncrement(state, props),
   numColors: selectors.numColors(state, props),
 });
 
-const mapDispatchToProps = {
-  setColor: PaletteActions.set,
-};
+const mapDispatchToProps = {};
 
-const Popup: React.FC<PopupProps & PopupConnectedProps> = ({
-  setColor,
-  position,
-  activeIndex,
-  rotation,
-  openTransition,
-  angleIncrement,
-  numColors,
-  cell,
-  state,
-}) => {
-  const [dragX, dragY, velocityX, velocityY] = useValues<number>(
-    [0, 0, 0, 0],
-    []
-  );
-
-  const handler = onGestureEvent({
-    absoluteX: position.x,
-    absoluteY: position.y,
-    translationX: dragX,
-    translationY: dragY,
-    velocityX,
-    velocityY,
+const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
+  ({
+    position,
+    activeIndex,
+    rotation,
+    openTransition,
+    angleIncrement,
+    numColors,
     state,
-  });
+  }) => {
+    const [dragX, dragY, velocityX, velocityY] = useValues<number>(
+      [0, 0, 0, 0],
+      []
+    );
 
-  const active = eq(state, State.ACTIVE);
-  const activeTransition = withTransition(active);
-  const activeSpringTransition = withSpringTransition(active);
+    const handler = onGestureEvent({
+      absoluteX: position.x,
+      absoluteY: position.y,
+      translationX: dragX,
+      translationY: dragY,
+      velocityX,
+      velocityY,
+      state,
+    });
 
-  const [translateX, translateY] = useMemoOne(
-    () => [
-      withSpring({
-        value: dragX,
-        velocity: velocityX,
-        state,
-        snapPoints: [0],
-        config,
-      }),
-      withSpring({
-        value: dragY,
-        velocity: velocityY,
-        state,
-        snapPoints: [0],
-        config,
-      }),
-    ],
-    []
-  );
+    const active = eq(state, State.ACTIVE);
+    const activeTransition = withTransition(active);
 
-  const { theta, radius } = canvas2Polar(
-    { x: position.x, y: position.y },
-    { y: SCREEN_HEIGHT, x: SCREEN_WIDTH / 2 }
-  );
+    const [translateX, translateY] = useMemoOne(
+      () => [
+        withSpring({
+          value: dragX,
+          velocity: velocityX,
+          state,
+          snapPoints: [0],
+          config,
+        }),
+        withSpring({
+          value: dragY,
+          velocity: velocityY,
+          state,
+          snapPoints: [0],
+          config,
+        }),
+      ],
+      []
+    );
 
-  useCode(
-    () => [
-      onChange(
-        state,
-        cond(
-          and(eq(state, State.END), greaterOrEq(activeIndex, 0)),
-          [
-            call([activeIndex], ([index]) => {
-              Haptics.trigger("impactHeavy");
-              setColor(cell.color, index);
-            }),
-            set(activeIndex, -1),
-            set(position.x, 0),
-            set(position.y, 0),
-          ],
-          [set(position.x, 0), set(position.y, 0)]
-        )
-      ),
-    ],
-    [cell.color]
-  );
+    const { theta, radius } = canvas2Polar(
+      { x: position.x, y: position.y },
+      { y: SCREEN_HEIGHT, x: SCREEN_WIDTH / 2 }
+    );
 
-  useCode(
-    () => [
-      onChange(
-        activeIndex,
-        cond(
-          neq(activeIndex, -1),
-          call([], () => Haptics.trigger("impactLight"))
-        )
-      ),
-      cond(
-        and(
-          lessOrEq(radius, COLOR_WHEEL_RADIUS + COLOR_SIZE),
-          greaterThan(radius, COLOR_WHEEL_RADIUS - COLOR_SIZE / 2)
+    useCode(
+      () => [
+        onChange(
+          activeIndex,
+          cond(
+            neq(activeIndex, -1),
+            call([], () => Haptics.trigger("impactLight"))
+          )
         ),
-        [
-          set(
-            activeIndex,
-            round(
-              sub(
-                numColors,
-                modulo(
-                  divide(
-                    add(theta, modulo(rotation, 2 * Math.PI)),
-                    angleIncrement
-                  ),
-                  numColors
+        cond(
+          and(
+            lessOrEq(radius, COLOR_WHEEL_RADIUS + COLOR_SIZE),
+            greaterThan(radius, COLOR_WHEEL_RADIUS - COLOR_SIZE / 2)
+          ),
+          [
+            set(
+              activeIndex,
+              round(
+                sub(
+                  numColors,
+                  modulo(
+                    divide(
+                      add(theta, modulo(rotation, 2 * Math.PI)),
+                      angleIncrement
+                    ),
+                    numColors
+                  )
                 )
               )
-            )
-          ),
-        ],
-        [set(activeIndex, -1)]
-      ),
-    ],
-    [angleIncrement, numColors]
-  );
+            ),
+          ],
+          [set(activeIndex, -1)]
+        ),
+      ],
+      [angleIncrement, numColors]
+    );
 
-  const width = mix(activeSpringTransition, POPUP_SIZE, COLOR_SIZE);
-  const height = mix(activeSpringTransition, POPUP_SIZE, COLOR_SIZE);
-  const borderRadius = divide(height, 2);
-  const borderWidth = mix(activeTransition, 0, COLOR_BORDER_WIDTH);
-  const translate = mix(activeTransition, 0, -(COLOR_SIZE - POPUP_SIZE) / 2);
-
-  return (
-    <PanGestureHandler {...handler}>
-      <Animated.View
-        style={{
-          ...styles.container,
-          opacity: openTransition,
-          transform: [{ translateX }, { translateY }],
-        }}
-      >
-        <Label {...{ activeTransition }} />
+    return (
+      <PanGestureHandler {...handler}>
         <Animated.View
           style={{
-            position: "absolute",
-            left: 5,
-            borderRadius,
-            borderWidth,
-            width,
-            height,
-            backgroundColor: cell.color,
-            transform: [{ translateX: translate }],
+            ...styles.container,
+            opacity: openTransition,
+            transform: [{ translateX }, { translateY }],
           }}
-        />
-      </Animated.View>
-    </PanGestureHandler>
-  );
-};
+        >
+          <Label {...{ activeTransition }} />
+          <Indicator {...{ position, activeIndex, state, activeTransition }} />
+        </Animated.View>
+      </PanGestureHandler>
+    );
+  },
+  (p, n) => p.numColors === n.numColors && p.angleIncrement === n.angleIncrement
+);
 
 const styles = StyleSheet.create({
   container: {

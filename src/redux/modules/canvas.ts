@@ -19,6 +19,7 @@ export type Canvas = {
 export type NewCanvas = Pick<Canvas, "name" | "backgroundColor" | "expiresAt">;
 
 export type CanvasState = Readonly<{
+  showCreator: boolean;
   activeCanvas: string;
   canvases: { [canvasId: string]: Canvas };
   creatingCanvas: boolean;
@@ -28,6 +29,7 @@ export type CanvasState = Readonly<{
 }>;
 
 const initialState: CanvasState = {
+  showCreator: false,
   activeCanvas: "",
   creatingCanvas: false,
   fetchingCanvases: false,
@@ -116,12 +118,18 @@ export default (
       return { ...state, activeCanvas: "" };
     }
 
+    case ActionTypes.TOGGLE_CANVAS_CREATOR: {
+      return { ...state, showCreator: !state.showCreator };
+    }
+
     default:
       return state;
   }
 };
 
 export const CanvasActions = {
+  toggleCreator: () => createAction(ActionTypes.TOGGLE_CANVAS_CREATOR),
+
   fetch: () => createAction(ActionTypes.FETCH_CANVASES),
   fetchSuccess: (canvases: Canvas[]) =>
     createAction(ActionTypes.FETCH_CANVASES_SUCCESS, { canvases }),

@@ -1,67 +1,76 @@
-import React, { useRef, useEffect, useState, useImperativeHandle } from "react";
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useImperativeHandle,
+  useLayoutEffect,
+} from "react";
 import {
   TextInput,
   StyleSheet,
   ActivityIndicator,
+  Text,
   Keyboard,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { ConnectedProps, connect } from "react-redux";
 
 import moment from "moment";
-import Animated from "react-native-reanimated";
-import { useValues, useSpringTransition, mix } from "react-native-redash";
+import Animated, { Extrapolate, interpolate } from "react-native-reanimated";
+import { useValues, useSpringTransition, mix, bin } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
 import { NewCanvas } from "@redux/modules/canvas";
-import { ModalList, ModalListRef } from "./ModalList";
+import { ModalList } from "./ModalList";
 import {
   Input,
   Slider,
   CreateButton,
   BackgroundColorPicker,
 } from "./universal";
-import { TextStyles, TextSizes, Colors } from "@lib";
+import { TextStyles, TextSizes, Colors, SCREEN_HEIGHT } from "@lib";
 
 import { TouchableScale } from "./universal/TouchableScale";
 import Send from "@assets/svg/send.svg";
 import { useReduxAction } from "@hooks";
 import { CanvasActions } from "@redux/modules";
+import { RootState } from "@redux/types";
 
 export interface CreateCanvasProps {}
 
-export type CreateCanvasRef = {
-  open: () => void;
-  close: () => void;
+const mapStateToProps = (state: RootState) => ({
+  palettes: Object.values(selectors.palettes(state)),
+  loading: selectors.isCreatingCanvas(state),
+  show: selectors.showCanvasCreator(state),
+});
+
+const mapDispatchToProps = {
+  createCanvas: CanvasActions.create,
+  toggleShow: CanvasActions.toggleCreator,
 };
 
-const CreateCanvas = React.memo(
-  React.forwardRef<CreateCanvasRef, CreateCanvasProps>(({}, ref) => {
+export type CreateCanvasConnectedProps = ConnectedProps<typeof connector>;
+
+const CreateCanvas: React.FC<
+  CreateCanvasProps & CreateCanvasConnectedProps
+> = React.memo(
+  ({ loading, createCanvas, show, toggleShow }) => {
+    const [open] = useValues<0 | 1>([0], []);
+    const [yOffset] = useValues<number>([SCREEN_HEIGHT], []);
+
+    useLayoutEffect(() => {
+      open.setValue(bin(show));
+    }, [show]);
+
     const textInputRef = useRef<TextInput>(null);
-    const modalRef = useRef<ModalListRef>(null);
 
     const [sliderValue] = useValues([0], []);
     const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
     const [expiry, setExpiry] = useState(moment().add(1, "day"));
     const [name, setName] = useState("");
 
-    const loading = useSelector(selectors.isCreatingCanvas);
-    const createCanvas = useReduxAction(CanvasActions.create);
-
-    useImperativeHandle(ref, () => ({
-      open: () => {
-        modalRef.current?.open();
-        // setTimeout(() => textInputRef.current?.focus(), 300);
-      },
-      close: () => {
-        modalRef.current?.close();
-        setTimeout(() => textInputRef.current?.blur(), 100);
-      },
-    }));
-
     const handleOnSnap = (index: number) => {
       if (!index) {
         setName("");
-        // textInputRef.current?.blur();
         Keyboard.dismiss();
       }
     };
@@ -75,14 +84,26 @@ const CreateCanvas = React.memo(
     const handleOnPressCreateCanvas = () =>
       createCanvas({ name, expiresAt: expiry.unix(), backgroundColor });
 
+    const opacity = interpolate(yOffset, {
+      inputRange: [0, SCREEN_HEIGHT],
+      outputRange: [0.8, 0],
+      extrapolate: Extrapolate.CLAMP,
+    });
+
     const range = [1, 5] as [number, number];
     return (
       <>
+        <Animated.View
+          onTouchEndCapture={toggleShow}
+          pointerEvents={show ? "auto" : "none"}
+          style={[styles.overlay, { opacity }]}
+        />
         <ModalList
-          showHeader={false}
+          open={open}
+          onClose={toggleShow}
           onSnap={handleOnSnap}
-          style={{ flex: 1, paddingHorizontal: 10 }}
-          ref={modalRef}
+          yOffset={yOffset}
+          style={styles.container}
         >
           <Input
             maxLength={30}
@@ -93,16 +114,14 @@ const CreateCanvas = React.memo(
             value={name}
             onChangeText={setName}
           />
-          <Animated.Text style={styles.text}>
-            expires {expiry.fromNow()}
-          </Animated.Text>
+          <Text style={styles.text}>expires {expiry.fromNow()}</Text>
           <Slider
             style={{ marginBottom: 20 }}
             onCompleteDrag={handleOnCompleteDrag}
             value={sliderValue}
             range={range}
           />
-          <Animated.Text style={styles.text}>background color</Animated.Text>
+          <Text style={styles.text}>background color</Text>
           <BackgroundColorPicker
             selected={backgroundColor}
             onChoose={setBackgroundColor}
@@ -116,10 +135,15 @@ const CreateCanvas = React.memo(
         </ModalList>
       </>
     );
-  })
+  },
+  (p, n) => p.show === n.show && p.loading === n.loading
 );
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 10,
+  },
   text: {
     textTransform: "uppercase",
     color: Colors.gray,
@@ -132,6 +156,11 @@ const styles = StyleSheet.create({
     right: 10,
     alignSelf: "center",
   },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.nearBlack,
+  },
 });
 
-export default CreateCanvas;
+const connector = connect(mapStateToProps, mapDispatchToProps);
+export default connector(CreateCanvas);

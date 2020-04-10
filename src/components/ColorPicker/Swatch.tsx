@@ -112,7 +112,10 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
             easing: Easing.inOut(Easing.ease),
           }
         ),
-        withSpringTransition(or(editing, active)),
+        withTransition(or(editing, active), {
+          duration: 300,
+          easing: Easing.bezier(0.33, 0.11, 0.49, 0.83),
+        }),
       ],
       []
     );
