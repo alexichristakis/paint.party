@@ -1,39 +1,25 @@
-import React, { useCallback, useRef } from "react";
-import { StyleSheet, View, Share } from "react-native";
+import React, { useCallback } from "react";
+import { StyleSheet, View } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useValues } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
-import { CanvasActions, VisualizationActions } from "@redux/modules";
+import { CanvasActions } from "@redux/modules";
 import { RootState } from "@redux/types";
-import { Visualization, LiveUsers } from "@components/Canvas";
+import { Visualization, Header } from "@components/Canvas";
 import ColorPicker from "@components/ColorPicker";
-import { Countdown, LoadingOverlay } from "@components/universal";
-import {
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH,
-  Colors,
-  SB_HEIGHT,
-  canvasUrl,
-} from "@lib";
-
-import X from "@assets/svg/X.svg";
-import Hamburger from "@assets/svg/hamburger.svg";
+import { LoadingOverlay } from "@components/universal";
+import { SCREEN_HEIGHT, SCREEN_WIDTH, Colors } from "@lib";
 
 import { StackParamList } from "../App";
 
 const mapStateToProps = (state: RootState) => ({
   activeCanvas: selectors.activeCanvas(state),
   loadingCanvas: selectors.isLoadingCanvas(state),
-  canvas: selectors.activeCanvasEntity(state),
-  canvasActiveAt: selectors.canvasActiveAt(state),
 });
 const mapDispatchToProps = {
-  enable: VisualizationActions.enableCanvas,
-  close: CanvasActions.close,
   open: CanvasActions.open,
 };
 
@@ -46,11 +32,7 @@ export interface CanvasProps {
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
   loadingCanvas,
-  canvasActiveAt,
-  canvas,
-  enable,
   open,
-  close,
 }) => {
   const [positionsVisible, pickerVisible] = useValues<0 | 1>([0, 0], []);
 
@@ -60,31 +42,9 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     }, [])
   );
 
-  const handleOnPressShare = () =>
-    Share.share({
-      title: `share ${canvas.name}`,
-      message: canvasUrl(activeCanvas),
-    });
-
-  const handleOnPressUsers = useCallback(() => {
-    positionsVisible.setValue(1);
-    pickerVisible.setValue(0);
-  }, []);
-
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity onPress={close}>
-            <X width={20} height={20} />
-          </TouchableOpacity>
-          <Countdown enable={enable} toDate={canvasActiveAt} />
-          <TouchableOpacity onPress={handleOnPressShare}>
-            <Hamburger width={20} height={20} />
-          </TouchableOpacity>
-        </View>
-        <LiveUsers onPress={handleOnPressUsers} />
-      </View>
+      <Header {...{ positionsVisible, pickerVisible }} />
       <Visualization
         pickerVisible={pickerVisible}
         positionsVisible={positionsVisible}
@@ -103,19 +63,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lightGray,
     alignItems: "center",
     justifyContent: "center",
-  },
-  header: {
-    alignItems: "center",
-    position: "absolute",
-    left: 12,
-    right: 12,
-    top: SB_HEIGHT + 5,
-  },
-  headerRow: {
-    alignSelf: "stretch",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
   },
 });
 

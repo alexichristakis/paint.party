@@ -63,52 +63,34 @@ const ColorWheel: React.FC<
     const panRef = useRef<PanGestureHandler>(null);
 
     const [
-      x0,
-      y0,
       x,
       y,
       translationX,
       translationY,
       velocityX,
       velocityY,
-      velocity,
       absoluteY,
       editingColor,
-    ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []);
+    ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0], []);
 
     const [panState] = useValues<State>([State.UNDETERMINED], []);
 
-    const panHandler = useMemoOne(
-      () =>
-        onGestureEvent({
-          state: panState,
-          x,
-          y,
-          absoluteY,
-          velocityX,
-          velocityY,
-          translationX,
-          translationY,
-        }),
-      []
-    );
+    const panHandler = onGestureEvent({
+      state: panState,
+      x,
+      y,
+      absoluteY,
+      velocityX,
+      velocityY,
+      translationX,
+      translationY,
+    });
 
-    useCode(
-      () => [
-        set(x0, sub(x, translationX)),
-        set(y0, sub(y, translationY)),
-
-        set(
-          velocity,
-          divide(
-            sub(multiply(x, velocityY), multiply(y, velocityX)),
-            add(multiply(x, x), multiply(y, y))
-          )
-        ),
-
-        cond(isDragging, set(angle, rotate)),
-      ],
-      []
+    const x0 = sub(x, translationX);
+    const y0 = sub(y, translationY);
+    const velocity = divide(
+      sub(multiply(x, velocityY), multiply(y, velocityX)),
+      add(multiply(x, x), multiply(y, y))
     );
 
     const diff = sub(atan2(x0, y0), atan2(x, y));
@@ -125,6 +107,8 @@ const ColorWheel: React.FC<
         }),
       []
     );
+
+    useCode(() => [cond(isDragging, set(angle, rotate))], []);
 
     const containerAnimatedStyle = {
       transform: [{ translateY: mix(openTransition, 75, 10) }],

@@ -38,8 +38,6 @@ const mapDispatchToProps = {
 
 const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
   ({ enable, colorEditorState, palette, active }) => {
-    console.log("render palette");
-
     const { id: paletteId, name, colors } = palette;
 
     const numColors = colors.length;

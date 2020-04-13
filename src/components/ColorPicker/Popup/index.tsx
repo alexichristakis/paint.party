@@ -3,12 +3,11 @@ import Animated, { useCode } from "react-native-reanimated";
 import { State, PanGestureHandler } from "react-native-gesture-handler";
 import {
   onGestureEvent,
-  withSpringTransition,
-  mix,
   useValues,
   withSpring,
   withTransition,
   canvas2Polar,
+  withSpringTransition,
 } from "react-native-redash";
 import { StyleSheet } from "react-native";
 import { ConnectedProps, connect } from "react-redux";
@@ -18,14 +17,11 @@ import { useMemoOne } from "use-memo-one";
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import {
-  COLOR_BORDER_WIDTH,
   COLOR_SIZE,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
   COLOR_WHEEL_RADIUS,
-  POPUP_SIZE,
 } from "@lib";
-import { PaletteActions } from "@redux/modules";
 
 import Label from "./Label";
 import Indicator from "./Indicator";
@@ -33,7 +29,6 @@ import Indicator from "./Indicator";
 const {
   onChange,
   neq,
-  greaterOrEq,
   add,
   round,
   modulo,
@@ -104,6 +99,7 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
 
     const active = eq(state, State.ACTIVE);
     const activeTransition = withTransition(active);
+    const activeSpringTransition = withSpringTransition(active);
 
     const [translateX, translateY] = useMemoOne(
       () => [
@@ -176,8 +172,15 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
             transform: [{ translateX }, { translateY }],
           }}
         >
-          <Label {...{ activeTransition }} />
-          <Indicator {...{ position, activeIndex, state, activeTransition }} />
+          <Label transition={activeTransition} />
+          <Indicator
+            transition={activeSpringTransition}
+            {...{
+              position,
+              activeIndex,
+              state,
+            }}
+          />
         </Animated.View>
       </PanGestureHandler>
     );

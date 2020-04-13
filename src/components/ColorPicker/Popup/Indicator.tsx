@@ -45,7 +45,7 @@ export type IndicatorConnectedProps = ConnectedProps<typeof connector>;
 export interface IndicatorProps {
   state: Animated.Value<State>;
   activeIndex: Animated.Value<number>;
-  activeTransition: Animated.Node<number>;
+  transition: Animated.Node<number>;
   position: {
     x: Animated.Value<number>;
     y: Animated.Value<number>;
@@ -63,7 +63,7 @@ const mapDispatchToProps = {
 const Indicator: React.FC<
   IndicatorProps & IndicatorConnectedProps
 > = React.memo(
-  ({ cell, state, position, setColor, activeIndex, activeTransition }) => {
+  ({ cell, state, position, setColor, activeIndex, transition }) => {
     const { color: backgroundColor } = cell;
 
     useCode(
@@ -88,11 +88,11 @@ const Indicator: React.FC<
       [cell.color]
     );
 
-    const width = mix(activeTransition, POPUP_SIZE, COLOR_SIZE);
-    const height = mix(activeTransition, POPUP_SIZE, COLOR_SIZE);
+    const width = mix(transition, POPUP_SIZE, COLOR_SIZE);
+    const height = mix(transition, POPUP_SIZE, COLOR_SIZE);
     const borderRadius = divide(height, 2);
-    const borderWidth = mix(activeTransition, 0, COLOR_BORDER_WIDTH);
-    const translateX = mix(activeTransition, 0, -(COLOR_SIZE - POPUP_SIZE) / 2);
+    const borderWidth = mix(transition, 0, COLOR_BORDER_WIDTH);
+    const translateX = mix(transition, 0, -(COLOR_SIZE - POPUP_SIZE) / 2);
 
     return (
       <Animated.View

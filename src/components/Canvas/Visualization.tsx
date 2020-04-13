@@ -44,8 +44,6 @@ const Visualization: React.FC<
   VisualizationProps & VisualizationReduxProps
 > = React.memo(
   ({ pickerVisible, positionsVisible, selectCell, backgroundColor }) => {
-    console.log("render visualization");
-
     const pinchRef = useRef<PinchGestureHandler>(null);
     const panRef = useRef<PanGestureHandler>(null);
     const childRef = useRef<Animated.View>(null);

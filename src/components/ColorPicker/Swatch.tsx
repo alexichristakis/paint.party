@@ -141,7 +141,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
               call([], () => Haptics.trigger("impactMedium")),
             ],
             cond(eq(longPressState, State.END), [
-              call([interpolatedColor], ([color]) => {
+              call([backgroundColor], ([color]) => {
                 Haptics.trigger("impactHeavy");
 
                 const hex = color.toString(16).substring(2);
@@ -168,33 +168,35 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
       []
     );
 
-    const interpolatedColor = useMemoOne(
+    const backgroundColor = useMemoOne(
       () =>
-        colorHSV(
-          h,
-          interpolate(add(s, x), {
-            inputRange: [
-              sub(s, SCREEN_WIDTH / 2, x0),
-              s,
-              add(s, sub(SCREEN_WIDTH / 2, x0)),
-            ],
-            outputRange: [0.1, s, 1],
-            extrapolate: Extrapolate.CLAMP,
-          }),
-          interpolate(add(v, y), {
-            inputRange: [
-              sub(v, SCREEN_HEIGHT, sub(absoluteY, y)),
-              v,
-              add(v, sub(absoluteY, y)),
-            ],
-            outputRange: [0.1, v, 1],
-            extrapolate: Extrapolate.CLAMP,
-          })
+        cond(
+          editing,
+          colorHSV(
+            h,
+            interpolate(add(s, x), {
+              inputRange: [
+                sub(s, SCREEN_WIDTH / 2, x0),
+                s,
+                add(s, sub(SCREEN_WIDTH / 2, x0)),
+              ],
+              outputRange: [0.1, s, 1],
+              extrapolate: Extrapolate.CLAMP,
+            }),
+            interpolate(add(v, y), {
+              inputRange: [
+                sub(v, SCREEN_HEIGHT, sub(absoluteY, y)),
+                v,
+                add(v, sub(absoluteY, y)),
+              ],
+              outputRange: [0.1, v, 1],
+              extrapolate: Extrapolate.CLAMP,
+            })
+          ),
+          color(r, g, b)
         ),
       [fill]
     );
-
-    const backgroundColor = cond(editing, interpolatedColor, color(r, g, b));
 
     const borderRadius = mix(activeTransition, COLOR_SIZE / 2, COLOR_SIZE / 4);
     const colorTransform = [

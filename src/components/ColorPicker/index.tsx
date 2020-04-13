@@ -1,11 +1,7 @@
 import React from "react";
-import Animated, { Easing, useCode } from "react-native-reanimated";
+import Animated, { Easing } from "react-native-reanimated";
 import { State } from "react-native-gesture-handler";
-import {
-  useValues,
-  withSpringTransition,
-  withTransition,
-} from "react-native-redash";
+import { useValues, withTransition } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
 import { View, StyleSheet } from "react-native";
@@ -19,7 +15,7 @@ import ColorWheel from "./Wheel";
 import { PaletteActions } from "@redux/modules";
 import isEqual from "lodash/isEqual";
 
-const { or, eq, debug } = Animated;
+const { or, eq } = Animated;
 
 export interface ColorPickerProps {
   visible: Animated.Value<0 | 1>;
@@ -36,15 +32,6 @@ const ColorPicker: React.FC<
   ColorPickerProps & ColorPickerConnectedProps
 > = React.memo(
   ({ visible, showPalettes }) => {
-    console.log("render picker");
-    useCode(
-      () => [
-        //
-        debug("visible", visible),
-      ],
-      []
-    );
-
     const [tapState, popupDragState] = useValues<State>(
       [State.UNDETERMINED, State.UNDETERMINED],
       []

@@ -3,6 +3,7 @@ import Animated from "react-native-reanimated";
 import { mix } from "react-native-redash";
 import { StyleSheet, View, Text } from "react-native";
 import { ConnectedProps, connect } from "react-redux";
+import isEqual from "lodash/isEqual";
 import moment from "moment";
 
 import * as selectors from "@redux/selectors";
@@ -13,7 +14,7 @@ import { useOnLayout } from "@hooks";
 export type LabelConnectedProps = ConnectedProps<typeof connector>;
 
 export interface LabelProps {
-  activeTransition: Animated.Node<number>;
+  transition: Animated.Node<number>;
 }
 
 const mapStateToProps = (state: RootState) => ({
@@ -22,29 +23,29 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {};
 
-const Label: React.FC<LabelProps & LabelConnectedProps> = ({
-  activeTransition,
-  cell,
-}) => {
-  const { time, color } = cell;
-  const { width, onLayout } = useOnLayout();
+const Label: React.FC<LabelProps & LabelConnectedProps> = React.memo(
+  ({ transition, cell }) => {
+    const { time, color } = cell;
+    const { width, onLayout } = useOnLayout();
 
-  const translateX = mix(activeTransition, 0, -width);
-  return (
-    <View pointerEvents={"none"} style={styles.container}>
-      <Animated.View
-        style={{ ...styles.animated, transform: [{ translateX }] }}
-        onLayout={onLayout}
-      >
-        <Text style={styles.text} numberOfLines={2}>
-          {color}
-          {"\n"}
-          {moment.unix(Number(time)).fromNow()}
-        </Text>
-      </Animated.View>
-    </View>
-  );
-};
+    const translateX = mix(transition, 0, -width);
+    return (
+      <View pointerEvents={"none"} style={styles.container}>
+        <Animated.View
+          style={{ ...styles.animated, transform: [{ translateX }] }}
+          onLayout={onLayout}
+        >
+          <Text style={styles.text} numberOfLines={2}>
+            {color}
+            {"\n"}
+            {moment.unix(Number(time)).fromNow()}
+          </Text>
+        </Animated.View>
+      </View>
+    );
+  },
+  (p, n) => isEqual(p.cell, n.cell)
+);
 
 const styles = StyleSheet.create({
   container: {

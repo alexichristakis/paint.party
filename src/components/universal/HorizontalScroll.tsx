@@ -137,8 +137,6 @@ export default memo(({ children, translate, velocity }: ScrollViewProps) => {
   const { width: content, onLayout: contentOnLayout } = useOnLayout();
   const { width: container, onLayout: containerOnLayout } = useOnLayout();
 
-  console.log("content", content, "container", container);
-
   const { gestureHandler, translationX, velocityX, state } = useMemoOne(
     () => horizontalPanGestureHandler(),
     []
