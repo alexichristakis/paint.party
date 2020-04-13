@@ -22,7 +22,6 @@ import Color from "./Color";
 
 export interface PaletteProps {
   palette: PaletteType;
-  colorEditorState: ColorEditorState;
 }
 
 export type PaletteConnectedProps = ConnectedProps<typeof connector>;
@@ -37,7 +36,7 @@ const mapDispatchToProps = {
 };
 
 const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
-  ({ enable, colorEditorState, palette, active }) => {
+  ({ enable, palette, active }) => {
     const { id: paletteId, name, colors } = palette;
 
     const numColors = colors.length;
@@ -71,15 +70,7 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
           contentContainerStyle={styles.colorContainer}
         >
           {times(numColors, (index) => (
-            <Color
-              key={index}
-              {...{
-                index,
-                xOffset,
-                colorEditorState,
-                paletteId,
-              }}
-            />
+            <Color key={index} {...{ index, paletteId }} />
           ))}
         </Animated.ScrollView>
       </TouchableHighlight>

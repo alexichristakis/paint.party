@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useContext, useMemo } from "react";
 import { View } from "react-native";
 import Animated, { useCode, Easing } from "react-native-reanimated";
 import { connect, ConnectedProps } from "react-redux";
@@ -21,6 +21,7 @@ import { useMemoOne } from "use-memo-one";
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import { PaletteActions } from "@redux/modules";
+import { ColorEditorContext } from "@hooks";
 import {
   SCREEN_WIDTH,
   COLOR_BORDER_WIDTH,
@@ -54,19 +55,9 @@ const {
   modulo,
 } = Animated;
 
-export type ColorEditorState = {
-  id: Animated.Value<number>;
-  layout: {
-    x: Animated.Value<number>;
-    y: Animated.Value<number>;
-    width: Animated.Value<number>;
-    height: Animated.Value<number>;
-  };
-};
-
 export type ColorEditorConnectedProps = ConnectedProps<typeof connector>;
 
-export type ColorEditorProps = ColorEditorState;
+export type ColorEditorProps = {};
 
 const mapStateToProps = (state: RootState) => ({
   active: selectors.editingActive(state),
@@ -76,51 +67,53 @@ const mapDispatchToProps = {
   closeEditor: PaletteActions.closeEditor,
 };
 
-const ColorEditor: React.FC<
-  ColorEditorProps & ColorEditorConnectedProps
-> = React.memo(
-  ({ id, closeEditor, active, layout }) => {
-    const indicatorPanRef = useRef<PanGestureHandler>(null);
-    const tapRef = useRef<TapGestureHandler>(null);
+const ColorEditor: React.FC<ColorEditorProps & ColorEditorConnectedProps> = ({
+  closeEditor,
+  active,
+}) => {
+  console.log("render color editor ");
+  const colorEditorState = useContext(ColorEditorContext);
+  const { id, layout } = colorEditorState;
 
-    const [tapState] = useValues([State.UNDETERMINED], []);
+  const indicatorPanRef = useRef<PanGestureHandler>(null);
+  const tapRef = useRef<TapGestureHandler>(null);
 
-    const tapHandler = useMemoOne(
-      () => onGestureEvent({ state: tapState }),
-      []
-    );
+  const [tapState] = useValues([State.UNDETERMINED], []);
 
-    const duration = 300;
-    const [transition, pressInTransition] = useMemoOne(
-      () => [
-        withTransition(neq(id, -1), {
-          duration,
-          easing: Easing.bezier(0.33, 0.11, 0.49, 0.83),
-        }),
-        withTransition(eq(tapState, State.BEGAN), {
-          duration,
-          easing: Easing.inOut(Easing.ease),
-        }),
-      ],
-      []
-    );
+  const duration = 300;
+  const [transition, pressInTransition] = useMemoOne(
+    () => [
+      withTransition(neq(id, -1), {
+        duration,
+        easing: Easing.bezier(0.33, 0.11, 0.49, 0.83),
+      }),
+      withTransition(eq(tapState, State.BEGAN), {
+        duration,
+        easing: Easing.inOut(Easing.ease),
+      }),
+    ],
+    []
+  );
 
-    // start close of editor
-    useCode(
-      () => [onChange(tapState, cond(eq(tapState, State.END), set(id, -1)))],
-      []
-    );
+  // start close of editor
+  useCode(
+    () => [onChange(tapState, cond(eq(tapState, State.END), set(id, -1)))],
+    []
+  );
 
-    // handle closing the editor
-    useCode(
-      () => [
-        cond(
-          and(eq(id, -1), not(transition), bin(active)),
-          call([], closeEditor)
-        ),
-      ],
-      [active]
-    );
+  // handle closing the editor
+  useCode(
+    () => [
+      cond(
+        and(eq(id, -1), not(transition), bin(active)),
+        call([], closeEditor)
+      ),
+    ],
+    [active]
+  );
+
+  return useMemo(() => {
+    const tapHandler = onGestureEvent({ state: tapState });
 
     return (
       <View
@@ -151,9 +144,8 @@ const ColorEditor: React.FC<
         </Animated.View>
       </View>
     );
-  },
-  (p, n) => p.active === n.active
-);
+  }, [active]);
+};
 
 const styles = StyleSheet.create({
   container: {

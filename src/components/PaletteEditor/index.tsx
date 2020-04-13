@@ -28,33 +28,24 @@ const mapDispatchToProps = {
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
 const PaletteEditor: React.FC<Props> = React.memo(
   ({ palettes, showPalettes, toggleShow }) => {
-    const initialColorEditorState = useColorEditorState();
-
     const handleOnClose = () => {
       toggleShow();
     };
 
     return (
-      <>
-        <BottomSheet
-          open={showPalettes}
-          onClose={handleOnClose}
-          style={styles.container}
-        >
-          <CreatePalette />
-          {palettes.map((palette, index) => (
-            <React.Fragment key={index}>
-              {index ? <View style={styles.separator} /> : null}
-              <Palette
-                palette={palette}
-                colorEditorState={initialColorEditorState}
-              />
-            </React.Fragment>
-          ))}
-        </BottomSheet>
-
-        {showPalettes ? <ColorEditor {...initialColorEditorState} /> : null}
-      </>
+      <BottomSheet
+        open={showPalettes}
+        onClose={handleOnClose}
+        style={styles.container}
+      >
+        <CreatePalette />
+        {palettes.map((palette, index) => (
+          <React.Fragment key={index}>
+            {index ? <View style={styles.separator} /> : null}
+            <Palette palette={palette} />
+          </React.Fragment>
+        ))}
+      </BottomSheet>
     );
   },
   (p, n) =>

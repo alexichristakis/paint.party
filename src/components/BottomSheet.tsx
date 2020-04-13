@@ -24,15 +24,8 @@ import {
   useClocks,
   contains,
 } from "react-native-redash";
-import isEqual from "lodash/isEqual";
 
-import {
-  Colors,
-  SB_HEIGHT,
-  TextStyles,
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH,
-} from "@lib";
+import { Colors, SB_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH } from "@lib";
 import { useMemoOne } from "use-memo-one";
 
 const {
@@ -41,10 +34,6 @@ const {
   neq,
   useCode,
   cond,
-  and,
-  debug,
-  abs,
-  eq,
   not,
   call,
   block,
@@ -253,22 +242,5 @@ const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: Colors.nearBlack,
-  },
-  headerContainer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 10,
-    marginRight: 10,
-    marginLeft: 15,
-    marginBottom: 7,
-  },
-  headerDivider: {
-    width: "100%",
-    height: 1,
-    backgroundColor: Colors.lightGray,
   },
 });

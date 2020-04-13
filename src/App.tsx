@@ -15,11 +15,17 @@ import CodePush, { CodePushOptions } from "react-native-code-push";
 // @ts-ignore
 import withPerformance from "react-native-performance-monitor/provider";
 
-import { useNotificationEvents } from "@hooks";
+import {
+  useNotificationEvents,
+  useColorEditorState,
+  ColorEditorContext,
+} from "@hooks";
 import * as selectors from "@redux/selectors";
 import createStore from "@redux/store";
+
 import PaletteEditor from "@components/PaletteEditor";
 import CreateCanvas from "@components/CreateCanvas";
+import ColorEditor from "@components/ColorEditor";
 
 import { Home, Canvas, Landing } from "./screens";
 
@@ -36,10 +42,11 @@ const Root = () => {
 
   const isAuthenticated = useSelector(selectors.isAuthenticated);
   const activeCanvas = useSelector(selectors.activeCanvas);
+  const initialColorEditorState = useColorEditorState();
 
   const showHome = !!activeCanvas.length;
   return (
-    <>
+    <ColorEditorContext.Provider value={initialColorEditorState}>
       <NavigationContainer ref={ref}>
         <Stack.Navigator
           screenOptions={{
@@ -59,9 +66,10 @@ const Root = () => {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-      {showHome ? <CreateCanvas /> : null}
+      <CreateCanvas />
       <PaletteEditor />
-    </>
+      <ColorEditor />
+    </ColorEditorContext.Provider>
   );
 };
 

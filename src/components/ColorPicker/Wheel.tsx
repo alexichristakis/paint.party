@@ -69,9 +69,8 @@ const ColorWheel: React.FC<
       translationY,
       velocityX,
       velocityY,
-      absoluteY,
       editingColor,
-    ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0], []);
+    ] = useValues<number>([0, 0, 0, 0, 0, 0, 0], []);
 
     const [panState] = useValues<State>([State.UNDETERMINED], []);
 
@@ -79,7 +78,6 @@ const ColorWheel: React.FC<
       state: panState,
       x,
       y,
-      absoluteY,
       velocityX,
       velocityY,
       translationX,
@@ -99,11 +97,7 @@ const ColorWheel: React.FC<
         withDecay({
           velocity: cond(editingColor, 0, velocity),
           value: cond(defined(diff), diff, 0),
-          state: cond(
-            and(editingColor, eq(panState, State.ACTIVE)),
-            State.END,
-            panState
-          ) as Animated.Value<State>,
+          state: panState,
         }),
       []
     );
@@ -134,16 +128,7 @@ const ColorWheel: React.FC<
               <Swatch
                 key={index}
                 active={eq(activeIndex, index)}
-                {...{
-                  index,
-                  panRef,
-                  x0,
-                  absoluteY,
-                  x: translationX,
-                  y: translationY,
-                  editingColor,
-                  openTransition,
-                }}
+                {...{ index, openTransition }}
               />
             ))}
           </Animated.View>

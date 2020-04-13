@@ -42,6 +42,7 @@ import {
   INDICATOR_MIN,
   INDICATOR_MAX,
   onPress,
+  COLOR_SIZE,
 } from "@lib";
 import { Slider } from "@components/universal";
 import Check from "@assets/svg/check_line.svg";
@@ -84,8 +85,7 @@ export interface EditorProps {
   transition: Animated.Node<number>;
   x: Animated.Value<number>;
   y: Animated.Value<number>;
-  width: Animated.Value<number>;
-  height: Animated.Value<number>;
+  scale: Animated.Value<number>;
 }
 
 export const bInterpolate = (
@@ -95,7 +95,7 @@ export const bInterpolate = (
 ) => origin + value * (destination - origin);
 
 const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
-  ({ id, transition, color, x, y, width, height, setColor }) => {
+  ({ id, transition, color, x, y, scale, setColor }) => {
     const indicatorPanRef = useRef<PanGestureHandler>(null);
 
     const [pan, undo, confirm] = useValues(
@@ -186,6 +186,8 @@ const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
       []
     );
 
+    const width = multiply(scale, COLOR_SIZE);
+    const height = multiply(scale, COLOR_SIZE);
     const animatedEditorStyle = {
       top: mix(transition, y, EDITOR_TOP),
       left: mix(transition, x, EDITOR_LEFT),
