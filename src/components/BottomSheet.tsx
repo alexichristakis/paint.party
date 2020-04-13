@@ -82,7 +82,6 @@ export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
       []
     );
     const [shouldOpen, shouldClose] = useValues([bin(open), 0], []);
-
     const [gestureState] = useValues([UNDETERMINED], []);
 
     const panHandler = onGestureEvent({

@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import Animated, { useCode } from "react-native-reanimated";
 import { useValues } from "react-native-redash";
 import { State } from "react-native-gesture-handler";
+import Haptics from "react-native-haptic-feedback";
 
 import { COLOR_SIZE, hash } from "@lib";
-import { useReduxAction } from "./use-redux-action";
 import { PaletteActions } from "@redux/modules";
-import { useContext } from "react";
+import { useReduxAction } from "./use-redux-action";
 
 const { onChange, cond, call, or, eq } = Animated;
 
@@ -46,17 +46,16 @@ export const useColorEditor = (
     () => [
       onChange(
         id,
-        cond(eq(colorId, id), [
-          //
-          call([], () => edit(index, paletteId)),
-        ])
+        cond(eq(colorId, id), [call([], () => edit(index, paletteId))])
       ),
 
       onChange(state, [
         cond(
           or(eq(state, State.END), eq(state, State.ACTIVE)),
           call([], () => {
-            ref.current?.getNode().measure((_, __, width, height, x, y) => {
+            ref.current?.getNode().measure((_, __, width, ___, x, y) => {
+              Haptics.trigger("impactLight");
+
               // set values
               layout.x.setValue(x + (width - COLOR_SIZE) / 2);
               layout.y.setValue(y + (width - COLOR_SIZE) / 2);

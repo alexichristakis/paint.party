@@ -1,19 +1,15 @@
-import React, { useRef, useContext, useMemo } from "react";
+import React, { useRef, useMemo } from "react";
 import { StyleSheet } from "react-native";
-import Animated, { useCode, onChange } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import { connect, ConnectedProps } from "react-redux";
 import { TapGestureHandler, State } from "react-native-gesture-handler";
 import { useValues, onGestureEvent, bin } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
-import { PaletteActions } from "@redux/modules";
-import { hash, COLOR_SIZE, COLOR_BORDER_WIDTH, COLOR_MARGIN } from "@lib";
+import { COLOR_SIZE, COLOR_BORDER_WIDTH, COLOR_MARGIN } from "@lib";
 
-import { ColorEditorContext } from "../ColorEditor";
 import { useColorEditor } from "@hooks";
-
-const { cond, call, sub, not, eq, set, add } = Animated;
 
 export type ColorConnectedProps = ConnectedProps<typeof connector>;
 
@@ -35,8 +31,6 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = ({
   isEditing,
   color: backgroundColor,
 }) => {
-  console.log("render color");
-
   const ref = useRef<Animated.View>(null);
   const [state] = useValues([State.UNDETERMINED], []);
 

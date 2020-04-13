@@ -27,7 +27,7 @@ const { onChange, or, eq, cond, call } = Animated;
 
 export interface SwatchProps {
   index: number;
-  active: Animated.Value<0 | 1>;
+  active: Animated.Node<0 | 1>;
   openTransition: Animated.Node<number>;
 }
 
@@ -150,7 +150,6 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "red",
     alignItems: "center",
     justifyContent: "center",
   },

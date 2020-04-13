@@ -71,7 +71,6 @@ const ColorEditor: React.FC<ColorEditorProps & ColorEditorConnectedProps> = ({
   closeEditor,
   active,
 }) => {
-  console.log("render color editor ");
   const colorEditorState = useContext(ColorEditorContext);
   const { id, layout } = colorEditorState;
 

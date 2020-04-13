@@ -6,10 +6,8 @@ import { PaletteActions } from "@redux/modules";
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import { Colors } from "@lib";
-import { useColorEditorState } from "@hooks";
 
 import Palette from "./Palette";
-import ColorEditor from "../ColorEditor";
 import { BottomSheet } from "../BottomSheet";
 import CreatePalette from "./CreatePalette";
 
@@ -27,27 +25,21 @@ const mapDispatchToProps = {
 
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
 const PaletteEditor: React.FC<Props> = React.memo(
-  ({ palettes, showPalettes, toggleShow }) => {
-    const handleOnClose = () => {
-      toggleShow();
-    };
-
-    return (
-      <BottomSheet
-        open={showPalettes}
-        onClose={handleOnClose}
-        style={styles.container}
-      >
-        <CreatePalette />
-        {palettes.map((palette, index) => (
-          <React.Fragment key={index}>
-            {index ? <View style={styles.separator} /> : null}
-            <Palette palette={palette} />
-          </React.Fragment>
-        ))}
-      </BottomSheet>
-    );
-  },
+  ({ palettes, showPalettes, toggleShow }) => (
+    <BottomSheet
+      open={showPalettes}
+      onClose={toggleShow}
+      style={styles.container}
+    >
+      <CreatePalette />
+      {palettes.map((palette, index) => (
+        <React.Fragment key={index}>
+          {index ? <View style={styles.separator} /> : null}
+          <Palette palette={palette} />
+        </React.Fragment>
+      ))}
+    </BottomSheet>
+  ),
   (p, n) =>
     p.palettes.length === n.palettes.length && p.showPalettes === n.showPalettes
 );
