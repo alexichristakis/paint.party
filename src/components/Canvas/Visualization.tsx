@@ -1,7 +1,7 @@
-import React, { useRef, useCallback } from "react";
+import React, { useCallback } from "react";
 import { State, TapGestureHandler } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
-import { onGestureEvent, useValues, useVector } from "react-native-redash";
+import { onGestureEvent, useValue, useVector } from "react-native-redash";
 import { connect, ConnectedProps } from "react-redux";
 import isEqual from "lodash/isEqual";
 
@@ -36,7 +36,7 @@ const Visualization: React.FC<
 > = React.memo(
   ({ pickerVisible, positionsVisible, selectCell, backgroundColor }) => {
     const tap = useVector(0, 0, []);
-    const [tapState] = useValues<State>([UNDETERMINED], []);
+    const tapState = useValue(UNDETERMINED, []);
     const tapGestureHandler = onGestureEvent({ state: tapState, ...tap });
 
     const handleOnPressCell = useCallback(

@@ -1,7 +1,7 @@
 import React from "react";
 import Animated, { Easing } from "react-native-reanimated";
 import { State } from "react-native-gesture-handler";
-import { useValues, withTransition } from "react-native-redash";
+import { useValues, withTransition, useVector } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
 import { View, StyleSheet } from "react-native";
@@ -36,9 +36,8 @@ const ColorPicker: React.FC<
       [State.UNDETERMINED, State.UNDETERMINED],
       []
     );
-    const [popupPositionX, popupPositionY, rotation, activeIndex] = useValues<
-      number
-    >([0, 0, 0, -1], []);
+    const [rotation, activeIndex] = useValues<number>([0, -1], []);
+    const popupPosition = useVector(0, 0, []);
 
     const openTransition = useMemoOne(
       () =>
@@ -64,7 +63,7 @@ const ColorPicker: React.FC<
         />
         <Popup
           state={popupDragState}
-          position={{ x: popupPositionX, y: popupPositionY }}
+          position={popupPosition}
           {...{ rotation, activeIndex, openTransition }}
         />
       </View>
