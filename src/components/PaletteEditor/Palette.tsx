@@ -1,12 +1,6 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
-import Animated from "react-native-reanimated";
-import {
-  useValues,
-  useTransition,
-  bInterpolateColor,
-  onScrollEvent,
-} from "react-native-redash";
+import { StyleSheet, ScrollView, Text } from "react-native";
+import { useTransition, bInterpolateColor } from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
 import times from "lodash/times";
@@ -17,12 +11,10 @@ import { RootState } from "@redux/types";
 import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN } from "@lib";
 import { TouchableHighlight, HorizontalScroll } from "@components/universal";
 
-import { ColorEditorState } from "../ColorEditor";
 import Color from "./Color";
 
 export interface PaletteProps {
   palette: PaletteType;
-  colorEditorState: ColorEditorState;
 }
 
 export type PaletteConnectedProps = ConnectedProps<typeof connector>;
@@ -37,12 +29,10 @@ const mapDispatchToProps = {
 };
 
 const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
-  ({ enable, colorEditorState, palette, active }) => {
+  ({ enable, palette, active }) => {
     const { id: paletteId, name, colors } = palette;
 
     const numColors = colors.length;
-
-    const [xOffset] = useValues<number>([0], []);
 
     const enablePalette = () => {
       Haptics.trigger("impactMedium");
@@ -63,25 +53,15 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
         onPress={enablePalette}
       >
         <Text style={styles.name}>{name}</Text>
-        <Animated.ScrollView
+        <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          onScroll={onScrollEvent({ x: xOffset })}
-          scrollEventThrottle={16}
           contentContainerStyle={styles.colorContainer}
         >
           {times(numColors, (index) => (
-            <Color
-              key={index}
-              {...{
-                index,
-                xOffset,
-                colorEditorState,
-                paletteId,
-              }}
-            />
+            <Color key={index} {...{ index, paletteId }} />
           ))}
-        </Animated.ScrollView>
+        </ScrollView>
       </TouchableHighlight>
     );
   },
