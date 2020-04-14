@@ -2,6 +2,9 @@ import Animated, { Value } from "react-native-reanimated";
 import { State } from "react-native-gesture-handler";
 
 import { URL_PREFIX, CELL_SIZE, CANVAS_DIMENSIONS } from "./constants";
+import { Point, vec } from "react-native-redash";
+import { DependencyList } from "react";
+import { useMemoOne } from "use-memo-one";
 
 const {
   cond,
@@ -107,6 +110,11 @@ export const match = (
     match(condsAndResPairs, offset + 2)
   );
 };
+
+export const useVectors = <T extends number = number>(
+  points: [T, T][],
+  deps: DependencyList
+) => useMemoOne(() => points.map((point) => vec.createValue(...point)), deps);
 
 export const colorHSV = (
   h: Animated.Adaptable<number> /* 0 - 360 */,

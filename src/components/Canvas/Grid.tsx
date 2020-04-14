@@ -34,8 +34,10 @@ const Cell = ({ i, j }: { i: number; j: number }) => {
 export default React.memo(({ backgroundColor }: GridProps) => (
   <View style={{ backgroundColor }}>
     <Svg width={CANVAS_SIZE} height={CANVAS_SIZE}>
-      {times(CANVAS_DIMENSIONS, i =>
-        times(CANVAS_DIMENSIONS, j => <Cell key={`${i}-${j}`} {...{ i, j }} />)
+      {times(CANVAS_DIMENSIONS, (i) =>
+        times(CANVAS_DIMENSIONS, (j) => (
+          <Cell key={`${i}-${j}`} {...{ i, j }} />
+        ))
       )}
     </Svg>
   </View>

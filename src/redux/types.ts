@@ -20,6 +20,7 @@ export enum PaletteActionTypes {
   ADD_COLOR = "palette/ADD",
   REMOVE_COLOR = "palette/REMOVE",
   ENABLE_PALETTE = "palette/ENABLE",
+  TOGGLE_PALETTE_EDITOR = "palette/TOGGLE_EDITOR",
 }
 
 export enum AppActionTypes {
@@ -32,6 +33,7 @@ export enum AppActionTypes {
 }
 
 export enum CanvasActionTypes {
+  TOGGLE_CANVAS_CREATOR = "canvas/TOGGLE_CREATOR",
   FETCH_CANVASES = "canvas/FETCH",
   FETCH_CANVASES_SUCCESS = "canvas/FETCH_SUCCESS",
   OPEN_CANVAS = "canvas/OPEN",

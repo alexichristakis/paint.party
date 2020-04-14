@@ -1,4 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import {
   NativeViewGestureHandler,
@@ -6,7 +12,7 @@ import {
   State,
   TapGestureHandler,
 } from "react-native-gesture-handler";
-import Animated, { onChange } from "react-native-reanimated";
+import Animated, { Extrapolate } from "react-native-reanimated";
 import {
   bin,
   clamp,
@@ -15,25 +21,19 @@ import {
   spring,
   useValues,
   withSpring,
+  useClocks,
+  contains,
 } from "react-native-redash";
-import isEqual from "lodash/isEqual";
 
-import {
-  Colors,
-  SB_HEIGHT,
-  TextStyles,
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH,
-} from "@lib";
+import { Colors, SB_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH } from "@lib";
+import { useMemoOne } from "use-memo-one";
 
 const {
   interpolate,
+  round,
+  neq,
   useCode,
   cond,
-  and,
-  debug,
-  abs,
-  eq,
   not,
   call,
   block,
@@ -55,13 +55,11 @@ const config = {
   restDisplacementThreshold: 0.1,
 };
 
-export interface ModalListProps {
+export interface BottomSheetProps {
   scrollRef?: React.RefObject<Animated.ScrollView>;
   children: React.ReactNode;
-  open: Animated.Value<0 | 1>;
   style?: StyleProp<ViewStyle>;
-  yOffset?: Animated.Value<number>;
-  onSnap?: (index: number) => void;
+  open: boolean;
   onClose?: () => void;
 }
 
@@ -69,17 +67,9 @@ const FULLY_OPEN = SB_HEIGHT;
 const SNAP_OPEN = SCREEN_HEIGHT / 2;
 const CLOSED = SCREEN_HEIGHT;
 
-export const ModalList: React.FC<ModalListProps> = React.memo(
-  ({
-    open,
-    style,
-    children,
-    yOffset = new Animated.Value(0),
-    scrollRef,
-    onSnap,
-    onClose,
-  }) => {
-    const [clock] = useState(new Clock());
+export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
+  ({ open, style, children, scrollRef, onClose }) => {
+    const [clock] = useClocks(1, []);
 
     const [lastSnap, setLastSnap] = useState(SCREEN_HEIGHT);
 
@@ -91,25 +81,8 @@ export const ModalList: React.FC<ModalListProps> = React.memo(
       [0, 0, 0, 0, SCREEN_HEIGHT],
       []
     );
-    const [shouldOpen, shouldClose] = useValues([0, 0], []);
-
+    const [shouldOpen, shouldClose] = useValues([bin(open), 0], []);
     const [gestureState] = useValues([UNDETERMINED], []);
-
-    const handleClose = () => {
-      if (onClose) onClose();
-    };
-
-    const handleOnSnap = ([value]: readonly number[]) => {
-      if (value === CLOSED) {
-        handleClose();
-      }
-
-      if (value !== SCREEN_HEIGHT || !onClose) {
-        setLastSnap(value);
-      }
-
-      if (onSnap) onSnap(value);
-    };
 
     const panHandler = onGestureEvent({
       state: gestureState,
@@ -117,46 +90,54 @@ export const ModalList: React.FC<ModalListProps> = React.memo(
       velocityY,
     });
 
-    const [translateY] = useState(
-      clamp(
-        withSpring({
-          value: sub(dragY, lastScrollY),
-          velocity: velocityY,
-          state: gestureState,
-          snapPoints: [FULLY_OPEN, SNAP_OPEN, CLOSED],
-          onSnap: handleOnSnap,
-          offset,
-          config,
-        }),
-        FULLY_OPEN,
-        CLOSED
-      )
+    const translateY = useMemoOne(
+      () =>
+        clamp(
+          withSpring({
+            value: sub(dragY, lastScrollY),
+            velocity: velocityY,
+            state: gestureState,
+            snapPoints: [FULLY_OPEN, SNAP_OPEN, CLOSED],
+            offset,
+            config,
+          }),
+          FULLY_OPEN,
+          CLOSED
+        ),
+      []
+    );
+
+    useLayoutEffect(() => {
+      shouldOpen.setValue(bin(open));
+      shouldClose.setValue(bin(!open));
+    }, [open]);
+
+    const handleOnSnap = useCallback(
+      ([value]: readonly number[]) => {
+        if (value !== lastSnap) {
+          setLastSnap(value);
+        }
+
+        if (value === CLOSED && lastSnap !== CLOSED && onClose) {
+          onClose();
+        }
+      },
+      [lastSnap]
     );
 
     useCode(
       () => [
-        onChange(open, [
-          cond(
-            and(open, not(shouldOpen)),
-            [set(shouldOpen, 1), set(shouldClose, 0)],
-            [
-              cond(and(not(open), not(shouldClose)), [
-                set(shouldOpen, 0),
-                set(shouldClose, 1),
-              ]),
-            ]
-          ),
-        ]),
+        cond(
+          contains([SB_HEIGHT, CLOSED, SNAP_OPEN], round(translateY)),
+          call([round(translateY)], handleOnSnap)
+        ),
+      ],
+      [lastSnap, translateY]
+    );
 
-        set(yOffset, translateY),
-        cond(
-          eq(translateY, SNAP_OPEN),
-          call([], () => setLastSnap(SNAP_OPEN))
-        ),
-        cond(
-          eq(translateY, SB_HEIGHT),
-          call([], () => setLastSnap(FULLY_OPEN))
-        ),
+    const reset = [set(shouldOpen, 0), set(shouldClose, 0)];
+    useCode(
+      () => [
         cond(shouldOpen, [
           set(
             offset,
@@ -167,7 +148,7 @@ export const ModalList: React.FC<ModalListProps> = React.memo(
               config,
             })
           ),
-          cond(not(clockRunning(clock)), set(shouldOpen, 0)),
+          cond(not(clockRunning(clock)), reset),
         ]),
         cond(shouldClose, [
           set(
@@ -179,11 +160,22 @@ export const ModalList: React.FC<ModalListProps> = React.memo(
               config,
             })
           ),
-          cond(not(clockRunning(clock)), set(shouldClose, 0)),
+          cond(not(clockRunning(clock)), reset),
         ]),
       ],
-      [open]
+      []
     );
+
+    const opacity = interpolate(translateY, {
+      inputRange: [0, SCREEN_HEIGHT],
+      outputRange: [0.8, 0],
+      extrapolate: Extrapolate.CLAMP,
+    });
+
+    const handleOnPressOverlay = useCallback(() => {
+      shouldOpen.setValue(0);
+      shouldClose.setValue(1);
+    }, []);
 
     return (
       <TapGestureHandler
@@ -192,6 +184,11 @@ export const ModalList: React.FC<ModalListProps> = React.memo(
         maxDeltaY={lastSnap - FULLY_OPEN}
       >
         <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+          <Animated.View
+            onTouchEndCapture={handleOnPressOverlay}
+            pointerEvents={open ? "auto" : "none"}
+            style={[styles.overlay, { opacity }]}
+          />
           <PanGestureHandler
             ref={panRef}
             maxPointers={1}
@@ -220,7 +217,7 @@ export const ModalList: React.FC<ModalListProps> = React.memo(
                     style,
                   ]}
                 >
-                  {children}
+                  {open ? children : null}
                 </Animated.ScrollView>
               </NativeViewGestureHandler>
             </Animated.View>
@@ -229,7 +226,7 @@ export const ModalList: React.FC<ModalListProps> = React.memo(
       </TapGestureHandler>
     );
   },
-  (p, n) => isEqual(p.open, n.open)
+  (p, n) => p.open === n.open
 );
 
 const styles = StyleSheet.create({
@@ -241,21 +238,8 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
   },
-  headerContainer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 10,
-    marginRight: 10,
-    marginLeft: 15,
-    marginBottom: 7,
-  },
-  headerDivider: {
-    width: "100%",
-    height: 1,
-    backgroundColor: Colors.lightGray,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.nearBlack,
   },
 });

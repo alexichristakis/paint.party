@@ -1,102 +1,47 @@
-import React, { useRef, useState, useImperativeHandle } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 
-import { useValues } from "react-native-redash";
-
-import * as selectors from "@redux/selectors";
-import { Colors, TextSizes } from "@lib";
-import { useColorEditorState } from "@hooks";
-import { RootState } from "@redux/types";
 import { PaletteActions } from "@redux/modules";
+import * as selectors from "@redux/selectors";
+import { RootState } from "@redux/types";
+import { Colors } from "@lib";
 
 import Palette from "./Palette";
-import ColorEditor from "../ColorEditor";
-import { Input, CreateButton } from "../universal";
-import { ModalList, ModalListRef } from "../ModalList";
+import { BottomSheet } from "../BottomSheet";
+import CreatePalette from "./CreatePalette";
 
 export interface PaletteEditorProps {}
-
-export type PaletteEditorRef = {
-  open: () => void;
-  close: () => void;
-};
 
 export type PaletteEditorConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState) => ({
   palettes: Object.values(selectors.palettes(state)),
+  showPalettes: state.palette.showEditor,
 });
 const mapDispatchToProps = {
-  create: PaletteActions.createPalette,
+  toggleShow: PaletteActions.toggleEditor,
 };
 
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
-const PaletteEditor = React.memo(
-  React.forwardRef<PaletteEditorRef, Props>(({ palettes, create }, ref) => {
-    const [name, setName] = useState("");
-    const [open, setOpen] = useState(false);
-    const modalRef = useRef<ModalListRef>(null);
-
-    const [yOffset] = useValues<number>([0], []);
-
-    const initialColorEditorState = useColorEditorState();
-
-    useImperativeHandle(ref, () => ({
-      open: () => {
-        modalRef.current?.open();
-        setOpen(true);
-      },
-      close: () => {
-        modalRef.current?.close();
-      },
-    }));
-
-    const handleOnPressCreate = () => {
-      create(name);
-      setName("");
-    };
-
-    return (
-      <>
-        <ModalList
-          ref={modalRef}
-          showHeader={false}
-          yOffset={yOffset}
-          onClose={() => setOpen(false)}
-          style={styles.container}
-        >
-          <Input
-            maxLength={30}
-            autoCapitalize="none"
-            placeholder="new palette name"
-            size={TextSizes.title}
-            style={{ marginHorizontal: 10 }}
-            value={name}
-            onChangeText={setName}
-          />
-          {open
-            ? palettes.map((palette, index) => (
-                <React.Fragment key={index}>
-                  {index ? <View style={styles.separator} /> : null}
-                  <Palette
-                    palette={palette}
-                    colorEditorState={initialColorEditorState}
-                  />
-                </React.Fragment>
-              ))
-            : null}
-          <CreateButton
-            dependencies={[name]}
-            valid={!!name.length}
-            onPress={handleOnPressCreate}
-          />
-        </ModalList>
-        <ColorEditor {...initialColorEditorState} />
-      </>
-    );
-  }),
-  (p, n) => p.palettes.length === n.palettes.length
+const PaletteEditor: React.FC<Props> = React.memo(
+  ({ palettes, showPalettes, toggleShow }) => (
+    <BottomSheet
+      open={showPalettes}
+      onClose={toggleShow}
+      style={styles.container}
+    >
+      <CreatePalette />
+      {palettes.map((palette, index) => (
+        <React.Fragment key={index}>
+          {index ? <View style={styles.separator} /> : null}
+          <Palette palette={palette} />
+        </React.Fragment>
+      ))}
+    </BottomSheet>
+  ),
+  (p, n) =>
+    p.palettes.length === n.palettes.length && p.showPalettes === n.showPalettes
 );
 
 const styles = StyleSheet.create({
@@ -107,15 +52,7 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: Colors.lightGray,
   },
-  sendButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    alignSelf: "center",
-  },
 });
 
-const connector = connect(mapStateToProps, mapDispatchToProps, null, {
-  forwardRef: true,
-});
+const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(PaletteEditor);

@@ -1,6 +1,5 @@
 import React, { useCallback, useRef } from "react";
 import { StyleSheet } from "react-native";
-import values from "lodash/values";
 import Animated from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
@@ -9,10 +8,8 @@ import { useValues, onScrollEvent } from "react-native-redash";
 
 import { RootState } from "@redux/types";
 import * as selectors from "@redux/selectors";
-import { CanvasActions, AppActions } from "@redux/modules";
+import { CanvasActions, AppActions, PaletteActions } from "@redux/modules";
 import { SB_HEIGHT, TextStyles } from "@lib";
-import CreateCanvas, { CreateCanvasRef } from "@components/CreateCanvas";
-import PaletteEditor, { PaletteEditorRef } from "@components/PaletteEditor";
 import ActionButton from "@components/ActionButton";
 import { Canvases } from "@components/Canvases";
 
@@ -21,13 +18,15 @@ import { StackParamList } from "../App";
 const connector = connect(
   (state: RootState) => ({
     activeCanvas: selectors.activeCanvas(state),
-    canvases: selectors.canvases(state)
+    canvases: selectors.canvases(state),
   }),
   {
     logout: AppActions.logout,
     openCanvas: CanvasActions.open,
     unsubscribe: CanvasActions.close,
-    fetchCanvases: CanvasActions.fetch
+    fetchCanvases: CanvasActions.fetch,
+    openPalettes: PaletteActions.toggleEditor,
+    openCanvasCreator: CanvasActions.toggleCreator,
   }
 );
 
@@ -41,11 +40,11 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
   openCanvas,
   fetchCanvases,
   activeCanvas,
-  unsubscribe
+  unsubscribe,
+  openPalettes,
+  openCanvasCreator,
 }) => {
   const [scrollY] = useValues([0], []);
-  const paletteEditorRef = useRef<PaletteEditorRef>(null);
-  const createCanvasRef = useRef<CreateCanvasRef>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -53,10 +52,6 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
       fetchCanvases();
     }, [activeCanvas])
   );
-
-  const openCanvasCreator = () => createCanvasRef.current?.open();
-
-  const openPaletteEditor = () => paletteEditorRef.current?.open();
 
   return (
     <>
@@ -69,15 +64,13 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
         <Canvases
           scrollY={scrollY}
           onPressCanvas={openCanvas}
-          canvases={values(canvases)}
+          canvases={Object.values(canvases)}
         />
       </Animated.ScrollView>
       <ActionButton
         onPressAction1={openCanvasCreator}
-        onPressAction2={openPaletteEditor}
+        onPressAction2={openPalettes}
       />
-      <CreateCanvas ref={createCanvasRef} />
-      <PaletteEditor ref={paletteEditorRef} />
     </>
   );
 };
@@ -85,24 +78,24 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: SB_HEIGHT + 5
+    paddingTop: SB_HEIGHT + 5,
   },
   header: {
     alignItems: "flex-end",
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
   headerContent: {
     alignSelf: "stretch",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   welcomeText: {
-    ...TextStyles.medium
+    ...TextStyles.medium,
   },
   contentContainer: {
     //
-  }
+  },
 });
 
 export default connector(Home);

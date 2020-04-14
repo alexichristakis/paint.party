@@ -1,47 +1,37 @@
 import React from "react";
 import Animated, { Easing } from "react-native-reanimated";
 import { State } from "react-native-gesture-handler";
-import {
-  useValues,
-  withSpringTransition,
-  withTransition,
-} from "react-native-redash";
+import { useValues, withTransition } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
 import { View, StyleSheet } from "react-native";
+import isEqual from "lodash/isEqual";
 
 import { RootState } from "@redux/types";
+import { PaletteActions } from "@redux/modules";
 import { COLOR_WHEEL_RADIUS, COLOR_SIZE } from "@lib";
 
 import Button from "./Button";
 import Popup from "./Popup";
 import ColorWheel from "./Wheel";
 
-const { or, eq } = Animated;
-
-const config = {
-  damping: 40,
-  mass: 1,
-  stiffness: 300,
-  overshootClamping: false,
-  restSpeedThreshold: 0.1,
-  restDisplacementThreshold: 0.1,
-};
+const { eq } = Animated;
 
 export interface ColorPickerProps {
-  onPressEdit: () => void;
   visible: Animated.Value<0 | 1>;
 }
 
 export type ColorPickerConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (_: RootState) => ({});
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  showPalettes: PaletteActions.toggleEditor,
+};
 
 const ColorPicker: React.FC<
   ColorPickerProps & ColorPickerConnectedProps
 > = React.memo(
-  ({ visible, onPressEdit }) => {
+  ({ visible, showPalettes }) => {
     const [tapState, popupDragState] = useValues<State>(
       [State.UNDETERMINED, State.UNDETERMINED],
       []
@@ -50,14 +40,12 @@ const ColorPicker: React.FC<
       number
     >([0, 0, 0, -1], []);
 
-    const [openTransition, closeTransition] = useMemoOne(
-      () => [
-        withSpringTransition(visible, config),
-        withTransition(
-          or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
-          { duration: 200, easing: Easing.inOut(Easing.ease) }
-        ),
-      ],
+    const openTransition = useMemoOne(
+      () =>
+        withTransition(visible, {
+          duration: 300,
+          easing: Easing.bezier(0.33, 0.11, 0.49, 0.83),
+        }),
       []
     );
 
@@ -67,12 +55,12 @@ const ColorPicker: React.FC<
           state={tapState}
           visible={visible}
           openTransition={openTransition}
-          onPress={onPressEdit}
+          onPress={showPalettes}
         />
         <ColorWheel
           angle={rotation}
           isDragging={eq(popupDragState, State.ACTIVE)}
-          {...{ activeIndex, openTransition, closeTransition }}
+          {...{ activeIndex, openTransition }}
         />
         <Popup
           state={popupDragState}
@@ -82,7 +70,7 @@ const ColorPicker: React.FC<
       </View>
     );
   },
-  () => true
+  (p, n) => isEqual(p, n)
 );
 
 const styles = StyleSheet.create({

@@ -9,11 +9,8 @@ import {
   useValues,
   useClocks,
   mix,
-  useTransition,
-  bInterpolateColor,
 } from "react-native-redash";
 import { connect, ConnectedProps } from "react-redux";
-import isNull from "lodash/isNull";
 
 import * as selectors from "@redux/selectors";
 import { CELL_SIZE, coordinatesFromIndex, Colors } from "@lib";
@@ -23,7 +20,7 @@ const { set } = Animated;
 
 const config = {
   damping: 40,
-  mass: 1,
+  mass: 1.1,
   stiffness: 300,
   overshootClamping: false,
   restSpeedThreshold: 0.1,
@@ -45,13 +42,27 @@ export const CellHighlight: React.FC<
 > = React.memo(
   ({ borderColor = Colors.nearBlack, color, cell, visible }) => {
     const [top, left] = useValues<number>([0, 0], []);
-    const [clock] = useClocks(1, []);
+    const [loopClock] = useClocks(1, []);
 
     const { x, y } = coordinatesFromIndex(cell);
     useCode(
       () => [
-        set(top, spring({ to: y - BORDER_WIDTH, from: top, config })),
-        set(left, spring({ to: x - BORDER_WIDTH, from: left, config })),
+        set(
+          top,
+          spring({
+            to: y - BORDER_WIDTH,
+            from: top,
+            config,
+          })
+        ),
+        set(
+          left,
+          spring({
+            to: x - BORDER_WIDTH,
+            from: left,
+            config,
+          })
+        ),
       ],
       [cell]
     );
@@ -59,8 +70,8 @@ export const CellHighlight: React.FC<
     const [loopValue, opacity] = useMemoOne(
       () => [
         loop({
-          clock,
-          duration: 550,
+          clock: loopClock,
+          duration: 600,
           easing: Easing.inOut(Easing.ease),
           boomerang: true,
           autoStart: true,
@@ -68,13 +79,6 @@ export const CellHighlight: React.FC<
         withTimingTransition(visible),
       ],
       []
-    );
-
-    const colorTransition = useTransition(!isNull(color));
-    const backgroundColor = bInterpolateColor(
-      colorTransition,
-      "transparent",
-      color as string
     );
 
     const scale = mix(loopValue, 0.9, 1.1);
@@ -88,7 +92,7 @@ export const CellHighlight: React.FC<
               opacity,
               top,
               left,
-              backgroundColor,
+              backgroundColor: color ?? "transparent",
               transform: [{ scale }],
             },
           ]}

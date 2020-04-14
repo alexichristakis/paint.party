@@ -3,7 +3,7 @@ import { StatusBar } from "react-native";
 
 import {
   NavigationContainer,
-  NavigationContainerRef
+  NavigationContainerRef,
 } from "@react-navigation/native";
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
@@ -12,11 +12,22 @@ import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import CodePush, { CodePushOptions } from "react-native-code-push";
 
-import { useNotificationEvents } from "@hooks";
+// @ts-ignore
+import withPerformance from "react-native-performance-monitor/provider";
+
+import {
+  useNotificationEvents,
+  useColorEditorState,
+  ColorEditorContext,
+} from "@hooks";
 import * as selectors from "@redux/selectors";
 import createStore from "@redux/store";
 
-import { Landing, Home, Canvas } from "./screens";
+import PaletteEditor from "@components/PaletteEditor";
+import CreateCanvas from "@components/CreateCanvas";
+import ColorEditor from "@components/ColorEditor";
+
+import { Home, Canvas, Landing } from "./screens";
 
 export type StackParamList = {
   HOME: undefined;
@@ -31,27 +42,34 @@ const Root = () => {
 
   const isAuthenticated = useSelector(selectors.isAuthenticated);
   const activeCanvas = useSelector(selectors.activeCanvas);
+  const initialColorEditorState = useColorEditorState();
 
+  const showHome = !!activeCanvas.length;
   return (
-    <NavigationContainer ref={ref}>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          gestureEnabled: false,
-          stackAnimation: "fade"
-        }}
-      >
-        {isAuthenticated ? (
-          activeCanvas.length ? (
-            <Stack.Screen name="CANVAS" component={Canvas} />
+    <ColorEditorContext.Provider value={initialColorEditorState}>
+      <NavigationContainer ref={ref}>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            gestureEnabled: false,
+            stackAnimation: "fade",
+          }}
+        >
+          {isAuthenticated ? (
+            showHome ? (
+              <Stack.Screen name="CANVAS" component={Canvas} />
+            ) : (
+              <Stack.Screen name="HOME" component={Home} />
+            )
           ) : (
-            <Stack.Screen name="HOME" component={Home} />
-          )
-        ) : (
-          <Stack.Screen name="LANDING" component={Landing} />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+            <Stack.Screen name="LANDING" component={Landing} />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+      <CreateCanvas />
+      <PaletteEditor />
+      <ColorEditor />
+    </ColorEditorContext.Provider>
   );
 };
 
@@ -74,6 +92,7 @@ const App: React.FC = () => {
 };
 
 const codePushOptions: CodePushOptions = {
-  checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME
+  checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
 };
+
 export default CodePush(codePushOptions)(gestureHandlerRootHOC(App));
