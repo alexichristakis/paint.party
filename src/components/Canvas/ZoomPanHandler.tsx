@@ -14,7 +14,7 @@ import {
   PinchGestureHandler,
 } from "react-native-gesture-handler";
 
-import { CANVAS_SIZE, useVectors } from "@lib";
+import { CANVAS_SIZE, useVectors, SCREEN_HEIGHT } from "@lib";
 
 const { set, neq, and, cond, eq, or, multiply } = Animated;
 
@@ -22,7 +22,7 @@ export interface ZoomPanHandlerProps {
   onGestureBegan: Animated.Adaptable<number>;
 }
 
-const CANVAS = vec.create(CANVAS_SIZE, CANVAS_SIZE);
+const CANVAS = vec.create(CANVAS_SIZE, SCREEN_HEIGHT);
 const CENTER = vec.divide(CANVAS, 2);
 
 const ZoomPanHandler: React.FC<ZoomPanHandlerProps> = ({

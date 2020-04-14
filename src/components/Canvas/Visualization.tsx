@@ -1,26 +1,12 @@
-import React, { useRef, useCallback, useMemo } from "react";
-import {
-  PanGestureHandler,
-  PinchGestureHandler,
-  State,
-  TapGestureHandler,
-} from "react-native-gesture-handler";
+import React, { useRef, useCallback } from "react";
+import { State, TapGestureHandler } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
-import {
-  onGestureEvent,
-  useValues,
-  withScaleOffset,
-  withDecay,
-  transformOrigin,
-  translate,
-  vec,
-  withOffset,
-} from "react-native-redash";
+import { onGestureEvent, useValues, useVector } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
-import { coordinatesToIndex, onPress, CANVAS_SIZE, SCREEN_HEIGHT } from "@lib";
+import { coordinatesToIndex, onPress } from "@lib";
 import { RootState } from "@redux/types";
 import { VisualizationActions } from "@redux/modules";
 
@@ -28,7 +14,6 @@ import Grid from "./Grid";
 import CellHighlight from "./CellHighlight";
 import PositionsOverlay from "./PositionsOverlay";
 import ZoomPanHandler from "./ZoomPanHandler";
-import { StyleSheet } from "react-native";
 
 const {
   onChange,
@@ -44,7 +29,7 @@ const {
   cond,
   call,
 } = Animated;
-const { ACTIVE, BEGAN, END, UNDETERMINED } = State;
+const { UNDETERMINED } = State;
 
 const mapStateToProps = (state: RootState) => ({
   backgroundColor: selectors.activeCanvasBackgroundColor(state),
@@ -65,7 +50,7 @@ const Visualization: React.FC<
   ({ pickerVisible, positionsVisible, selectCell, backgroundColor }) => {
     const childRef = useRef<Animated.View>(null);
 
-    const tap = useMemoOne(() => vec.createValue(0, 0), []);
+    const tap = useVector(0, 0, []);
 
     const [tapState] = useValues<State>([UNDETERMINED], []);
 
