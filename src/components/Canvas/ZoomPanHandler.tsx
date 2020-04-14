@@ -1,428 +1,119 @@
-import React, { useRef } from "react";
-import { StyleSheet, View } from "react-native";
-import Animated, { Easing, useCode, onChange } from "react-native-reanimated";
-import { bin, useValues, onGestureEvent, translate } from "react-native-redash";
-import { useMemoOne } from "use-memo-one";
+import React from "react";
+import { StyleSheet } from "react-native";
+import Animated, { useCode } from "react-native-reanimated";
 import {
-  PanGestureHandler,
+  useValues,
+  onGestureEvent,
+  translate,
+  pinchBegan,
+  vec,
+} from "react-native-redash";
+import {
   State,
+  PanGestureHandler,
   PinchGestureHandler,
 } from "react-native-gesture-handler";
 
-import { CANVAS_SIZE } from "@lib";
+import { CANVAS_SIZE, useVectors } from "@lib";
 
-const {
-  set,
-  cond,
-  eq,
-  or,
-  add,
-  sub,
-  pow,
-  min,
-  max,
-  debug,
-  multiply,
-  divide,
-  lessThan,
-  spring,
-  defined,
-  decay,
-  timing,
-  call,
-  diff,
-  acc,
-  not,
-  abs,
-  block,
-  startClock,
-  stopClock,
-  clockRunning,
-  Value,
-  Clock,
-  event,
-} = Animated;
-
-function scaleDiff(value: Animated.Adaptable<number>) {
-  const tmp = new Value(1);
-  const prev = new Value(1);
-  return [set(tmp, divide(value, prev)), set(prev, value), tmp];
-}
-
-function dragDiff(
-  value: Animated.Adaptable<number>,
-  updating: Animated.Adaptable<0 | 1>
-) {
-  const tmp = new Value(0);
-  const prev = new Value(0);
-  return cond(
-    updating,
-    [set(tmp, sub(value, prev)), set(prev, value), tmp],
-    set(prev, 0)
-  );
-}
-
-// returns linear friction coeff. When `value` is 0 coeff is 1 (no friction), then
-// it grows linearly until it reaches `MAX_FRICTION` when `value` is equal
-// to `MAX_VALUE`
-function friction(value: Animated.Adaptable<number>) {
-  const MAX_FRICTION = 5;
-  const MAX_VALUE = 100;
-  return max(
-    1,
-    min(MAX_FRICTION, add(1, multiply(value, (MAX_FRICTION - 1) / MAX_VALUE)))
-  );
-}
-
-function speed(value: Animated.Adaptable<number>) {
-  const clock = new Clock();
-  const dt = diff(clock);
-  return cond(lessThan(dt, 1), 0, multiply(1000, divide(diff(value), dt)));
-}
-
-const MIN_SCALE = 1;
-const MAX_SCALE = 4;
-
-function scaleRest(value: Animated.Adaptable<number>) {
-  return cond(
-    lessThan(value, MIN_SCALE),
-    MIN_SCALE,
-    cond(lessThan(MAX_SCALE, value), MAX_SCALE, value)
-  );
-}
-
-function scaleFriction(
-  value: Animated.Adaptable<number>,
-  rest: Animated.Adaptable<number>,
-  delta: Animated.Adaptable<number>
-) {
-  const MAX_FRICTION = 20;
-  const MAX_VALUE = 0.5;
-  const res = multiply(value, delta);
-  const howFar = abs(sub(rest, value));
-  const friction = max(
-    1,
-    min(MAX_FRICTION, add(1, multiply(howFar, (MAX_FRICTION - 1) / MAX_VALUE)))
-  );
-  return cond(
-    lessThan(0, howFar),
-    multiply(value, add(1, divide(add(delta, -1), friction))),
-    res
-  );
-}
-
-function runTiming(
-  clock: Animated.Clock,
-  value: Animated.Adaptable<number>,
-  dest: Animated.Adaptable<number>,
-  startStopClock = true
-) {
-  const state = {
-    finished: new Value(0),
-    position: new Value(0),
-    frameTime: new Value(0),
-    time: new Value(0),
-  };
-
-  const config = {
-    toValue: new Value(0),
-    duration: 300,
-    easing: Easing.inOut(Easing.cubic),
-  };
-
-  return [
-    cond(clockRunning(clock), 0, [
-      set(state.finished, 0),
-      set(state.frameTime, 0),
-      set(state.time, 0),
-      set(state.position, value),
-      set(config.toValue, dest),
-      cond(bin(startStopClock), startClock(clock)),
-    ]),
-    timing(clock, state, config),
-    cond(state.finished, cond(bin(startStopClock), stopClock(clock))),
-    state.position,
-  ];
-}
-
-function runDecay(
-  clock: Animated.Clock,
-  value: Animated.Adaptable<number>,
-  velocity: Animated.Adaptable<number>
-) {
-  const state = {
-    finished: new Value(0),
-    velocity: new Value(0),
-    position: new Value(0),
-    time: new Value(0),
-  };
-
-  const config = { deceleration: 0.99 };
-
-  return [
-    cond(clockRunning(clock), 0, [
-      set(state.finished, 0),
-      set(state.velocity, velocity),
-      set(state.position, value),
-      set(state.time, 0),
-      startClock(clock),
-    ]),
-    set(state.position, value),
-    decay(clock, state, config),
-    cond(state.finished, stopClock(clock)),
-    state.position,
-  ];
-}
-
-function bouncyPinch(
-  value: Animated.Adaptable<number>,
-  gesture: Animated.Adaptable<number>,
-  gestureActive: Animated.Node<number>,
-  focalX: Animated.Adaptable<number>,
-  displacementX: Animated.Value<number>,
-  focalY: Animated.Adaptable<number>,
-  displacementY: Animated.Value<number>
-) {
-  const clock = new Clock();
-
-  const delta = scaleDiff(gesture);
-  const rest = scaleRest(value);
-  const focalXRest = cond(
-    lessThan(value, 1),
-    0,
-    sub(displacementX, multiply(focalX, add(-1, divide(rest, value))))
-  );
-  const focalYRest = cond(
-    lessThan(value, 1),
-    0,
-    sub(displacementY, multiply(focalY, add(-1, divide(rest, value))))
-  );
-  const nextScale = new Value(1);
-
-  return cond(
-    [delta, gestureActive],
-    [
-      stopClock(clock),
-      set(nextScale, scaleFriction(value, rest, delta)),
-      set(
-        displacementX,
-        sub(displacementX, multiply(focalX, add(-1, divide(nextScale, value))))
-      ),
-      set(
-        displacementY,
-        sub(displacementY, multiply(focalY, add(-1, divide(nextScale, value))))
-      ),
-      nextScale,
-    ],
-    cond(
-      or(clockRunning(clock), not(eq(rest, value))),
-      [
-        set(displacementX, runTiming(clock, displacementX, focalXRest, false)),
-        set(displacementY, runTiming(clock, displacementY, focalYRest, false)),
-        runTiming(clock, value, rest),
-      ],
-      value
-    )
-  );
-}
-
-function bouncy(
-  value: Animated.Adaptable<number>,
-  gestureDiv: Animated.Node<number>,
-  gestureActive: Animated.Node<number>,
-  lowerBound: Animated.Node<number>,
-  upperBound: Animated.Node<number>,
-  friction: (val: Animated.Node<number>) => Animated.Node<number>
-) {
-  const timingClock = new Clock();
-  const decayClock = new Clock();
-
-  const velocity = speed(value);
-
-  // did value go beyond the limits (lower, upper)
-  const isOutOfBounds = or(
-    lessThan(value, lowerBound),
-    lessThan(upperBound, value)
-  );
-  // position to snap to (upper or lower is beyond or the current value elsewhere)
-  const rest = cond(
-    lessThan(value, lowerBound),
-    lowerBound,
-    cond(lessThan(upperBound, value), upperBound, value)
-  );
-  // how much the value exceeds the bounds, this is used to calculate friction
-  const outOfBounds = abs(sub(rest, value));
-
-  return cond(
-    [gestureDiv, velocity, gestureActive],
-    [
-      stopClock(timingClock),
-      stopClock(decayClock),
-      add(value, divide(gestureDiv, friction(outOfBounds))),
-    ],
-    cond(
-      or(clockRunning(timingClock), isOutOfBounds),
-      [stopClock(decayClock), runTiming(timingClock, value, rest)],
-      cond(
-        or(clockRunning(decayClock), lessThan(5, abs(velocity))),
-        runDecay(decayClock, value, velocity),
-        value
-      )
-    )
-  );
-}
-
-const WIDTH = CANVAS_SIZE;
-const HEIGHT = CANVAS_SIZE;
+const { set, neq, and, cond, eq, or, multiply } = Animated;
 
 export interface ZoomPanHandlerProps {
   onGestureBegan: Animated.Adaptable<number>;
 }
 
+const CANVAS = vec.create(CANVAS_SIZE, CANVAS_SIZE);
+const CENTER = vec.divide(CANVAS, 2);
+
 const ZoomPanHandler: React.FC<ZoomPanHandlerProps> = ({
-  children,
   onGestureBegan,
+  children,
 }) => {
-  const pinchRef = useRef<PinchGestureHandler>(null);
-  const panRef = useRef<PanGestureHandler>(null);
+  const [origin, pinch, focal, drag, translation, offset] = useVectors(
+    [
+      [0, 0],
+      [0, 0],
+      [0, 0],
+      [0, 0],
+      [0, 0],
+      [0, 0],
+    ],
+    []
+  );
 
-  const [
-    panTransX,
-    panTransY,
-    pinchScale,
-    pinchFocalX,
-    pinchFocalY,
-    focalDisplacementX,
-    focalDisplacementY,
-    scale,
-    dragX,
-    dragY,
-  ] = useValues<number>([0, 0, 1, 0, 0, 0, 0, 1, 0, 0], []);
-
+  const [scale, scaleOffset] = useValues([1, 1], []);
   const [pinchState, panState] = useValues(
     [State.UNDETERMINED, State.UNDETERMINED],
     []
   );
 
-  const pinchActive = eq(pinchState, State.ACTIVE);
-  const pinchHandler = onGestureEvent({
-    state: pinchState,
-    scale: pinchScale,
-    focalX: pinchFocalX,
-    focalY: pinchFocalY,
-  });
-
-  const panHandler = onGestureEvent({
-    state: panState,
-    translationX: dragX,
-    translationY: dragY,
-  });
-
-  const relativeFocalX = sub(pinchFocalX, add(panTransX, focalDisplacementX));
-  const relativeFocalY = sub(pinchFocalY, add(panTransY, focalDisplacementY));
-
-  const _scale = set(
+  const pinchGestureHandler = onGestureEvent({
     scale,
-    bouncyPinch(
-      scale,
-      pinchScale,
-      pinchActive,
-      relativeFocalX,
-      focalDisplacementX,
-      relativeFocalY,
-      focalDisplacementY
-    )
-  );
+    state: pinchState,
+    focalX: focal.x,
+    focalY: focal.y,
+  });
 
-  const panActive = eq(panState, State.ACTIVE);
+  const panGestureHandler = onGestureEvent({
+    state: panState,
+    translationX: drag.x,
+    translationY: drag.y,
+  });
 
-  // X
-  const panUpX = cond(lessThan(_scale, 1), 0, multiply(-1, focalDisplacementX));
-  const panLowX = add(panUpX, multiply(-WIDTH, add(max(1, _scale), -1)));
-
-  // Y
-  const panUpY = cond(lessThan(_scale, 1), 0, multiply(-1, focalDisplacementY));
-  const panLowY = add(panUpY, multiply(-HEIGHT, add(max(1, _scale), -1)));
-
-  const trans = useMemoOne(
-    () => ({
-      x: set(
-        panTransX,
-        bouncy(
-          panTransX,
-          dragDiff(dragX, panActive),
-          or(panActive, pinchActive),
-          panLowX,
-          panUpX,
-          friction
+  const adjustedFocal = vec.sub(focal, vec.add(CENTER, offset));
+  useCode(
+    () => [
+      vec.set(
+        translation,
+        vec.add(
+          pinch,
+          origin,
+          vec.multiply(drag, scaleOffset),
+          vec.multiply(-1, scale, origin)
         )
       ),
-      y: set(
-        panTransY,
-        bouncy(
-          panTransY,
-          dragDiff(dragY, panActive),
-          or(panActive, pinchActive),
-          panLowY,
-          panUpY,
-          friction
-        )
+      cond(
+        or(pinchBegan(pinchState), eq(panState, State.BEGAN)),
+        onGestureBegan
       ),
-    }),
+      cond(pinchBegan(pinchState), vec.set(origin, adjustedFocal)),
+      cond(
+        eq(pinchState, State.ACTIVE),
+        vec.set(pinch, vec.sub(adjustedFocal, origin))
+      ),
+      cond(and(neq(pinchState, State.ACTIVE), neq(panState, State.ACTIVE)), [
+        vec.set(offset, vec.add(offset, translation)),
+        set(scaleOffset, multiply(scale, scaleOffset)),
+        set(scale, 1),
+        vec.set(translation, 0),
+        vec.set(focal, 0),
+        vec.set(drag, 0),
+        vec.set(pinch, 0),
+      ]),
+    ],
     []
   );
 
-  const gestureBegan = or(panActive, pinchActive);
-  useCode(() => [onChange(gestureBegan, onGestureBegan)], []);
-
-  const scaleTopLeftFixX = divide(multiply(WIDTH, add(_scale, -1)), 2);
-  const scaleTopLeftFixY = divide(multiply(HEIGHT, add(_scale, -1)), 2);
   return (
-    <View style={styles.wrapper}>
-      <PinchGestureHandler
-        ref={pinchRef}
-        simultaneousHandlers={panRef}
-        {...pinchHandler}
+    <PinchGestureHandler {...pinchGestureHandler}>
+      <Animated.View
+        style={[StyleSheet.absoluteFill, { justifyContent: "center" }]}
       >
-        <Animated.View>
-          <PanGestureHandler
-            ref={panRef}
-            minDist={10}
-            avgTouches
-            simultaneousHandlers={pinchRef}
-            {...panHandler}
+        <PanGestureHandler {...panGestureHandler}>
+          <Animated.View
+            style={{
+              transform: [
+                ...translate(vec.add(offset, translation)),
+                { scale: multiply(scaleOffset, scale) },
+              ],
+            }}
           >
-            <Animated.View
-              style={[
-                {
-                  width: CANVAS_SIZE,
-                  height: CANVAS_SIZE,
-                  transform: [
-                    ...translate(trans),
-                    { translateX: focalDisplacementX },
-                    { translateY: focalDisplacementY },
-                    { translateX: scaleTopLeftFixX },
-                    { translateY: scaleTopLeftFixY },
-                    { scale: _scale },
-                  ],
-                },
-              ]}
-            >
-              {children}
-            </Animated.View>
-          </PanGestureHandler>
-        </Animated.View>
-      </PinchGestureHandler>
-    </View>
+            {children}
+          </Animated.View>
+        </PanGestureHandler>
+      </Animated.View>
+    </PinchGestureHandler>
   );
 };
 
 export default ZoomPanHandler;
-
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
