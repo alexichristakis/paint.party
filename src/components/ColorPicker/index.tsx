@@ -15,7 +15,7 @@ import Button from "./Button";
 import Popup from "./Popup";
 import ColorWheel from "./Wheel";
 
-const { or, eq } = Animated;
+const { eq } = Animated;
 
 export interface ColorPickerProps {
   visible: Animated.Value<0 | 1>;
@@ -40,17 +40,12 @@ const ColorPicker: React.FC<
       number
     >([0, 0, 0, -1], []);
 
-    const [openTransition, closeTransition] = useMemoOne(
-      () => [
+    const openTransition = useMemoOne(
+      () =>
         withTransition(visible, {
           duration: 300,
           easing: Easing.bezier(0.33, 0.11, 0.49, 0.83),
         }),
-        withTransition(
-          or(eq(tapState, State.ACTIVE), eq(tapState, State.BEGAN)),
-          { duration: 200, easing: Easing.inOut(Easing.ease) }
-        ),
-      ],
       []
     );
 
@@ -65,7 +60,7 @@ const ColorPicker: React.FC<
         <ColorWheel
           angle={rotation}
           isDragging={eq(popupDragState, State.ACTIVE)}
-          {...{ activeIndex, openTransition, closeTransition }}
+          {...{ activeIndex, openTransition }}
         />
         <Popup
           state={popupDragState}

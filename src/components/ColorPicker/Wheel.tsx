@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import Animated, { useCode } from "react-native-reanimated";
+import Animated, { useCode, Easing } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import { State, PanGestureHandler } from "react-native-gesture-handler";
 import {
@@ -9,6 +9,7 @@ import {
   withDecay,
   useSpringTransition,
   atan2,
+  useTransition,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
@@ -19,7 +20,7 @@ import { RootState } from "@redux/types";
 
 import Swatch from "./Swatch";
 
-const { and, divide, defined, set, eq, sub, cond, add, multiply } = Animated;
+const { divide, set, eq, sub, cond, add, multiply } = Animated;
 
 const config = {
   damping: 40,
@@ -34,7 +35,6 @@ export interface ColorWheelProps {
   angle: Animated.Value<number>;
   activeIndex: Animated.Value<number>;
   openTransition: Animated.Node<number>;
-  closeTransition: Animated.Node<number>;
   isDragging: Animated.Node<0 | 1>;
 }
 
@@ -49,33 +49,21 @@ const mapDispatchToProps = {};
 const ColorWheel: React.FC<
   ColorWheelProps & ColorWheelConnectedProps
 > = React.memo(
-  ({
-    numColors,
-    enabled,
-    activeIndex,
-    angle,
-    openTransition,
-    closeTransition,
-    isDragging,
-  }) => {
-    const enabledTransition = useSpringTransition(enabled, config);
+  ({ numColors, enabled, activeIndex, angle, openTransition, isDragging }) => {
+    const enabledTransition = useTransition(enabled, {
+      easing: Easing.inOut(Easing.ease),
+    });
 
     const panRef = useRef<PanGestureHandler>(null);
 
-    const [
-      x,
-      y,
-      translationX,
-      translationY,
-      velocityX,
-      velocityY,
-      editingColor,
-    ] = useValues<number>([0, 0, 0, 0, 0, 0, 0], []);
+    const [x, y, translationX, translationY, velocityX, velocityY] = useValues<
+      number
+    >([0, 0, 0, 0, 0, 0], []);
 
-    const [panState] = useValues<State>([State.UNDETERMINED], []);
+    const [state] = useValues<State>([State.UNDETERMINED], []);
 
     const panHandler = onGestureEvent({
-      state: panState,
+      state,
       x,
       y,
       velocityX,
@@ -84,23 +72,17 @@ const ColorWheel: React.FC<
       translationY,
     });
 
-    const x0 = sub(x, translationX);
-    const y0 = sub(y, translationY);
     const velocity = divide(
       sub(multiply(x, velocityY), multiply(y, velocityX)),
       add(multiply(x, x), multiply(y, y))
     );
 
-    const diff = sub(atan2(x0, y0), atan2(x, y));
-    const rotate = useMemoOne(
-      () =>
-        withDecay({
-          velocity: cond(editingColor, 0, velocity),
-          value: cond(defined(diff), diff, 0),
-          state: panState,
-        }),
-      []
+    const value = sub(
+      atan2(sub(x, translationX), sub(y, translationY)),
+      atan2(x, y)
     );
+
+    const rotate = useMemoOne(() => withDecay({ velocity, value, state }), []);
 
     useCode(() => [cond(isDragging, set(angle, rotate))], []);
 
@@ -110,18 +92,14 @@ const ColorWheel: React.FC<
 
     const animatedStyle = {
       opacity: mix(enabledTransition, 0.5, 1),
-      transform: [
-        { rotate },
-        { rotate: mix(openTransition, -Math.PI / 4, 0) },
-        { scale: mix(closeTransition, 1, 0.9) },
-      ],
+      transform: [{ rotate }, { rotate: mix(openTransition, -Math.PI / 4, 0) }],
     };
 
     return (
       <PanGestureHandler ref={panRef} {...panHandler}>
         <Animated.View style={[styles.container, containerAnimatedStyle]}>
           <Animated.View
-            pointerEvents={enabled ? "auto" : "none"}
+            pointerEvents={enabled ? "auto" : "box-only"}
             style={[styles.container, animatedStyle]}
           >
             {times(numColors, (index) => (

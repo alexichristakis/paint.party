@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useMemo } from "react";
 import {
   PanGestureHandler,
   PinchGestureHandler,
@@ -11,21 +11,40 @@ import {
   useValues,
   withScaleOffset,
   withDecay,
+  transformOrigin,
+  translate,
+  vec,
+  withOffset,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
-import { coordinatesToIndex } from "@lib";
+import { coordinatesToIndex, onPress, CANVAS_SIZE, SCREEN_HEIGHT } from "@lib";
 import { RootState } from "@redux/types";
-import { CanvasActions, VisualizationActions } from "@redux/modules";
+import { VisualizationActions } from "@redux/modules";
 
 import Grid from "./Grid";
 import CellHighlight from "./CellHighlight";
 import PositionsOverlay from "./PositionsOverlay";
+import ZoomPanHandler from "./ZoomPanHandler";
+import { StyleSheet } from "react-native";
 
-const { onChange, useCode, or, and, eq, not, set, cond, call } = Animated;
-const { ACTIVE, UNDETERMINED, END } = State;
+const {
+  onChange,
+  debug,
+  useCode,
+  or,
+  and,
+  neq,
+  add,
+  eq,
+  not,
+  set,
+  cond,
+  call,
+} = Animated;
+const { ACTIVE, BEGAN, END, UNDETERMINED } = State;
 
 const mapStateToProps = (state: RootState) => ({
   backgroundColor: selectors.activeCanvasBackgroundColor(state),
@@ -48,55 +67,73 @@ const Visualization: React.FC<
     const panRef = useRef<PanGestureHandler>(null);
     const childRef = useRef<Animated.View>(null);
 
+    // const velocity = vec.createValue(0, 0);
+    // const drag = vec.create(0, 0);
+
     const [pinchState, panState, tapState] = useValues<State>(
       [UNDETERMINED, UNDETERMINED, UNDETERMINED],
       []
     );
 
-    const [
-      dragX,
-      dragY,
-      velocityY,
-      velocityX,
-      pinchVelocity,
-      tapX,
-      tapY,
-      pinch,
-    ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 1], []);
+    const [translation, focal, velocity, tap, origin] = useMemoOne(
+      () => [
+        vec.createValue(0, 0),
+        vec.createValue(0, 0),
+        vec.createValue(0, 0),
+        vec.createValue(0, 0),
+        vec.createValue(0, 0),
+      ],
+      []
+    );
+
+    const [pinch] = useValues<number>([1], []);
+
+    // const [
+    //   translationX,
+    //   translationY,
+    //   focalX,
+    //   focalY,
+    //   velocityY,
+    //   velocityX,
+    //   tapX,
+    //   tapY,
+    //   pinch,
+    // ] = useValues<number>([0, 0, 0, 0, 0, 0, 0, 0, 1], []);
 
     const [pinchHandler, panHandler, tapHandler] = useMemoOne(
       () => [
         onGestureEvent({
           scale: pinch,
           state: pinchState,
-          velocity: pinchVelocity,
+          focalX: focal.x,
+          focalY: focal.y,
         }),
         onGestureEvent({
           state: panState,
-          translationX: dragX,
-          translationY: dragY,
-          velocityX,
-          velocityY,
+          translationX: translation.x,
+          translationY: translation.y,
+          velocityX: velocity.x,
+          velocityY: velocity.y,
         }),
-        onGestureEvent({ state: tapState, x: tapX, y: tapY }),
+        onGestureEvent({ state: tapState, ...tap }),
       ],
       []
     );
 
-    const deceleration = 0.979;
+    const deceleration = 0.992;
     const [scale, translateY, translateX] = useMemoOne(
       () => [
         withScaleOffset(pinch, pinchState),
         withDecay({
           state: panState,
-          value: dragY,
-          velocity: velocityY,
+          value: translation.y,
+          velocity: velocity.y,
           deceleration,
         }),
         withDecay({
           state: panState,
-          value: dragX,
-          velocity: velocityX,
+          value: translation.x,
+          velocity: velocity.x,
           deceleration,
         }),
       ],
@@ -108,53 +145,117 @@ const Visualization: React.FC<
       []
     );
 
+    const adjustedFocal = vec.add(
+      {
+        x: -CANVAS_SIZE / 2,
+        y: CANVAS_SIZE / 2 - (SCREEN_HEIGHT - CANVAS_SIZE),
+      },
+      focal
+    );
+
+    // const trans = vec.createValue(0, 0);
+
     const gestureBegan = or(eq(panState, ACTIVE), eq(pinchState, ACTIVE));
     useCode(
       () => [
+        cond(eq(pinchState, BEGAN), [
+          vec.set(origin, adjustedFocal),
+          debug("originX", origin.x),
+          debug("originY", origin.y),
+        ]),
+        onChange(
+          pinchState,
+          cond(eq(pinchState, END), [
+            //
+            vec.set(focal, trans),
+          ])
+        ),
         onChange(
           gestureBegan,
           cond(and(gestureBegan, pickerVisible), set(pickerVisible, 0))
         ),
-        onChange(
-          tapState,
-          cond(eq(tapState, END), [
-            call([tapX, tapY], handleOnPressCell),
-            cond(not(pickerVisible), set(pickerVisible, 1)),
-            cond(positionsVisible, set(positionsVisible, 0)),
-          ])
-        ),
+        onPress(tapState, [
+          call([tap.x, tap.y], handleOnPressCell),
+          cond(not(pickerVisible), set(pickerVisible, 1)),
+          cond(positionsVisible, set(positionsVisible, 0)),
+        ]),
       ],
       []
     );
 
-    const translationStyle = { transform: [{ translateX }, { translateY }] };
-    const scaleStyle = { transform: [{ scale }] };
+    const trans = useMemoOne(() => {
+      const { x, y } = vec.invert(vec.sub(origin, adjustedFocal));
+
+      const start = and(neq(pinchState, BEGAN), neq(pinchState, UNDETERMINED));
+      return {
+        x: withOffset(cond(start, x, 0), pinchState),
+        y: withOffset(cond(start, y, 0), pinchState),
+      };
+    }, []);
+
+    useCode(
+      () => [
+        debug("x", trans.x),
+        debug("y", trans.y),
+        // debug("x", vec.invert(vec.sub(origin, adjustedFocal)).x),
+        // debug("y", vec.invert(vec.sub(origin, adjustedFocal)).y),
+      ],
+      []
+    );
+
+    const translationStyle = {}; // { transform: [{ translateX }, { translateY }] };
+    const scaleStyle = {
+      paddingTop: (SCREEN_HEIGHT - CANVAS_SIZE) / 2,
+      transform: [
+        ...translate(trans),
+        ...transformOrigin(origin, { scale }),
+        // ...translate(origin),
+        // { scale },
+        // ...translate(vec.multiply(origin, -1)),
+        // ...translate({ x: CANVAS_SIZE / 2, y: CANVAS_SIZE / 2 }),
+      ],
+    };
+
     return (
-      <PanGestureHandler
-        avgTouches={true}
-        ref={panRef}
-        minDist={10}
-        simultaneousHandlers={pinchRef}
-        {...panHandler}
+      <ZoomPanHandler>
+        <TapGestureHandler {...tapHandler}>
+          <Animated.View ref={childRef}>
+            <Grid backgroundColor={backgroundColor} />
+            <PositionsOverlay visible={positionsVisible} />
+            <CellHighlight visible={pickerVisible} />
+          </Animated.View>
+        </TapGestureHandler>
+      </ZoomPanHandler>
+    );
+
+    return (
+      // <PanGestureHandler
+      //   avgTouches
+      //   ref={panRef}
+      //   minDist={10}
+      //   simultaneousHandlers={pinchRef}
+      //   {...panHandler}
+      // >
+      //   <Animated.View style={translationStyle}>
+      <PinchGestureHandler
+        ref={pinchRef}
+        simultaneousHandlers={panRef}
+        {...pinchHandler}
       >
-        <Animated.View style={translationStyle}>
-          <PinchGestureHandler
-            ref={pinchRef}
-            simultaneousHandlers={panRef}
-            {...pinchHandler}
-          >
-            <Animated.View>
-              <TapGestureHandler {...tapHandler}>
-                <Animated.View ref={childRef} style={scaleStyle}>
-                  <Grid backgroundColor={backgroundColor} />
-                  <PositionsOverlay visible={positionsVisible} />
-                  <CellHighlight visible={pickerVisible} />
-                </Animated.View>
-              </TapGestureHandler>
-            </Animated.View>
-          </PinchGestureHandler>
+        <Animated.View style={StyleSheet.absoluteFill}>
+          <Animated.View style={scaleStyle}>
+            {/* <TapGestureHandler {...tapHandler}>
+              <Animated.View ref={childRef}> */}
+            <Grid backgroundColor={backgroundColor} />
+            <PositionsOverlay visible={positionsVisible} />
+            <CellHighlight visible={pickerVisible} />
+            {/* </Animated.View> */}
+            {/* </TapGestureHandler> */}
+          </Animated.View>
         </Animated.View>
-      </PanGestureHandler>
+      </PinchGestureHandler>
+      //   </Animated.View>
+      // </PanGestureHandler>
     );
   },
   (p, n) => p.backgroundColor === n.backgroundColor
