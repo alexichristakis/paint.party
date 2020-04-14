@@ -3,6 +3,7 @@ import { State, TapGestureHandler } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { onGestureEvent, useValues, useVector } from "react-native-redash";
 import { connect, ConnectedProps } from "react-redux";
+import isEqual from "lodash/isEqual";
 
 import * as selectors from "@redux/selectors";
 import { coordinatesToIndex, onPress } from "@lib";
@@ -13,7 +14,6 @@ import Grid from "./Grid";
 import CellHighlight from "./CellHighlight";
 import PositionsOverlay from "./PositionsOverlay";
 import ZoomPanHandler from "./ZoomPanHandler";
-import isEqual from "lodash/isEqual";
 
 const { useCode, not, set, cond, call } = Animated;
 const { UNDETERMINED } = State;

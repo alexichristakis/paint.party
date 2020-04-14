@@ -3,16 +3,16 @@ import Animated, { useCode } from "react-native-reanimated";
 import { State, PanGestureHandler } from "react-native-gesture-handler";
 import {
   onGestureEvent,
-  useValues,
-  withSpring,
   withTransition,
   canvas2Polar,
   withSpringTransition,
+  vec,
+  translate,
+  spring,
 } from "react-native-redash";
 import { StyleSheet } from "react-native";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
-import { useMemoOne } from "use-memo-one";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
@@ -21,6 +21,7 @@ import {
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
   COLOR_WHEEL_RADIUS,
+  useVectors,
 } from "@lib";
 
 import Label from "./Label";
@@ -82,44 +83,25 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
     numColors,
     state,
   }) => {
-    const [dragX, dragY, velocityX, velocityY] = useValues<number>(
-      [0, 0, 0, 0],
+    const [drag, translation] = useVectors(
+      [
+        [0, 0],
+        [0, 0],
+      ],
       []
     );
 
     const handler = onGestureEvent({
       absoluteX: position.x,
       absoluteY: position.y,
-      translationX: dragX,
-      translationY: dragY,
-      velocityX,
-      velocityY,
+      translationX: drag.x,
+      translationY: drag.y,
       state,
     });
 
     const active = eq(state, State.ACTIVE);
     const activeTransition = withTransition(active);
     const activeSpringTransition = withSpringTransition(active);
-
-    const [translateX, translateY] = useMemoOne(
-      () => [
-        withSpring({
-          value: dragX,
-          velocity: velocityX,
-          state,
-          snapPoints: [0],
-          config,
-        }),
-        withSpring({
-          value: dragY,
-          velocity: velocityY,
-          state,
-          snapPoints: [0],
-          config,
-        }),
-      ],
-      []
-    );
 
     const { theta, radius } = canvas2Polar(
       { x: position.x, y: position.y },
@@ -128,6 +110,12 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
 
     useCode(
       () => [
+        cond(active, vec.set(translation, drag), [
+          cond(eq(state, State.END), [
+            set(translation.x, spring({ from: translation.x, to: 0, config })),
+            set(translation.y, spring({ from: translation.y, to: 0, config })),
+          ]),
+        ]),
         onChange(
           activeIndex,
           cond(
@@ -169,17 +157,13 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
           style={{
             ...styles.container,
             opacity: openTransition,
-            transform: [{ translateX }, { translateY }],
+            transform: translate(translation),
           }}
         >
           <Label transition={activeTransition} />
           <Indicator
             transition={activeSpringTransition}
-            {...{
-              position,
-              activeIndex,
-              state,
-            }}
+            {...{ position, activeIndex, state }}
           />
         </Animated.View>
       </PanGestureHandler>
