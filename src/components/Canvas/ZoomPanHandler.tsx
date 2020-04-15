@@ -17,8 +17,8 @@ import {
 import { CANVAS_SIZE, useVectors, SCREEN_HEIGHT } from "@lib";
 import isEqual from "lodash/isEqual";
 
-const { set, neq, and, cond, eq, or, multiply } = Animated;
-const { BEGAN, UNDETERMINED, ACTIVE } = State;
+const { set, cond, eq, or, multiply } = Animated;
+const { UNDETERMINED, END, ACTIVE } = State;
 
 export interface ZoomPanHandlerProps {
   onGestureBegan: Animated.Adaptable<number>;
@@ -29,8 +29,17 @@ const CENTER = vec.divide(CANVAS, 2);
 
 const ZoomPanHandler: React.FC<ZoomPanHandlerProps> = React.memo(
   ({ onGestureBegan, children }) => {
-    const [origin, pinch, focal, drag, translation, offset] = useVectors(
+    const [
+      origin,
+      pinch,
+      focal,
+      drag,
+      translation,
+      offset,
+      dragOffset,
+    ] = useVectors(
       [
+        [0, 0],
         [0, 0],
         [0, 0],
         [0, 0],
@@ -58,31 +67,30 @@ const ZoomPanHandler: React.FC<ZoomPanHandlerProps> = React.memo(
     });
 
     const adjustedFocal = vec.sub(focal, vec.add(CENTER, offset));
+    const gestureBegan = or(pinchBegan(pinchState), eq(panState, ACTIVE));
     useCode(
       () => [
         vec.set(
           translation,
-          vec.add(
-            pinch,
-            origin,
-            vec.multiply(drag, scaleOffset),
-            vec.multiply(-1, scale, origin)
-          )
+          vec.add(pinch, origin, vec.multiply(-1, scale, origin))
         ),
-        cond(or(pinchBegan(pinchState), eq(panState, BEGAN)), onGestureBegan),
+        cond(gestureBegan, onGestureBegan),
         cond(pinchBegan(pinchState), vec.set(origin, adjustedFocal)),
         cond(
           eq(pinchState, ACTIVE),
           vec.set(pinch, vec.sub(adjustedFocal, origin))
         ),
-        cond(and(neq(pinchState, ACTIVE), neq(panState, ACTIVE)), [
+        cond(eq(pinchState, END), [
           vec.set(offset, vec.add(offset, translation)),
           set(scaleOffset, multiply(scale, scaleOffset)),
           set(scale, 1),
           vec.set(translation, 0),
           vec.set(focal, 0),
-          vec.set(drag, 0),
           vec.set(pinch, 0),
+        ]),
+        cond(eq(panState, END), [
+          vec.set(dragOffset, vec.add(dragOffset, drag)),
+          vec.set(drag, 0),
         ]),
       ],
       []
@@ -95,14 +103,23 @@ const ZoomPanHandler: React.FC<ZoomPanHandlerProps> = React.memo(
       ],
     };
 
+    const panAnimatedStyle = {
+      transform: translate(vec.add(dragOffset, drag)),
+    };
+
     return (
-      <PinchGestureHandler {...pinchGestureHandler}>
-        <Animated.View pointerEvents={"box-none"} style={styles.container}>
-          <PanGestureHandler {...panGestureHandler}>
-            <Animated.View style={animatedStyle}>{children}</Animated.View>
-          </PanGestureHandler>
+      <PanGestureHandler {...panGestureHandler}>
+        <Animated.View
+          pointerEvents={"box-none"}
+          style={{ ...styles.container, ...panAnimatedStyle }}
+        >
+          <PinchGestureHandler {...pinchGestureHandler}>
+            <Animated.View pointerEvents={"box-none"} style={styles.container}>
+              <Animated.View style={animatedStyle}>{children}</Animated.View>
+            </Animated.View>
+          </PinchGestureHandler>
         </Animated.View>
-      </PinchGestureHandler>
+      </PanGestureHandler>
     );
   },
   (p, n) => isEqual(p, n)

@@ -9,7 +9,7 @@ import {
 import {
   useValues,
   onGestureEvent,
-  bInterpolateColor,
+  mixColor,
   mix,
   bin,
   withTransition,
@@ -83,7 +83,7 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
     )
   );
 
-  const backgroundColor = bInterpolateColor(
+  const backgroundColor = mixColor(
     onPressIn,
     Colors.background,
     Colors.grayBlue

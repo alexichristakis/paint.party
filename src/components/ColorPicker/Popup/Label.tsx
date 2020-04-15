@@ -28,11 +28,11 @@ const Label: React.FC<LabelProps & LabelConnectedProps> = React.memo(
     const { time, color } = cell;
     const { width, onLayout } = useOnLayout();
 
-    const translateX = mix(transition, 0, -width);
+    const transform = [{ translateX: mix(transition, 0, -width) }];
     return (
       <View pointerEvents={"none"} style={styles.container}>
         <Animated.View
-          style={{ ...styles.animated, transform: [{ translateX }] }}
+          style={{ ...styles.label, transform }}
           onLayout={onLayout}
         >
           <Text style={styles.text} numberOfLines={2}>
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     left: 0,
   },
-  animated: {
+  label: {
     borderRadius: 25,
     paddingLeft: POPUP_SIZE + 10,
     minHeight: POPUP_SIZE + 10,

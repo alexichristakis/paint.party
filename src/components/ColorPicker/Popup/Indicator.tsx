@@ -1,44 +1,16 @@
 import React from "react";
 import Animated, { useCode } from "react-native-reanimated";
 import { mix } from "react-native-redash";
-import { StyleSheet, View, Text } from "react-native";
 import { ConnectedProps, connect } from "react-redux";
 import { State } from "react-native-gesture-handler";
 import Haptics from "react-native-haptic-feedback";
-import moment from "moment";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
-import {
-  Colors,
-  TextStyles,
-  POPUP_SIZE,
-  COLOR_SIZE,
-  COLOR_BORDER_WIDTH,
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH,
-  COLOR_WHEEL_RADIUS,
-} from "@lib";
-import { useOnLayout } from "@hooks";
+import { POPUP_SIZE, COLOR_SIZE, COLOR_BORDER_WIDTH } from "@lib";
 import { PaletteActions } from "@redux/modules";
 
-const {
-  onChange,
-  neq,
-  greaterOrEq,
-  add,
-  round,
-  modulo,
-  set,
-  eq,
-  divide,
-  sub,
-  cond,
-  and,
-  lessOrEq,
-  greaterThan,
-  call,
-} = Animated;
+const { onChange, greaterOrEq, set, eq, divide, cond, and, call } = Animated;
 
 export type IndicatorConnectedProps = ConnectedProps<typeof connector>;
 
@@ -46,10 +18,6 @@ export interface IndicatorProps {
   state: Animated.Value<State>;
   activeIndex: Animated.Value<number>;
   transition: Animated.Node<number>;
-  position: {
-    x: Animated.Value<number>;
-    y: Animated.Value<number>;
-  };
 }
 
 const mapStateToProps = (state: RootState) => ({
@@ -63,26 +31,20 @@ const mapDispatchToProps = {
 const Indicator: React.FC<
   IndicatorProps & IndicatorConnectedProps
 > = React.memo(
-  ({ cell, state, position, setColor, activeIndex, transition }) => {
+  ({ cell, state, setColor, activeIndex, transition }) => {
     const { color: backgroundColor } = cell;
 
     useCode(
       () => [
         onChange(
           state,
-          cond(
-            and(eq(state, State.END), greaterOrEq(activeIndex, 0)),
-            [
-              call([activeIndex], ([index]) => {
-                Haptics.trigger("impactHeavy");
-                setColor(cell.color, index);
-              }),
-              set(activeIndex, -1),
-              set(position.x, 0),
-              set(position.y, 0),
-            ],
-            [set(position.x, 0), set(position.y, 0)]
-          )
+          cond(and(eq(state, State.END), greaterOrEq(activeIndex, 0)), [
+            call([activeIndex], ([index]) => {
+              Haptics.trigger("impactHeavy");
+              setColor(cell.color, index);
+            }),
+            set(activeIndex, -1),
+          ])
         ),
       ],
       [cell.color]
@@ -111,27 +73,6 @@ const Indicator: React.FC<
   },
   (p, n) => p.cell.color === n.cell.color
 );
-
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    overflow: "hidden",
-    borderRadius: 25,
-    left: 0,
-  },
-  animated: {
-    borderRadius: 25,
-    paddingLeft: POPUP_SIZE + 10,
-    minHeight: POPUP_SIZE + 10,
-    paddingRight: 15,
-    backgroundColor: Colors.mediumGray,
-    justifyContent: "center",
-  },
-  text: {
-    ...TextStyles.medium,
-    textAlign: "left",
-  },
-});
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(Indicator);

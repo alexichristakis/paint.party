@@ -12,9 +12,6 @@ import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import CodePush, { CodePushOptions } from "react-native-code-push";
 
-// @ts-ignore
-import withPerformance from "react-native-performance-monitor/provider";
-
 import {
   useNotificationEvents,
   useColorEditorState,
