@@ -87,6 +87,7 @@ export default (
       return immer(state, (draft) => {
         draft.activeCanvas = canvas.id;
         draft.canvases[canvas.id] = canvas;
+        draft.showCreator = false;
         draft.loadingCanvas = false;
         draft.creatingCanvas = false;
         draft.joiningCanvas = false;
@@ -118,8 +119,12 @@ export default (
       return { ...state, activeCanvas: "" };
     }
 
-    case ActionTypes.TOGGLE_CANVAS_CREATOR: {
-      return { ...state, showCreator: !state.showCreator };
+    case ActionTypes.OPEN_CANVAS_CREATOR: {
+      return { ...state, showCreator: true };
+    }
+
+    case ActionTypes.CLOSE_CANVAS_CREATOR: {
+      return { ...state, showCreator: false };
     }
 
     default:
@@ -128,7 +133,8 @@ export default (
 };
 
 export const CanvasActions = {
-  toggleCreator: () => createAction(ActionTypes.TOGGLE_CANVAS_CREATOR),
+  openCreator: () => createAction(ActionTypes.OPEN_CANVAS_CREATOR),
+  closeCreator: () => createAction(ActionTypes.CLOSE_CANVAS_CREATOR),
 
   fetch: () => createAction(ActionTypes.FETCH_CANVASES),
   fetchSuccess: (canvases: Canvas[]) =>

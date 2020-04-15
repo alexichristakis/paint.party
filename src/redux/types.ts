@@ -14,13 +14,14 @@ import {
 export enum PaletteActionTypes {
   RESET_COLORS = "palette/RESET",
   EDIT_COLOR = "palette/EDIT",
-  CLOSE_EDITOR = "palette/CLOSE_EDITOR",
+  CLOSE_COLOR_EDITOR = "palette/CLOSE_COLOR_EDITOR",
   CREATE_PALETTE = "palette/CREATE",
   SET_COLOR = "palette/SET",
   ADD_COLOR = "palette/ADD",
   REMOVE_COLOR = "palette/REMOVE",
   ENABLE_PALETTE = "palette/ENABLE",
-  TOGGLE_PALETTE_EDITOR = "palette/TOGGLE_EDITOR",
+  OPEN_PALETTE_EDITOR = "palette/OPEN_EDITOR",
+  CLOSE_PALETTE_EDITOR = "palette/CLOSE_EDITOR",
 }
 
 export enum AppActionTypes {
@@ -33,7 +34,8 @@ export enum AppActionTypes {
 }
 
 export enum CanvasActionTypes {
-  TOGGLE_CANVAS_CREATOR = "canvas/TOGGLE_CREATOR",
+  OPEN_CANVAS_CREATOR = "canvas/OPEN_CREATOR",
+  CLOSE_CANVAS_CREATOR = "canvas/CLOSE_CREATOR",
   FETCH_CANVASES = "canvas/FETCH",
   FETCH_CANVASES_SUCCESS = "canvas/FETCH_SUCCESS",
   OPEN_CANVAS = "canvas/OPEN",

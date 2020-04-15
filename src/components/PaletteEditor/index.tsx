@@ -20,17 +20,13 @@ const mapStateToProps = (state: RootState) => ({
   showPalettes: state.palette.showEditor,
 });
 const mapDispatchToProps = {
-  toggleShow: PaletteActions.toggleEditor,
+  close: PaletteActions.closeEditor,
 };
 
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
 const PaletteEditor: React.FC<Props> = React.memo(
-  ({ palettes, showPalettes, toggleShow }) => (
-    <BottomSheet
-      open={showPalettes}
-      onClose={toggleShow}
-      style={styles.container}
-    >
+  ({ palettes, showPalettes, close }) => (
+    <BottomSheet open={showPalettes} onClose={close} style={styles.container}>
       <CreatePalette />
       {palettes.map((palette, index) => (
         <React.Fragment key={index}>

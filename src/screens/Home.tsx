@@ -25,8 +25,8 @@ const connector = connect(
     openCanvas: CanvasActions.open,
     unsubscribe: CanvasActions.close,
     fetchCanvases: CanvasActions.fetch,
-    openPalettes: PaletteActions.toggleEditor,
-    openCanvasCreator: CanvasActions.toggleCreator,
+    openPalettes: PaletteActions.openEditor,
+    openCanvasCreator: CanvasActions.openCreator,
   }
 );
 
