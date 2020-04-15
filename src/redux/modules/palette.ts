@@ -125,10 +125,17 @@ export default (
       });
     }
 
-    case ActionTypes.TOGGLE_PALETTE_EDITOR: {
+    case ActionTypes.OPEN_PALETTE_EDITOR: {
       return {
         ...state,
-        showEditor: !state.showEditor,
+        showEditor: true,
+      };
+    }
+
+    case ActionTypes.CLOSE_PALETTE_EDITOR: {
+      return {
+        ...state,
+        showEditor: false,
       };
     }
 
@@ -138,14 +145,15 @@ export default (
 };
 
 export const PaletteActions = {
-  toggleEditor: () => createAction(ActionTypes.TOGGLE_PALETTE_EDITOR),
+  openEditor: () => createAction(ActionTypes.OPEN_PALETTE_EDITOR),
+  closeEditor: () => createAction(ActionTypes.CLOSE_PALETTE_EDITOR),
 
   reset: () => createAction(ActionTypes.RESET_COLORS),
 
   createPalette: (name: string) =>
     createAction(ActionTypes.CREATE_PALETTE, { name }),
 
-  closeEditor: () => createAction(ActionTypes.CLOSE_EDITOR),
+  closeColorEditor: () => createAction(ActionTypes.CLOSE_COLOR_EDITOR),
 
   enablePalette: (paletteId: string) =>
     createAction(ActionTypes.ENABLE_PALETTE, { paletteId }),

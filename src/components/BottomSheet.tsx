@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-} from "react";
+import React, { useRef, useState, useLayoutEffect, useCallback } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import {
   NativeViewGestureHandler,
@@ -31,17 +25,13 @@ import { useMemoOne } from "use-memo-one";
 const {
   interpolate,
   round,
-  neq,
   useCode,
   cond,
   not,
   call,
-  block,
   set,
   clockRunning,
   sub,
-  Clock,
-  Value,
 } = Animated;
 
 const { UNDETERMINED } = State;

@@ -34,26 +34,7 @@ import {
 
 import Editor from "./Editor";
 
-const {
-  onChange,
-  min,
-  max,
-  multiply,
-  abs,
-  neq,
-  debug,
-  and,
-  not,
-  call,
-  cond,
-  eq,
-  greaterThan,
-  set,
-  add,
-  sub,
-  divide,
-  modulo,
-} = Animated;
+const { onChange, neq, and, not, call, cond, eq, set } = Animated;
 
 export type ColorEditorConnectedProps = ConnectedProps<typeof connector>;
 
@@ -64,7 +45,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  closeEditor: PaletteActions.closeEditor,
+  closeEditor: PaletteActions.closeColorEditor,
 };
 
 const ColorEditor: React.FC<ColorEditorProps & ColorEditorConnectedProps> = ({
