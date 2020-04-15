@@ -5,6 +5,7 @@ import {
   State,
   TapGestureHandler,
   LongPressGestureHandler,
+  PanGestureHandler,
 } from "react-native-gesture-handler";
 import {
   useValues,
@@ -20,7 +21,12 @@ import { connect, ConnectedProps } from "react-redux";
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import { PaletteActions, VisualizationActions } from "@redux/modules";
-import { COLOR_WHEEL_RADIUS, COLOR_BORDER_WIDTH, COLOR_SIZE } from "@lib";
+import {
+  COLOR_WHEEL_RADIUS,
+  COLOR_BORDER_WIDTH,
+  COLOR_SIZE,
+  onPress,
+} from "@lib";
 import { useColorEditor } from "@hooks";
 
 const { onChange, or, eq, cond, call } = Animated;
@@ -88,15 +94,9 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
       selectColor(backgroundColor);
     };
 
-    useCode(
-      () => [
-        onChange(
-          tapState,
-          cond(eq(tapState, State.END), call([], handleOnChoose))
-        ),
-      ],
-      [backgroundColor]
-    );
+    useCode(() => [onPress(tapState, call([], handleOnChoose))], [
+      backgroundColor,
+    ]);
 
     const tapHandler = onGestureEvent({ state: tapState });
     const longPressHandler = onGestureEvent({ state: longPressState });
@@ -113,7 +113,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
       <TapGestureHandler
         {...tapHandler}
         ref={tapRef}
-        simultaneousHandlers={[longPressRef]}
+        simultaneousHandlers={longPressRef}
         maxDurationMs={500}
         maxDeltaX={10}
         maxDeltaY={10}
@@ -127,7 +127,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
         >
           <LongPressGestureHandler
             {...longPressHandler}
-            simultaneousHandlers={[tapRef]}
+            simultaneousHandlers={tapRef}
           >
             <Animated.View
               ref={viewRef}

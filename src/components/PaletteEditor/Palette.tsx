@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, ScrollView, Text } from "react-native";
-import { useTransition, bInterpolateColor } from "react-native-redash";
+import { useTransition, mixColor } from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
 import times from "lodash/times";
@@ -40,7 +40,7 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
     };
 
     const activeTransition = useTransition(active);
-    const backgroundColor = bInterpolateColor(
+    const backgroundColor = mixColor(
       activeTransition,
       Colors.white,
       Colors.lightGreen

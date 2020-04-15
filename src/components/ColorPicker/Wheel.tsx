@@ -7,7 +7,6 @@ import {
   onGestureEvent,
   mix,
   withDecay,
-  useSpringTransition,
   atan2,
   useTransition,
 } from "react-native-redash";
@@ -19,17 +18,9 @@ import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 
 import Swatch from "./Swatch";
+import { useVectors } from "@lib";
 
-const { divide, set, eq, sub, cond, add, multiply } = Animated;
-
-const config = {
-  damping: 40,
-  mass: 1,
-  stiffness: 300,
-  overshootClamping: false,
-  restSpeedThreshold: 0.1,
-  restDisplacementThreshold: 0.1,
-};
+const { divide, pow, set, eq, sub, cond, add, multiply } = Animated;
 
 export interface ColorWheelProps {
   angle: Animated.Value<number>;
@@ -56,33 +47,40 @@ const ColorWheel: React.FC<
 
     const panRef = useRef<PanGestureHandler>(null);
 
-    const [x, y, translationX, translationY, velocityX, velocityY] = useValues<
-      number
-    >([0, 0, 0, 0, 0, 0], []);
+    const [pos, translation, velocity] = useVectors(
+      [
+        [0, 0],
+        [0, 0],
+        [0, 0],
+      ],
+      []
+    );
 
     const [state] = useValues<State>([State.UNDETERMINED], []);
 
     const panHandler = onGestureEvent({
       state,
-      x,
-      y,
-      velocityX,
-      velocityY,
-      translationX,
-      translationY,
+      ...pos,
+      velocityX: velocity.x,
+      velocityY: velocity.y,
+      translationX: translation.x,
+      translationY: translation.y,
     });
 
-    const velocity = divide(
-      sub(multiply(x, velocityY), multiply(y, velocityX)),
-      add(multiply(x, x), multiply(y, y))
+    const angularVelocity = divide(
+      sub(multiply(pos.x, velocity.y), multiply(pos.y, velocity.x)),
+      add(pow(pos.x, 2), pow(pos.y, 2))
     );
 
     const value = sub(
-      atan2(sub(x, translationX), sub(y, translationY)),
-      atan2(x, y)
+      atan2(sub(pos.x, translation.x), sub(pos.y, translation.y)),
+      atan2(pos.x, pos.y)
     );
 
-    const rotate = useMemoOne(() => withDecay({ velocity, value, state }), []);
+    const rotate = useMemoOne(
+      () => withDecay({ velocity: angularVelocity, value, state }),
+      []
+    );
 
     useCode(() => [cond(isDragging, set(angle, rotate))], []);
 

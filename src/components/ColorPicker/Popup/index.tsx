@@ -110,6 +110,7 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
 
     useCode(
       () => [
+        onChange(state, cond(eq(state, State.END), vec.set(position, 0))),
         cond(active, vec.set(translation, drag), [
           cond(eq(state, State.END), [
             set(translation.x, spring({ from: translation.x, to: 0, config })),
@@ -163,7 +164,7 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
           <Label transition={activeTransition} />
           <Indicator
             transition={activeSpringTransition}
-            {...{ position, activeIndex, state }}
+            {...{ activeIndex, state }}
           />
         </Animated.View>
       </PanGestureHandler>

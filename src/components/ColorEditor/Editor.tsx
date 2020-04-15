@@ -1,26 +1,20 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
-import Animated, {
-  useCode,
-  Easing,
-  greaterOrEq,
-  interpolate,
-} from "react-native-reanimated";
+import Animated, { useCode } from "react-native-reanimated";
 import { connect, ConnectedProps } from "react-redux";
 import {
   TapGestureHandler,
   PanGestureHandler,
   State,
 } from "react-native-gesture-handler";
-import { StyleSheet, ViewStyle, StyleProp } from "react-native";
+import { StyleSheet } from "react-native";
 import {
   useValues,
-  bin,
   onGestureEvent,
-  withSpringTransition,
   mix,
   withTransition,
   clamp,
   hsv2color,
+  useVector,
 } from "react-native-redash";
 import tinycolor from "tinycolor2";
 import { useMemoOne } from "use-memo-one";
@@ -29,45 +23,22 @@ import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import { PaletteActions } from "@redux/modules";
 import {
-  SCREEN_WIDTH,
   COLOR_BORDER_WIDTH,
-  Colors,
-  SCREEN_HEIGHT,
-  colorHSV,
-  SPRING_CONFIG,
   EDITOR_SIZE,
   INDICATOR_SIZE,
   EDITOR_LEFT,
   EDITOR_TOP,
   INDICATOR_MIN,
   INDICATOR_MAX,
-  onPress,
   COLOR_SIZE,
+  Colors,
+  onPress,
 } from "@lib";
 import { Slider } from "@components/universal";
 import Check from "@assets/svg/check_line.svg";
 import Undo from "@assets/svg/undo.svg";
 
-const {
-  onChange,
-  min,
-  max,
-  multiply,
-  abs,
-  neq,
-  debug,
-  and,
-  not,
-  call,
-  cond,
-  eq,
-  greaterThan,
-  set,
-  add,
-  sub,
-  divide,
-  modulo,
-} = Animated;
+const { multiply, call, eq, set, sub, divide } = Animated;
 
 export type EditorConnectedProps = ConnectedProps<typeof connector>;
 
@@ -104,26 +75,23 @@ const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
     );
     const [, setRenderKey] = useState(0);
 
-    const { h, s, v } = tinycolor(color).toHsv();
-    const [
-      indicatorPosX,
-      indicatorPosY,
-      interpolatedHue,
-      cachedH,
-      cachedS,
-      cachedV,
-    ] = useValues<number>([0, 0, 0, 0, 0, 0], []);
+    const [interpolatedHue, cachedH, cachedS, cachedV] = useValues<number>(
+      [0, 0, 0, 0],
+      []
+    );
+    const indicatorPos = useVector(0, 0, []);
 
+    const { h, s, v } = useMemoOne(() => tinycolor(color).toHsv(), [color]);
     useLayoutEffect(() => {
       // cached values for undo
-      cachedH.setValue(h);
+      cachedH.setValue(h / 360.0);
       cachedS.setValue(s);
       cachedV.setValue(v);
 
       // values used to interpolate new color
-      interpolatedHue.setValue(h);
-      indicatorPosX.setValue(mix(s, INDICATOR_MIN, INDICATOR_MAX));
-      indicatorPosY.setValue(mix(v, INDICATOR_MIN, INDICATOR_MAX));
+      interpolatedHue.setValue(h / 360.0);
+      indicatorPos.x.setValue(mix(s, INDICATOR_MIN, INDICATOR_MAX));
+      indicatorPos.y.setValue(mix(v, INDICATOR_MIN, INDICATOR_MAX));
     }, [color]);
 
     const controlTransition = useMemoOne(
@@ -135,17 +103,16 @@ const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
       () => [
         onGestureEvent({
           state: pan,
-          x: indicatorPosX,
-          y: indicatorPosY,
+          ...indicatorPos,
         }),
         onGestureEvent({ state: undo }),
         onGestureEvent({ state: confirm }),
       ],
-      [pan, undo, confirm, indicatorPosX, indicatorPosY]
+      [pan, undo, confirm, indicatorPos]
     );
 
-    const indicatorLeft = clamp(indicatorPosX, INDICATOR_MIN, INDICATOR_MAX);
-    const indicatorTop = clamp(indicatorPosY, INDICATOR_MIN, INDICATOR_MAX);
+    const indicatorLeft = clamp(indicatorPos.x, INDICATOR_MIN, INDICATOR_MAX);
+    const indicatorTop = clamp(indicatorPos.y, INDICATOR_MIN, INDICATOR_MAX);
 
     const interpolatedS = divide(
       sub(indicatorLeft, INDICATOR_MIN),
@@ -157,7 +124,7 @@ const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
       INDICATOR_MAX - INDICATOR_MIN
     );
 
-    const backgroundColor = colorHSV(
+    const backgroundColor = hsv2color(
       interpolatedHue,
       interpolatedS,
       interpolatedV
@@ -165,8 +132,8 @@ const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
 
     const resetPositions = [
       set(interpolatedHue, cachedH),
-      set(indicatorPosX, mix(cachedS, INDICATOR_MIN, INDICATOR_MAX)),
-      set(indicatorPosY, mix(cachedV, INDICATOR_MIN, INDICATOR_MAX)),
+      set(indicatorPos.x, mix(cachedS, INDICATOR_MIN, INDICATOR_MAX)),
+      set(indicatorPos.y, mix(cachedV, INDICATOR_MIN, INDICATOR_MAX)),
       call([], () => setRenderKey((prevKey) => prevKey + 1)),
     ];
 
@@ -236,7 +203,7 @@ const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
             style={{ width: EDITOR_SIZE - 50 }}
             trackColor={backgroundColor}
             value={interpolatedHue}
-            range={[0, 360]}
+            range={[0, 1]}
           />
         </Animated.View>
 
@@ -248,7 +215,7 @@ const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
       </>
     );
   },
-  (p, n) => p.color === n.color
+  (p, n) => p.color === n.color || !n.color
 );
 
 const styles = StyleSheet.create({
