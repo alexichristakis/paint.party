@@ -19,7 +19,7 @@ import { useMemoOne } from "use-memo-one";
 import { TextStyles, Colors, SCREEN_WIDTH } from "@lib";
 import { useOnLayout } from "@hooks";
 
-const { or, eq, and, defined, cond, call } = Animated;
+const { or, eq, and, cond, call } = Animated;
 
 export interface TouchableHighlightProps {
   style?: StyleProp<Animated.AnimateStyle<ViewStyle>>;

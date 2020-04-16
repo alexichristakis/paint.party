@@ -68,7 +68,7 @@ const Visualization: React.FC<
       <ZoomPanHandler onGestureBegan={onGestureBegan}>
         <TapGestureHandler {...tapGestureHandler}>
           <Animated.View>
-            <Grid gridRef={captureRef} backgroundColor={backgroundColor} />
+            <Grid {...{ captureRef, backgroundColor }} />
             <PositionsOverlay visible={positionsVisible} />
             <CellHighlight visible={pickerVisible} />
           </Animated.View>

@@ -4,7 +4,6 @@ import { connect, ConnectedProps } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
 import { useValues } from "react-native-redash";
-import storage from "@react-native-firebase/storage";
 
 import * as selectors from "@redux/selectors";
 import { CanvasActions, VisualizationActions } from "@redux/modules";
@@ -69,8 +68,6 @@ const styles = StyleSheet.create({
     height: SCREEN_HEIGHT,
     width: SCREEN_WIDTH,
     backgroundColor: Colors.lightGray,
-    // alignItems: "center",
-    // justifyContent: "center",
   },
 });
 

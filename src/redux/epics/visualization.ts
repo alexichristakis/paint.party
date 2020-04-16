@@ -1,26 +1,12 @@
-import {
-  map,
-  filter,
-  catchError,
-  takeUntil,
-  switchMap,
-  tap,
-  ignoreElements,
-} from "rxjs/operators";
+import { filter, tap, ignoreElements } from "rxjs/operators";
 import { isOfType } from "typesafe-actions";
 import { Epic } from "redux-observable";
-import tinycolor from "tinycolor2";
+
 import { captureRef } from "react-native-view-shot";
 import storage from "@react-native-firebase/storage";
 
 import * as selectors from "../selectors";
 import { RootState, ActionUnion as Actions, ActionTypes } from "../types";
-import {
-  CANVAS_DIMENSIONS,
-  Bitmap,
-  indicesFromIndex,
-  colorFromCell,
-} from "@lib";
 
 const capturePreview: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(

@@ -14,7 +14,7 @@ import moment from "moment";
 
 import { Colors, DRAW_INTERVAL, CANVAS_PREVIEW_SIZE } from "@lib";
 
-const { set, max, cond, eq, debug } = Animated;
+const { set, cond, eq } = Animated;
 
 export interface ProgressProps {
   index: number;

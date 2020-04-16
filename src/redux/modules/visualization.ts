@@ -112,7 +112,6 @@ export default (
 };
 
 export const VisualizationActions = {
-  // capturePreview: (uri: string) =>
   capturePreview: (ref: React.RefObject<View>) =>
     createAction(ActionTypes.CAPTURE_CANVAS_PREVIEW, { ref }),
   capturePreviewSuccess: () =>

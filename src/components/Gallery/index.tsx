@@ -1,6 +1,5 @@
 import React from "react";
 import { Canvas } from "@redux/modules";
-import { View } from "react-native";
 import Row, { RowProps } from "./Row";
 
 export interface GalleryProps {
