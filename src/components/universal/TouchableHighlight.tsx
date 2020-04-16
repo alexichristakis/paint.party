@@ -19,7 +19,7 @@ import { useMemoOne } from "use-memo-one";
 import { TextStyles, Colors, SCREEN_WIDTH } from "@lib";
 import { useOnLayout } from "@hooks";
 
-const { or, eq, and, defined, cond, call } = Animated;
+const { or, eq, and, cond, call } = Animated;
 
 export interface TouchableHighlightProps {
   style?: StyleProp<Animated.AnimateStyle<ViewStyle>>;
@@ -122,7 +122,7 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
           simultaneousHandlers={[tapRef]}
           {...longPressHandler}
         >
-          <Animated.View>{children}</Animated.View>
+          <Animated.View style={style}>{children}</Animated.View>
         </LongPressGestureHandler>
       </Animated.View>
     </TapGestureHandler>

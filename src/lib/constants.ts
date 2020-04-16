@@ -25,6 +25,8 @@ export const INDICATOR_MAX = EDITOR_SIZE - INDICATOR_SIZE + 5;
 export const POPUP_SIZE = COLOR_SIZE / 1.5;
 export const POPUP_BORDER_RADIUS = POPUP_SIZE / 2;
 
+export const CANVAS_PREVIEW_SIZE = 100;
+
 export const DRAW_INTERVAL = 3;
 
 export const SPRING_CONFIG = {

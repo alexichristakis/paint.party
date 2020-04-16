@@ -45,6 +45,7 @@ export enum CanvasActionTypes {
   JOIN_CANVAS = "canvas/JOIN",
   JOIN_CANVAS_SUCCESS = "canvas/JOIN_SUCCESS",
   JOIN_CANVAS_FAILURE = "canvas/JOIN_FAILURE",
+  SET_CANVAS_PREVIEW = "canvas/SET_PREVIEW",
   CLOSE_CANVAS = "canvas/CLOSE",
 }
 
@@ -59,6 +60,8 @@ export enum VisualizationActionTypes {
   UPDATE_CANVAS = "viz/UPDATE",
   UPDATE_CANVAS_SUCCESS = "viz/UPDATE_SUCCESS",
   UPDATE_CANVAS_FAILURE = "viz/UPDATE_FAILURE",
+  CAPTURE_CANVAS_PREVIEW = "viz/CAPTURE_PREVIEW",
+  CAPTURE_CANVAS_PREVIEW_SUCCESS = "viz/CAPTURE_PREVIEW_SUCCESS",
 }
 
 export type RootState = {

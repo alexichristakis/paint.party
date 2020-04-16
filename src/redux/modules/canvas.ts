@@ -22,6 +22,7 @@ export type CanvasState = Readonly<{
   showCreator: boolean;
   activeCanvas: string;
   canvases: { [canvasId: string]: Canvas };
+  previews: { [canvasId: string]: string };
   creatingCanvas: boolean;
   fetchingCanvases: boolean;
   joiningCanvas: boolean;
@@ -36,6 +37,7 @@ const initialState: CanvasState = {
   loadingCanvas: false,
   joiningCanvas: false,
   canvases: {},
+  previews: {},
 };
 
 export default (
@@ -127,6 +129,15 @@ export default (
       return { ...state, showCreator: false };
     }
 
+    case ActionTypes.SET_CANVAS_PREVIEW: {
+      const { id, url } = action.payload;
+
+      return immer(state, (draft) => {
+        if (!draft.previews) draft.previews = {};
+        draft.previews[id] = url;
+      });
+    }
+
     default:
       return state;
   }
@@ -150,6 +161,9 @@ export const CanvasActions = {
   joinSuccess: (canvas: Canvas) =>
     createAction(ActionTypes.JOIN_CANVAS_SUCCESS, { canvas }),
   joinFailure: () => createAction(ActionTypes.JOIN_CANVAS_FAILURE),
+
+  setPreviewUrl: (id: string, url: string) =>
+    createAction(ActionTypes.SET_CANVAS_PREVIEW, { id, url }),
 
   open: (id: string) => createAction(ActionTypes.OPEN_CANVAS, { id }),
   close: () => createAction(ActionTypes.CLOSE_CANVAS),

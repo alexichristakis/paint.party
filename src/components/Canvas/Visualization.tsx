@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { View } from "react-native";
 import { State, TapGestureHandler } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { onGestureEvent, useValue, useVector } from "react-native-redash";
@@ -27,6 +28,7 @@ const mapDispatchToProps = {
 
 export type VisualizationReduxProps = ConnectedProps<typeof connector>;
 export interface VisualizationProps {
+  captureRef: React.RefObject<View>;
   positionsVisible: Animated.Value<0 | 1>;
   pickerVisible: Animated.Value<0 | 1>;
 }
@@ -34,7 +36,13 @@ export interface VisualizationProps {
 const Visualization: React.FC<
   VisualizationProps & VisualizationReduxProps
 > = React.memo(
-  ({ pickerVisible, positionsVisible, selectCell, backgroundColor }) => {
+  ({
+    pickerVisible,
+    positionsVisible,
+    captureRef,
+    selectCell,
+    backgroundColor,
+  }) => {
     const tap = useVector(0, 0, []);
     const tapState = useValue(UNDETERMINED, []);
     const tapGestureHandler = onGestureEvent({ state: tapState, ...tap });
@@ -60,7 +68,7 @@ const Visualization: React.FC<
       <ZoomPanHandler onGestureBegan={onGestureBegan}>
         <TapGestureHandler {...tapGestureHandler}>
           <Animated.View>
-            <Grid backgroundColor={backgroundColor} />
+            <Grid {...{ captureRef, backgroundColor }} />
             <PositionsOverlay visible={positionsVisible} />
             <CellHighlight visible={pickerVisible} />
           </Animated.View>

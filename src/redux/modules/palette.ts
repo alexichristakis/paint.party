@@ -87,7 +87,7 @@ export default (
       });
     }
 
-    case ActionTypes.CLOSE_EDITOR: {
+    case ActionTypes.CLOSE_COLOR_EDITOR: {
       return immer(state, (draft) => {
         draft.editing.active = false;
         draft.editing.paletteId = "";

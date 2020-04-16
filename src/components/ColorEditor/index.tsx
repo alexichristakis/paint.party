@@ -12,7 +12,6 @@ import {
   useValues,
   bin,
   onGestureEvent,
-  withSpringTransition,
   mix,
   withTransition,
 } from "react-native-redash";
@@ -22,15 +21,7 @@ import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import { PaletteActions } from "@redux/modules";
 import { ColorEditorContext } from "@hooks";
-import {
-  SCREEN_WIDTH,
-  COLOR_BORDER_WIDTH,
-  Colors,
-  SCREEN_HEIGHT,
-  colorHSV,
-  EDITOR_SIZE,
-  INDICATOR_SIZE,
-} from "@lib";
+import { COLOR_BORDER_WIDTH, Colors, INDICATOR_SIZE } from "@lib";
 
 import Editor from "./Editor";
 
