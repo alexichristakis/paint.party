@@ -5,6 +5,8 @@ import { URL_PREFIX, CELL_SIZE, CANVAS_DIMENSIONS } from "./constants";
 import { Point, vec } from "react-native-redash";
 import { DependencyList } from "react";
 import { useMemoOne } from "use-memo-one";
+import { Cell } from "@redux/modules";
+import sortBy from "lodash/sortBy";
 
 const {
   cond,
@@ -31,14 +33,44 @@ const {
   Extrapolate,
 } = Animated;
 
+export const base64 = (data: string) => {
+  var enc = "";
+  for (var i = 5, n = data.length * 8 + 5; i < n; i += 6)
+    enc += "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[
+      (((data.charCodeAt(~~(i / 8) - 1) << 8) | data.charCodeAt(~~(i / 8))) >>
+        (7 - (i % 8))) &
+        63
+    ];
+  for (; enc.length % 4; enc += "=");
+  return enc;
+};
+
 export const coordinatesToIndex = (x: number, y: number) =>
   Math.floor(y / CELL_SIZE) * CANVAS_DIMENSIONS + Math.floor(x / CELL_SIZE);
 
-export const coordinatesFromIndex = (index: number) => {
-  const y = Math.floor(index / CANVAS_DIMENSIONS) * CELL_SIZE;
-  const x = Math.floor(index % CANVAS_DIMENSIONS) * CELL_SIZE;
+export const indicesFromIndex = (index: number) => {
+  const i = Math.floor(index % CANVAS_DIMENSIONS);
+  const j = Math.floor(index / CANVAS_DIMENSIONS);
 
-  return { x, y };
+  return { i, j };
+};
+
+export const coordinatesFromIndex = (index: number) => {
+  const { i, j } = indicesFromIndex(index);
+
+  return { x: i * CELL_SIZE, y: j * CELL_SIZE };
+};
+
+export const colorFromCell = (cell: Cell, fallback: string) => {
+  const updates = Object.values(cell);
+
+  if (updates.length) {
+    const sorted = sortBy(updates, (o) => o.time);
+
+    return sorted[updates.length - 1].color;
+  }
+
+  return fallback;
 };
 
 export const onGestureEnd = proc(

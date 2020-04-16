@@ -9,6 +9,7 @@ import { uid } from "./app";
 // const createSelector = createSelectorCreator(defaultMemoize, isEqual);
 
 const s = (state: RootState) => state.canvas || {};
+const p = (_: RootState, props: any) => props || {};
 
 export const activeCanvas = createSelector(
   s,
@@ -16,6 +17,17 @@ export const activeCanvas = createSelector(
 );
 
 export const canvases = createSelector(s, (state) => state.canvases);
+
+export const canvas = createSelector(
+  [canvases, activeCanvas, p],
+  (canvases, activeCanvas, props) =>
+    canvases[props.canvasId ?? activeCanvas] ?? {}
+);
+
+export const canvasBackgroundColor = createSelector(
+  canvas,
+  (canvas) => canvas.backgroundColor ?? ""
+);
 
 export const canvasList = createSelector(canvases, (c) => values(c));
 

@@ -122,7 +122,7 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
           simultaneousHandlers={[tapRef]}
           {...longPressHandler}
         >
-          <Animated.View>{children}</Animated.View>
+          <Animated.View style={style}>{children}</Animated.View>
         </LongPressGestureHandler>
       </Animated.View>
     </TapGestureHandler>

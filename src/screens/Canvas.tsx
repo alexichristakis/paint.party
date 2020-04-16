@@ -4,9 +4,10 @@ import { connect, ConnectedProps } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
 import { useValues } from "react-native-redash";
+import storage from "@react-native-firebase/storage";
 
 import * as selectors from "@redux/selectors";
-import { CanvasActions } from "@redux/modules";
+import { CanvasActions, VisualizationActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { Visualization, Header } from "@components/Canvas";
 import ColorPicker from "@components/ColorPicker";
@@ -21,6 +22,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 const mapDispatchToProps = {
   open: CanvasActions.open,
+  capture: VisualizationActions.capturePreview,
 };
 
 export type CanvasReduxProps = ConnectedProps<typeof connector>;

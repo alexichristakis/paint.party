@@ -31,7 +31,7 @@ export const initialCanvasViz: VisualizationState = {
   selectedCell: -1,
   selectedColor: "",
   live: null,
-  cells: null
+  cells: null,
 };
 
 export default (
@@ -51,7 +51,7 @@ export default (
     case ActionTypes.SELECT_CELL: {
       const { cell } = action.payload;
 
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         draft.selectedCell = cell;
         draft.selectedColor = null;
 
@@ -74,12 +74,12 @@ export default (
 
       return {
         ...state,
-        live: positions
+        live: positions,
       };
     }
 
     case ActionTypes.DRAW_SUCCESS: {
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         draft.enabled = false;
         draft.selectedColor = null;
 
@@ -92,7 +92,7 @@ export default (
     case ActionTypes.UPDATE_CANVAS: {
       const { cellId, update } = action.payload;
 
-      return immer(state, draft => {
+      return immer(state, (draft) => {
         if (draft.cells) draft.cells[cellId] = update;
         else draft.cells = { [cellId]: update };
 
@@ -102,12 +102,19 @@ export default (
       });
     }
 
+    case ActionTypes.CAPTURE_CANVAS_PREVIEW: {
+    }
+
     default:
       return state;
   }
 };
 
 export const VisualizationActions = {
+  capturePreview: () => createAction(ActionTypes.CAPTURE_CANVAS_PREVIEW),
+  capturePreviewSuccess: () =>
+    createAction(ActionTypes.CAPTURE_CANVAS_PREVIEW_SUCCESS),
+
   enableCanvas: () => createAction(ActionTypes.ENABLE_CANVAS),
   openSuccess: (id: string, cells: Cells | null, live: Positions | null) =>
     createAction(ActionTypes.OPEN_CANVAS_SUCCESS, { id, cells, live }),
@@ -125,5 +132,5 @@ export const VisualizationActions = {
   update: (cellId: number, update: Cell) =>
     createAction(ActionTypes.UPDATE_CANVAS, { cellId, update }),
   updateFailure: (error: any) =>
-    createAction(ActionTypes.UPDATE_CANVAS_FAILURE, { error })
+    createAction(ActionTypes.UPDATE_CANVAS_FAILURE, { error }),
 };
