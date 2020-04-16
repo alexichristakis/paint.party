@@ -1,6 +1,7 @@
 import immer from "immer";
 
 import { createAction, ActionUnion, ActionTypes } from "../types";
+import { View } from "react-native";
 
 export type CellUpdate = {
   id: string;
@@ -111,7 +112,9 @@ export default (
 };
 
 export const VisualizationActions = {
-  capturePreview: () => createAction(ActionTypes.CAPTURE_CANVAS_PREVIEW),
+  // capturePreview: (uri: string) =>
+  capturePreview: (ref: React.RefObject<View>) =>
+    createAction(ActionTypes.CAPTURE_CANVAS_PREVIEW, { ref }),
   capturePreviewSuccess: () =>
     createAction(ActionTypes.CAPTURE_CANVAS_PREVIEW_SUCCESS),
 

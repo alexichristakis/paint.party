@@ -10,6 +10,7 @@ import {
 import { isOfType } from "typesafe-actions";
 import { Epic } from "redux-observable";
 import tinycolor from "tinycolor2";
+import { captureRef } from "react-native-view-shot";
 import storage from "@react-native-firebase/storage";
 
 import * as selectors from "../selectors";
@@ -23,41 +24,18 @@ import {
 
 const capturePreview: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
-    filter(isOfType(ActionTypes.CLOSE_CANVAS)),
-    tap(async () => {
-      const cells = selectors.cells(state$.value);
+    filter(isOfType(ActionTypes.CAPTURE_CANVAS_PREVIEW)),
+    tap(async (action) => {
+      const { ref } = action.payload;
+
+      const uri = await captureRef(ref);
+
       const canvasId = selectors.canvasVizId(state$.value);
-      const backgroundColor = selectors.canvasBackgroundColor(state$.value, {
-        canvasId,
-      });
-
-      const { r, g, b } = tinycolor(backgroundColor).toRgb();
-
-      const buffer = new Bitmap(CANVAS_DIMENSIONS, CANVAS_DIMENSIONS, [
-        r / 255,
-        g / 255,
-        b / 255,
-        1,
-      ]);
-
-      Object.keys(cells).forEach((index) => {
-        const { i, j } = indicesFromIndex(+index);
-        const cell = cells[index];
-
-        const { r, g, b } = tinycolor(
-          colorFromCell(cell, backgroundColor)
-        ).toRgb();
-
-        buffer.pixel[i][j] = [r / 255, g / 255, b / 255, 1];
-      });
-
-      const base64 = buffer.dataURL();
-
-      const ref = storage().ref(canvasId);
 
       return Promise.resolve().then(() =>
-        ref
-          .putString(base64, "base64")
+        storage()
+          .ref(canvasId)
+          .putFile(uri, { contentType: "image/png" })
           .then((res) => console.log(res))
           .catch((err) => console.log(err))
       );

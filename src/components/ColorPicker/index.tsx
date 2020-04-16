@@ -19,19 +19,20 @@ const { eq } = Animated;
 
 export interface ColorPickerProps {
   visible: Animated.Value<0 | 1>;
+  onDraw: () => void;
 }
 
 export type ColorPickerConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (_: RootState) => ({});
 const mapDispatchToProps = {
-  showPalettes: PaletteActions.toggleEditor,
+  openPalettes: PaletteActions.openEditor,
 };
 
 const ColorPicker: React.FC<
   ColorPickerProps & ColorPickerConnectedProps
 > = React.memo(
-  ({ visible, showPalettes }) => {
+  ({ visible, onDraw, openPalettes }) => {
     const [tapState, popupDragState] = useValues<State>(
       [State.UNDETERMINED, State.UNDETERMINED],
       []
@@ -54,7 +55,8 @@ const ColorPicker: React.FC<
           state={tapState}
           visible={visible}
           openTransition={openTransition}
-          onPress={showPalettes}
+          onPress={openPalettes}
+          onDraw={onDraw}
         />
         <ColorWheel
           angle={rotation}

@@ -529,8 +529,6 @@ PODS:
     - React-cxxreact (= 0.62.2)
     - React-jsi (= 0.62.2)
   - React-jsinspector (0.62.2)
-  - react-native-image-resizer (1.2.1):
-    - React
   - react-native-notifications (3.1.4):
     - React
   - react-native-view-shot (3.1.2):
@@ -658,7 +656,6 @@ DEPENDENCIES:
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
-  - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-notifications (from `../node_modules/react-native-notifications`)
   - react-native-view-shot (from `../node_modules/react-native-view-shot`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -758,8 +755,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
-  react-native-image-resizer:
-    :path: "../node_modules/react-native-image-resizer"
   react-native-notifications:
     :path: "../node_modules/react-native-notifications"
   react-native-view-shot:
@@ -861,7 +856,6 @@ SPEC CHECKSUMS:
   React-jsi: b6dc94a6a12ff98e8877287a0b7620d365201161
   React-jsiexecutor: 1540d1c01bb493ae3124ed83351b1b6a155db7da
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
-  react-native-image-resizer: 784fb2b5603021a91f059c03dfe32f8fca624b28
   react-native-notifications: 36929512507417ba0021659bd2f9e0184dda2489
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
   React-RCTActionSheet: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c

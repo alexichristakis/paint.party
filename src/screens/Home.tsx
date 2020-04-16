@@ -1,5 +1,5 @@
-import React, { useCallback, useRef } from "react";
-import { StyleSheet } from "react-native";
+import React, { useCallback } from "react";
+import { StyleSheet, Text } from "react-native";
 import Animated from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
@@ -9,11 +9,13 @@ import { useValues, onScrollEvent } from "react-native-redash";
 import { RootState } from "@redux/types";
 import * as selectors from "@redux/selectors";
 import { CanvasActions, AppActions, PaletteActions } from "@redux/modules";
-import { SB_HEIGHT, TextStyles } from "@lib";
+import { SB_HEIGHT, TextStyles, Colors } from "@lib";
 import ActionButton from "@components/ActionButton";
 import { Canvases } from "@components/Canvases";
+import Gallery from "@components/Gallery";
 
 import { StackParamList } from "../App";
+import moment from "moment";
 
 const connector = connect(
   (state: RootState) => ({
@@ -53,6 +55,11 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
     }, [activeCanvas])
   );
 
+  const currentTime = moment().unix();
+  const allCanvases = Object.values(canvases);
+  const activeCanvases = allCanvases.filter((o) => o.expiresAt > currentTime);
+  const expiredCanvases = allCanvases.filter((o) => o.expiresAt < currentTime);
+
   return (
     <>
       <Animated.ScrollView
@@ -61,11 +68,14 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
         scrollEventThrottle={1}
         contentContainerStyle={styles.contentContainer}
       >
+        <Text style={styles.header}>active</Text>
         <Canvases
           scrollY={scrollY}
           onPressCanvas={openCanvas}
-          canvases={Object.values(canvases)}
+          canvases={activeCanvases}
         />
+        <Text style={styles.header}>past works</Text>
+        <Gallery canvases={expiredCanvases} />
       </Animated.ScrollView>
       <ActionButton
         onPressAction1={openCanvasCreator}
@@ -81,8 +91,11 @@ const styles = StyleSheet.create({
     paddingTop: SB_HEIGHT + 5,
   },
   header: {
-    alignItems: "flex-end",
+    ...TextStyles.small,
+    color: Colors.gray,
     marginHorizontal: 10,
+    marginVertical: 5,
+    textTransform: "uppercase",
   },
   headerContent: {
     alignSelf: "stretch",
@@ -94,7 +107,7 @@ const styles = StyleSheet.create({
     ...TextStyles.medium,
   },
   contentContainer: {
-    //
+    paddingBottom: 100,
   },
 });
 

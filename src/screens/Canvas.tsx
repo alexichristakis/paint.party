@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 import { useFocusEffect, RouteProp } from "@react-navigation/core";
@@ -23,6 +23,7 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = {
   open: CanvasActions.open,
   capture: VisualizationActions.capturePreview,
+  draw: VisualizationActions.draw,
 };
 
 export type CanvasReduxProps = ConnectedProps<typeof connector>;
@@ -34,9 +35,12 @@ export interface CanvasProps {
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
   activeCanvas,
   loadingCanvas,
+  capture,
+  draw,
   open,
 }) => {
   const [positionsVisible, pickerVisible] = useValues<0 | 1>([0, 0], []);
+  const captureRef = useRef<View>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -44,14 +48,16 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     }, [])
   );
 
+  const handleOnDraw = () => {
+    draw();
+    capture(captureRef);
+  };
+
   return (
     <View style={styles.container}>
       <Header {...{ positionsVisible, pickerVisible }} />
-      <Visualization
-        pickerVisible={pickerVisible}
-        positionsVisible={positionsVisible}
-      />
-      <ColorPicker visible={pickerVisible} />
+      <Visualization {...{ captureRef, pickerVisible, positionsVisible }} />
+      <ColorPicker onDraw={handleOnDraw} visible={pickerVisible} />
       <LoadingOverlay loading={loadingCanvas} />
     </View>
   );

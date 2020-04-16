@@ -34,6 +34,7 @@ const config = {
 
 export interface ButtonProps {
   onPress: () => void;
+  onDraw: () => void;
   state: Animated.Value<State>;
   visible: Animated.Value<0 | 1>;
   openTransition: Animated.Node<number>;
@@ -49,7 +50,7 @@ const mapDispatchToProps = {
 };
 
 const Button: React.FC<ButtonProps & ButtonConnectedProps> = React.memo(
-  ({ state, onPress, visible, openTransition, isColorSelected, draw }) => {
+  ({ state, onPress, visible, openTransition, isColorSelected, onDraw }) => {
     const [isColorSelectedValue] = useValues<State>([bin(isColorSelected)], []);
 
     useEffect(() => {
@@ -78,7 +79,7 @@ const Button: React.FC<ButtonProps & ButtonConnectedProps> = React.memo(
               [
                 //
                 set(visible, 0),
-                call([], () => draw()),
+                call([], () => onDraw()),
               ],
               [
                 //
