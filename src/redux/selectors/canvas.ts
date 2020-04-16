@@ -1,12 +1,7 @@
 import { createSelector } from "reselect";
 import values from "lodash/values";
-import sortBy from "lodash/sortBy";
-import omit from "lodash/omit";
 
 import { RootState } from "../types";
-import { uid } from "./app";
-
-// const createSelector = createSelectorCreator(defaultMemoize, isEqual);
 
 const s = (state: RootState) => state.canvas || {};
 const p = (_: RootState, props: any) => props || {};
@@ -59,4 +54,11 @@ export const isLoadingCanvas = createSelector(
 export const showCanvasCreator = createSelector(
   s,
   (state) => state.showCreator
+);
+
+export const previews = createSelector(s, (state) => state.previews ?? {});
+
+export const previewUrl = createSelector(
+  [previews, p],
+  (previews, props) => previews[props.id]
 );

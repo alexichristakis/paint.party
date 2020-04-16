@@ -14,12 +14,7 @@ const Row: React.FC<RowProps> = ({ canvases }) => {
   return (
     <View style={styles.container}>
       {canvases.map((canvas, i) => (
-        <CanvasPreview
-          key={canvas.id}
-          canvasId={canvas.id}
-          backgroundColor={canvas.backgroundColor}
-          size={size}
-        />
+        <CanvasPreview key={i} {...canvas} {...{ size }} />
       ))}
     </View>
   );

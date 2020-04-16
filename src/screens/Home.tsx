@@ -68,13 +68,13 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
         scrollEventThrottle={1}
         contentContainerStyle={styles.contentContainer}
       >
-        <Text style={styles.header}>active</Text>
+        <Text style={styles.header}>active:</Text>
         <Canvases
           scrollY={scrollY}
           onPressCanvas={openCanvas}
           canvases={activeCanvases}
         />
-        <Text style={styles.header}>past works</Text>
+        <Text style={styles.header}>past works:</Text>
         <Gallery canvases={expiredCanvases} />
       </Animated.ScrollView>
       <ActionButton

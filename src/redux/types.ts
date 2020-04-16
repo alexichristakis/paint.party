@@ -45,6 +45,7 @@ export enum CanvasActionTypes {
   JOIN_CANVAS = "canvas/JOIN",
   JOIN_CANVAS_SUCCESS = "canvas/JOIN_SUCCESS",
   JOIN_CANVAS_FAILURE = "canvas/JOIN_FAILURE",
+  SET_CANVAS_PREVIEW = "canvas/SET_PREVIEW",
   CLOSE_CANVAS = "canvas/CLOSE",
 }
 

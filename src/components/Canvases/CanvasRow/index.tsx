@@ -54,7 +54,7 @@ export const CanvasRow: React.FC<CanvasRowProps> = ({
       onLongPress={handleOnLongPress}
     >
       <Progress index={index} time={nextDrawAt}>
-        <CanvasPreview backgroundColor={backgroundColor} canvasId={id} />
+        <CanvasPreview {...{ backgroundColor, id }} />
       </Progress>
       <View style={styles.right}>
         <Text style={styles.title}>{name}</Text>

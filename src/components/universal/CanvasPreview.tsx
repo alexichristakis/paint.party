@@ -1,36 +1,49 @@
-import React, { useEffect, useState } from "react";
-import { Image, View, StyleSheet } from "react-native";
-import Animated from "react-native-reanimated";
+import React, { useEffect } from "react";
+import { Image, View } from "react-native";
 import storage from "@react-native-firebase/storage";
+import { connect, ConnectedProps } from "react-redux";
+
+import * as selectors from "@redux/selectors";
+import { RootState } from "@redux/types";
+import { CanvasActions } from "@redux/modules";
 import { CANVAS_PREVIEW_SIZE } from "@lib";
 
+const mapStateToProps = (state: RootState, props: CanvasPreviewProps) => ({
+  url: selectors.previewUrl(state, props),
+});
+
+const mapDispatchToProps = {
+  setUrl: CanvasActions.setPreviewUrl,
+};
+
+export type CanvasPreviewConnectedProps = ConnectedProps<typeof connector>;
+
 export interface CanvasPreviewProps {
-  canvasId: string;
+  id: string;
   backgroundColor: string;
   size?: number;
 }
 
-const CanvasPreview: React.FC<CanvasPreviewProps> = ({
-  backgroundColor,
-  canvasId,
-  size = CANVAS_PREVIEW_SIZE,
-}) => {
-  const [url, setUrl] = useState("");
-
+const CanvasPreview: React.FC<
+  CanvasPreviewProps & CanvasPreviewConnectedProps
+> = ({ backgroundColor, id, url, setUrl, size = CANVAS_PREVIEW_SIZE }) => {
   useEffect(() => {
-    storage()
-      .ref(canvasId)
-      .getDownloadURL()
-      .then(setUrl)
-      .catch((err) => {});
-  }, []);
+    if (!url) {
+      storage()
+        .ref(id)
+        .getDownloadURL()
+        .then((newUrl) => setUrl(id, newUrl))
+        .catch((err) => {});
+    }
+  }, [url]);
 
   const style = {
     width: size,
     height: size,
     backgroundColor,
   };
-  if (url.length)
+
+  if (url)
     return (
       <Image
         source={{ uri: url }}
@@ -43,4 +56,5 @@ const CanvasPreview: React.FC<CanvasPreviewProps> = ({
   return <View style={style} />;
 };
 
-export default CanvasPreview;
+const connector = connect(mapStateToProps, mapDispatchToProps);
+export default connector(CanvasPreview);
