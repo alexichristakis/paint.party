@@ -54,13 +54,14 @@ const Canvases: React.FC<CanvasesProps & CanvasesReduxProps> = React.memo(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: SB_HEIGHT + 5,
+    paddingTop: SB_HEIGHT,
   },
   header: {
     ...TextStyles.small,
     color: Colors.gray,
     marginHorizontal: 10,
-    marginVertical: 5,
+    marginTop: 20,
+    marginBottom: 5,
     textTransform: "uppercase",
   },
 

@@ -17,20 +17,21 @@ export interface CarouselProps {}
 export type CarouselConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState) => ({
-  urls: selectors.sortedPreviews(state),
+  urls: selectors.previews(state),
 });
 
 const mapDispatchToProps = {};
 
 const Carousel: React.FC<CarouselProps & CarouselConnectedProps> = React.memo(
   ({ urls }) => {
-    const { x, y, visible, close, index, transition } = useContext(
+    const { x, y, visible, close, canvas, transition } = useContext(
       PhotoCarouselContext
     );
 
-    const url = urls[index];
+    const url = urls[canvas.id];
 
     const animatedStyle = {
+      backgroundColor: canvas.backgroundColor,
       top: mix(transition, y, CAROUSEL_TOP),
       left: mix(transition, x, 0),
       height: mix(transition, CANVAS_PREVIEW_SIZE, CAROUSEL_SIZE),
@@ -38,7 +39,6 @@ const Carousel: React.FC<CarouselProps & CarouselConnectedProps> = React.memo(
     };
 
     const opacity = mix(transition, 0, 0.8);
-
     return useMemo(
       () => (
         <Animated.View
@@ -56,6 +56,15 @@ const Carousel: React.FC<CarouselProps & CarouselConnectedProps> = React.memo(
             ]}
           />
 
+          <Animated.Text
+            style={{
+              position: "absolute",
+              top: CAROUSEL_TOP - 50,
+              color: "white",
+            }}
+          >
+            {canvas.name}
+          </Animated.Text>
           <Animated.Image
             source={{ uri: url, cache: "force-cache" }}
             style={[{ position: "absolute" }, animatedStyle]}

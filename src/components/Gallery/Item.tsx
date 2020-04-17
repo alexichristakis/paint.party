@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef } from "react";
+import React from "react";
 import {
   TapGestureHandler,
   State,
@@ -31,7 +31,7 @@ const Item: React.FC<ItemProps> = React.memo(
     return (
       <TapGestureHandler onHandlerStateChange={handleOnStateChange}>
         <Animated.View style={{ opacity }}>
-          <CanvasPreview {...canvas} />
+          <CanvasPreview {...canvas} cache="force-cache" />
         </Animated.View>
       </TapGestureHandler>
     );
@@ -40,4 +40,3 @@ const Item: React.FC<ItemProps> = React.memo(
 );
 
 export default Item;
-export { default as Carousel } from "./Carousel";

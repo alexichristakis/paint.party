@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Image, View } from "react-native";
+import { Image, View, ImageURISource } from "react-native";
 import storage from "@react-native-firebase/storage";
 import { connect, ConnectedProps } from "react-redux";
 
@@ -21,12 +21,20 @@ export type CanvasPreviewConnectedProps = ConnectedProps<typeof connector>;
 export interface CanvasPreviewProps {
   id: string;
   backgroundColor: string;
+  cache?: ImageURISource["cache"];
   size?: number;
 }
 
 const CanvasPreview: React.FC<
   CanvasPreviewProps & CanvasPreviewConnectedProps
-> = ({ backgroundColor, id, url, setUrl, size = CANVAS_PREVIEW_SIZE }) => {
+> = ({
+  backgroundColor,
+  id,
+  url,
+  setUrl,
+  cache,
+  size = CANVAS_PREVIEW_SIZE,
+}) => {
   useEffect(() => {
     if (!url) {
       storage()
@@ -46,7 +54,7 @@ const CanvasPreview: React.FC<
   if (url)
     return (
       <Image
-        source={{ uri: url }}
+        source={{ uri: url, cache }}
         resizeMethod={"scale"}
         resizeMode={"cover"}
         style={style}

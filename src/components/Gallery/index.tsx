@@ -47,22 +47,22 @@ const Gallery: React.FC<GalleryProps> = ({ canvases }) => {
   const {
     x,
     y,
-    setActiveIndex,
+    setActiveCanvas,
     transition,
-    index: activeIndex,
+    canvas: activeCanvas,
     open,
   } = useContext(PhotoCarouselContext);
 
   return useMemo(() => {
     const rows = generateRows(canvases);
 
-    const handleOnPressCanvas = (index: number) =>
+    const handleOnPressCanvas = (canvas: Canvas, index: number) =>
       ref.current?.measure((_, __, width, height, pageX, pageY) => {
         x.setValue(getXOffset(index));
         y.setValue(pageY + getYOffset(index));
 
         Haptics.trigger("impactLight");
-        setActiveIndex(index);
+        setActiveCanvas(canvas);
         open();
       });
 
@@ -73,13 +73,12 @@ const Gallery: React.FC<GalleryProps> = ({ canvases }) => {
             {row.canvases.map((canvas, j) => {
               const index = i * 3 + j;
 
-              const handleOnPress = () => handleOnPressCanvas(index);
-
+              const handleOnPress = () => handleOnPressCanvas(canvas, index);
               return (
                 <Item
                   key={canvas.id}
                   transition={transition}
-                  focused={activeIndex === index}
+                  focused={canvas.id === activeCanvas.id}
                   canvas={canvas}
                   onPress={handleOnPress}
                 />
@@ -89,7 +88,7 @@ const Gallery: React.FC<GalleryProps> = ({ canvases }) => {
         ))}
       </View>
     );
-  }, [canvases.length, ref, activeIndex]);
+  }, [canvases.length, ref, activeCanvas.id]);
 };
 
 const styles = StyleSheet.create({

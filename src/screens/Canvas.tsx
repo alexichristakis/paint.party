@@ -47,10 +47,10 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = ({
     }, [])
   );
 
-  const handleOnDraw = () => {
+  const handleOnDraw = useCallback(() => {
     draw();
     capture(captureRef);
-  };
+  }, [captureRef]);
 
   return (
     <View style={styles.container}>

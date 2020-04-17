@@ -5,18 +5,18 @@ import { State } from "react-native-gesture-handler";
 import Haptics from "react-native-haptic-feedback";
 
 import { COLOR_SIZE, hash, onPress } from "@lib";
-import { PaletteActions } from "@redux/modules";
+import { PaletteActions, Canvas } from "@redux/modules";
 import { useReduxAction } from "./use-redux-action";
 
 const { onChange, cond, set, call, or, eq } = Animated;
 
 export type PhotoCarouselState = {
-  index: number;
+  canvas: Canvas;
   visible: boolean;
   transition: Animated.Node<number>;
   x: Animated.Value<number>;
   y: Animated.Value<number>;
-  setActiveIndex: (index: number) => void;
+  setActiveCanvas: (canvas: Canvas) => void;
   open: () => void;
   close: () => void;
 };
@@ -27,11 +27,11 @@ export const PhotoCarouselContext = React.createContext<PhotoCarouselState>(
 
 export const usePhotoCarouselState = (): PhotoCarouselState => {
   const [x, y] = useValues<number>([-0, 0], []);
-  const [index, setIndex] = useState(-1);
+  const [canvas, setCanvas] = useState<Canvas>({} as Canvas);
   const [visible, setVisible] = useState(false);
 
-  const setActiveIndex = useCallback((index: number) => setIndex(index), [
-    setIndex,
+  const setActiveCanvas = useCallback((canvas: Canvas) => setCanvas(canvas), [
+    setCanvas,
   ]);
 
   const open = useCallback(() => setVisible(true), []);
@@ -40,9 +40,9 @@ export const usePhotoCarouselState = (): PhotoCarouselState => {
   const transition = useTransition(visible, { easing: Easing.ease });
 
   return {
-    index,
+    canvas,
+    setActiveCanvas,
     transition,
-    setActiveIndex,
     open,
     close,
     visible,

@@ -44,6 +44,7 @@ export const CreateButton: React.FC<CreateButtonProps> = ({
 
   return (
     <TouchableScale
+      enabled={valid}
       onPress={onPress}
       dependencies={dependencies}
       style={styles.sendButton}

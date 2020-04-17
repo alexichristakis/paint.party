@@ -60,7 +60,7 @@ export const CanvasRow: React.FC<CanvasRowProps> = ({
         <Text style={styles.title}>{name}</Text>
         <View style={styles.row}>
           <Text style={styles.subtitle}>
-            expires {moment.unix(expiresAt).fromNow()}
+            {moment.unix(expiresAt).fromNow(true)} left
           </Text>
           <Text style={styles.subtitle}>{pluralize("author", authors)}</Text>
         </View>
