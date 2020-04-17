@@ -10,28 +10,20 @@ import { CanvasRow } from "./CanvasRow";
 
 export interface CanvasListProps {
   onPressCanvas: (canvasId: string) => void;
-  yOffset: Animated.Value<number>;
   canvases: Canvas[];
 }
 
-const CanvasList: React.FC<CanvasListProps> = ({
-  onPressCanvas,
-  yOffset,
-  canvases,
-}) => {
-  if (canvases.length)
-    return (
-      <>
-        {sortBy(canvases, (o) => o.nextDrawAt).map((canvas, i) => (
-          <React.Fragment key={i}>
-            {i ? <Animated.View style={styles.separator} /> : null}
-            <CanvasRow index={i} onPress={onPressCanvas} canvas={canvas} />
-          </React.Fragment>
-        ))}
-      </>
-    );
-
-  return <Text style={styles.emptyState}>Welcome to PaintParty</Text>;
+const CanvasList: React.FC<CanvasListProps> = ({ onPressCanvas, canvases }) => {
+  return (
+    <>
+      {sortBy(canvases, (o) => o.nextDrawAt).map((canvas, i) => (
+        <React.Fragment key={i}>
+          {i ? <Animated.View style={styles.separator} /> : null}
+          <CanvasRow index={i} onPress={onPressCanvas} canvas={canvas} />
+        </React.Fragment>
+      ))}
+    </>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -40,12 +32,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     height: StyleSheet.hairlineWidth,
     backgroundColor: Colors.mediumGray,
-  },
-  emptyState: {
-    marginTop: 30,
-    marginHorizontal: 10,
-    ...TextStyles.title,
-    fontSize: 50,
   },
 });
 
