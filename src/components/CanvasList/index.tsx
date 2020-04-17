@@ -8,15 +8,15 @@ import { Colors, TextStyles } from "@lib";
 
 import { CanvasRow } from "./CanvasRow";
 
-export interface CanvasesProps {
+export interface CanvasListProps {
   onPressCanvas: (canvasId: string) => void;
-  scrollY: Animated.Value<number>;
+  yOffset: Animated.Value<number>;
   canvases: Canvas[];
 }
 
-export const Canvases: React.FC<CanvasesProps> = ({
+const CanvasList: React.FC<CanvasListProps> = ({
   onPressCanvas,
-  scrollY,
+  yOffset,
   canvases,
 }) => {
   if (canvases.length)
@@ -48,3 +48,5 @@ const styles = StyleSheet.create({
     fontSize: 50,
   },
 });
+
+export default CanvasList;
