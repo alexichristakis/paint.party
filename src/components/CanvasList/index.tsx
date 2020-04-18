@@ -1,10 +1,10 @@
 import React from "react";
-import { Text, StyleSheet } from "react-native";
-import Animated, { interpolate } from "react-native-reanimated";
+import { StyleSheet } from "react-native";
+import Animated from "react-native-reanimated";
 import sortBy from "lodash/sortBy";
 
 import { Canvas } from "@redux/modules/canvas";
-import { Colors, TextStyles } from "@lib";
+import { Colors } from "@lib";
 
 import { CanvasRow } from "./CanvasRow";
 

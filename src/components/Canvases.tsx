@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   header: {
     ...TextStyles.small,
     color: Colors.gray,
-    marginHorizontal: 10,
+    marginHorizontal: 15,
     marginTop: 20,
     marginBottom: 5,
     textTransform: "uppercase",

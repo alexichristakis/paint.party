@@ -6,11 +6,12 @@ import {
 } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { bin } from "react-native-redash";
+import { StyleSheet } from "react-native";
 
 import { CanvasPreview } from "@components/universal";
 import { Canvas } from "@redux/modules";
 
-const { event, cond, and, eq, or, not, call } = Animated;
+const { cond, eq } = Animated;
 
 export interface ItemProps {
   transition: Animated.Node<number>;
@@ -31,12 +32,18 @@ const Item: React.FC<ItemProps> = React.memo(
     return (
       <TapGestureHandler onHandlerStateChange={handleOnStateChange}>
         <Animated.View style={{ opacity }}>
-          <CanvasPreview {...canvas} cache="force-cache" />
+          <CanvasPreview {...canvas} style={styles.image} />
         </Animated.View>
       </TapGestureHandler>
     );
   },
   (p, n) => p.focused === n.focused
 );
+
+const styles = StyleSheet.create({
+  image: {
+    borderRadius: 10,
+  },
+});
 
 export default Item;

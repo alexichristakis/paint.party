@@ -9,12 +9,19 @@ import {
   loop,
   useClock,
   delay,
+  useValues,
 } from "react-native-redash";
 import moment from "moment";
 
-import { Colors, DRAW_INTERVAL, CANVAS_PREVIEW_SIZE } from "@lib";
+import {
+  Colors,
+  DRAW_INTERVAL,
+  CANVAS_PREVIEW_SIZE,
+  CANVAS_PREVIEW_MARGIN,
+  CANVAS_ROW_PREVIEW_SIZE,
+} from "@lib";
 
-const { set, cond, eq } = Animated;
+const { call, divide, multiply, sub, set, cond, eq } = Animated;
 
 export interface ProgressProps {
   index: number;
@@ -23,33 +30,42 @@ export interface ProgressProps {
 
 const Progress: React.FC<ProgressProps> = React.memo(
   ({ index, time, children }) => {
-    const clock = useClock([]);
-    const loopValue = useValue(1, []);
-
     const currentTime = moment().unix();
 
-    const delta = Math.max(time - currentTime, 0);
+    const clock = useClock([]);
+    const [loopValue, delta] = useValues(
+      [1, Math.max(time - currentTime, 0)],
+      [time]
+    );
+
+    // const delta = Math.max(time - currentTime, 0);
     const value = timing({
       to: 1,
-      from: 1 - delta / (DRAW_INTERVAL * 60),
-      duration: delta * 1000,
+      from: sub(1, divide(delta, DRAW_INTERVAL * 60)),
+      duration: multiply(delta, 1000),
     });
 
     useCode(
       () => [
-        set(
-          loopValue,
-          cond(
-            eq(value, 1),
-            loop({
-              clock,
-              duration: 600 + Math.random() * index * 100,
-              easing: Easing.inOut(Easing.ease),
-              boomerang: true,
-              autoStart: true,
-            }),
-            1
-          )
+        cond(
+          eq(value, 1),
+          [
+            set(delta, 0),
+            set(
+              loopValue,
+              sub(
+                1,
+                loop({
+                  clock,
+                  duration: 600 + Math.random() * index * 100,
+                  easing: Easing.inOut(Easing.ease),
+                  boomerang: true,
+                  autoStart: true,
+                })
+              )
+            ),
+          ],
+          [set(loopValue, 1)]
         ),
       ],
       [value]
@@ -85,8 +101,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-    width: CANVAS_PREVIEW_SIZE + 10,
-    height: CANVAS_PREVIEW_SIZE + 10,
+    width: CANVAS_ROW_PREVIEW_SIZE + 10,
+    height: CANVAS_ROW_PREVIEW_SIZE + 10,
     overflow: "visible",
     borderRadius: 5,
   },

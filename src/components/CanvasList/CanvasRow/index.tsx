@@ -18,9 +18,13 @@ import {
   SCREEN_WIDTH,
   canvasUrl,
   CANVAS_PREVIEW_SIZE,
+  CANVAS_ROW_PREVIEW_SIZE,
 } from "@lib";
 import { Canvas } from "@redux/modules/canvas";
 import { TouchableHighlight, CanvasPreview } from "@components/universal";
+
+import Clock from "@assets/svg/clock.svg";
+import Pencil from "@assets/svg/pencil.svg";
 
 import Progress from "./Progress";
 
@@ -54,15 +58,21 @@ export const CanvasRow: React.FC<CanvasRowProps> = ({
       onLongPress={handleOnLongPress}
     >
       <Progress index={index} time={nextDrawAt}>
-        <CanvasPreview {...{ backgroundColor, id }} />
+        <CanvasPreview
+          size={CANVAS_ROW_PREVIEW_SIZE}
+          {...{ backgroundColor, id }}
+        />
       </Progress>
       <View style={styles.right}>
         <Text style={styles.title}>{name}</Text>
         <View style={styles.row}>
           <Text style={styles.subtitle}>
+            <Clock width={12} height={12} />{" "}
             {moment.unix(expiresAt).fromNow(true)} left
           </Text>
-          <Text style={styles.subtitle}>{pluralize("author", authors)}</Text>
+          <Text style={styles.subtitle}>
+            <Pencil width={12} height={12} /> {pluralize("author", authors)}
+          </Text>
         </View>
       </View>
     </TouchableHighlight>
@@ -81,7 +91,7 @@ const styles = StyleSheet.create({
   right: {
     alignSelf: "stretch",
     justifyContent: "space-between",
-    width: SCREEN_WIDTH - CANVAS_PREVIEW_SIZE - 40,
+    width: SCREEN_WIDTH - CANVAS_ROW_PREVIEW_SIZE - 40,
   },
   row: {
     alignItems: "center",

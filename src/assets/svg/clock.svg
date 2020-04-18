@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>clock</title>
+    <desc>Created with Sketch.</desc>
+    <g id="clock" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Oval" stroke="#000000" cx="15" cy="15" r="14.5"></circle>
+        <line x1="15" y1="15" x2="20.4814864" y2="19.698417" id="Line-2-Copy" stroke="#000000" stroke-linecap="round"></line>
+        <line x1="15" y1="15" x2="15" y2="6" id="Line-2" stroke="#000000" stroke-linecap="round"></line>
+    </g>
+</svg>

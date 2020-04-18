@@ -1,14 +1,8 @@
-import React, { useContext, useState, useCallback } from "react";
-import Animated, { useCode, Easing } from "react-native-reanimated";
+import React, { useState, useCallback } from "react";
+import Animated, { Easing } from "react-native-reanimated";
 import { useValues, useTransition } from "react-native-redash";
-import { State } from "react-native-gesture-handler";
-import Haptics from "react-native-haptic-feedback";
 
-import { COLOR_SIZE, hash, onPress } from "@lib";
-import { PaletteActions, Canvas } from "@redux/modules";
-import { useReduxAction } from "./use-redux-action";
-
-const { onChange, cond, set, call, or, eq } = Animated;
+import { Canvas } from "@redux/modules";
 
 export type PhotoCarouselState = {
   canvas: Canvas;
@@ -37,7 +31,9 @@ export const usePhotoCarouselState = (): PhotoCarouselState => {
   const open = useCallback(() => setVisible(true), []);
   const close = useCallback(() => setVisible(false), []);
 
-  const transition = useTransition(visible, { easing: Easing.ease });
+  const transition = useTransition(visible, {
+    easing: Easing.inOut(Easing.ease),
+  });
 
   return {
     canvas,

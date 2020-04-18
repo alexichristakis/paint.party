@@ -1,27 +1,29 @@
 import React, { useEffect } from "react";
-import { Image, View, ImageURISource } from "react-native";
+import { View, ImageURISource, StyleProp, ImageStyle } from "react-native";
 import storage from "@react-native-firebase/storage";
 import { connect, ConnectedProps } from "react-redux";
+import Image from "react-native-fast-image";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import { CanvasActions } from "@redux/modules";
 import { CANVAS_PREVIEW_SIZE } from "@lib";
 
-const mapStateToProps = (state: RootState, props: CanvasPreviewProps) => ({
-  url: selectors.previewUrl(state, props),
-});
-
-const mapDispatchToProps = {
-  setUrl: CanvasActions.setPreviewUrl,
-};
+const connector = connect(
+  (state: RootState, props: CanvasPreviewProps) => ({
+    url: selectors.previewUrl(state, props),
+  }),
+  {
+    setUrl: CanvasActions.setPreviewUrl,
+  }
+);
 
 export type CanvasPreviewConnectedProps = ConnectedProps<typeof connector>;
 
 export interface CanvasPreviewProps {
   id: string;
   backgroundColor: string;
-  cache?: ImageURISource["cache"];
+  style?: ImageStyle;
   size?: number;
 }
 
@@ -32,7 +34,7 @@ const CanvasPreview: React.FC<
   id,
   url,
   setUrl,
-  cache,
+  style: styleProp,
   size = CANVAS_PREVIEW_SIZE,
 }) => {
   useEffect(() => {
@@ -46,23 +48,16 @@ const CanvasPreview: React.FC<
   }, [url]);
 
   const style = {
+    ...styleProp,
     width: size,
     height: size,
     backgroundColor,
   };
 
   if (url)
-    return (
-      <Image
-        source={{ uri: url, cache }}
-        resizeMethod={"scale"}
-        resizeMode={"cover"}
-        style={style}
-      />
-    );
+    return <Image source={{ uri: url }} resizeMode={"cover"} style={style} />;
 
   return <View style={style} />;
 };
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(CanvasPreview);

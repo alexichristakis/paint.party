@@ -3,24 +3,35 @@ import Animated from "react-native-reanimated";
 import { mix } from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import { StyleSheet } from "react-native";
+import Image from "react-native-fast-image";
 import isEqual from "lodash/isEqual";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import { PhotoCarouselContext } from "@hooks";
-import { CANVAS_PREVIEW_SIZE, CAROUSEL_TOP, CAROUSEL_SIZE, Colors } from "@lib";
+import {
+  CANVAS_PREVIEW_SIZE,
+  CAROUSEL_TOP,
+  CAROUSEL_SIZE,
+  Colors,
+  TextStyles,
+  SCREEN_HEIGHT,
+} from "@lib";
 
 const { cond, eq } = Animated;
+
+const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 export interface CarouselProps {}
 
 export type CarouselConnectedProps = ConnectedProps<typeof connector>;
 
-const mapStateToProps = (state: RootState) => ({
-  urls: selectors.previews(state),
-});
-
-const mapDispatchToProps = {};
+const connector = connect(
+  (state: RootState) => ({
+    urls: selectors.previews(state),
+  }),
+  {}
+);
 
 const Carousel: React.FC<CarouselProps & CarouselConnectedProps> = React.memo(
   ({ urls }) => {
@@ -31,9 +42,11 @@ const Carousel: React.FC<CarouselProps & CarouselConnectedProps> = React.memo(
     const url = urls[canvas.id];
 
     const animatedStyle = {
+      position: "absolute",
+      borderRadius: 10,
       backgroundColor: canvas.backgroundColor,
       top: mix(transition, y, CAROUSEL_TOP),
-      left: mix(transition, x, 0),
+      left: mix(transition, x, 10),
       height: mix(transition, CANVAS_PREVIEW_SIZE, CAROUSEL_SIZE),
       width: mix(transition, CANVAS_PREVIEW_SIZE, CAROUSEL_SIZE),
     };
@@ -58,17 +71,19 @@ const Carousel: React.FC<CarouselProps & CarouselConnectedProps> = React.memo(
 
           <Animated.Text
             style={{
+              ...TextStyles.title,
+              opacity,
+              marginHorizontal: 20,
               position: "absolute",
-              top: CAROUSEL_TOP - 50,
+              bottom: SCREEN_HEIGHT - CAROUSEL_TOP + 5,
+              // left: 0,
+              // right: 0,
               color: "white",
             }}
           >
             {canvas.name}
           </Animated.Text>
-          <Animated.Image
-            source={{ uri: url, cache: "force-cache" }}
-            style={[{ position: "absolute" }, animatedStyle]}
-          />
+          <AnimatedImage source={{ uri: url }} style={animatedStyle} />
         </Animated.View>
       ),
       [url, visible]
@@ -77,5 +92,4 @@ const Carousel: React.FC<CarouselProps & CarouselConnectedProps> = React.memo(
   (p, n) => isEqual(p, n)
 );
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(Carousel);
