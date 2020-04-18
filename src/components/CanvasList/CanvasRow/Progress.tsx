@@ -21,7 +21,7 @@ export interface ProgressProps {
 }
 
 const Progress: React.FC<ProgressProps> = React.memo(
-  ({ index, time, children }) => {
+  ({ index, time = 0, children }) => {
     const currentTime = moment().unix();
 
     const clock = useClock([]);
