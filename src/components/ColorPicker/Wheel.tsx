@@ -16,9 +16,9 @@ import times from "lodash/times";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
+import { useVectors } from "@lib";
 
 import Swatch from "./Swatch";
-import { useVectors } from "@lib";
 
 const { divide, pow, set, eq, sub, cond, add, multiply } = Animated;
 

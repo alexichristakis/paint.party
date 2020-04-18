@@ -1,22 +1,36 @@
-import React, { useContext } from "react";
-import Animated, { useCode } from "react-native-reanimated";
-import { useValues } from "react-native-redash";
+import React, { useContext, useState, useCallback, useMemo } from "react";
+import Animated, { useCode, Easing } from "react-native-reanimated";
+import { bin, useValues, useTransition } from "react-native-redash";
 import { State } from "react-native-gesture-handler";
 import Haptics from "react-native-haptic-feedback";
+import { useSelector } from "react-redux";
 
-import { COLOR_SIZE, hash } from "@lib";
+import { COLOR_SIZE } from "@lib";
+import * as selectors from "@redux/selectors";
 import { PaletteActions } from "@redux/modules";
+import { RootState } from "@redux/types";
+
 import { useReduxAction } from "./use-redux-action";
 
 const { onChange, cond, call, or, eq } = Animated;
 
+type EditorState = {
+  visible: boolean;
+  paletteId: string;
+  index: number;
+};
+
 export type ColorEditorState = {
-  id: Animated.Value<number>;
-  layout: {
-    x: Animated.Value<number>;
-    y: Animated.Value<number>;
-    scale: Animated.Value<number>;
-  };
+  visible: boolean;
+  index: number;
+  paletteId: string;
+  transition: Animated.Node<number>;
+  x: Animated.Value<number>;
+  y: Animated.Value<number>;
+  scale: Animated.Value<number>;
+  color: string;
+  close: (newColor?: string) => void;
+  edit: (index: number, paletteId: string) => void;
 };
 
 export const ColorEditorContext = React.createContext<ColorEditorState>(
@@ -24,11 +38,47 @@ export const ColorEditorContext = React.createContext<ColorEditorState>(
 );
 
 export const useColorEditorState = (): ColorEditorState => {
-  const [id, x, y, scale] = useValues<number>([-1, 0, 0, 1], []);
+  const [x, y, scale] = useValues<number>([0, 0, 1], []);
+  const [{ visible, paletteId, index }, setState] = useState<EditorState>({
+    visible: false,
+    paletteId: "",
+    index: -1,
+  });
+
+  const color = useSelector((state: RootState) =>
+    selectors.color(state, { index, paletteId })
+  );
+  const set = useReduxAction(PaletteActions.set);
+
+  const transition = useTransition(visible, {
+    easing: Easing.inOut(Easing.ease),
+  });
+
+  const close = useCallback((newColor?: string) => {
+    setState(({ index, paletteId }) => {
+      if (newColor) set(newColor, index, paletteId);
+
+      return { index, paletteId, visible: false };
+    });
+  }, []);
+
+  const edit = useCallback(
+    (index: number, paletteId: string) =>
+      setState({ visible: true, index, paletteId }),
+    []
+  );
 
   return {
-    id,
-    layout: { x, y, scale },
+    visible,
+    paletteId,
+    index,
+    transition,
+    x,
+    y,
+    scale,
+    color,
+    edit,
+    close,
   };
 };
 
@@ -38,35 +88,47 @@ export const useColorEditor = (
   ref: React.RefObject<Animated.View>,
   state: Animated.Value<State>
 ) => {
-  const { id, layout } = useContext(ColorEditorContext);
-  const edit = useReduxAction(PaletteActions.edit);
+  const {
+    x,
+    y,
+    scale,
+    edit,
+    transition,
+    index: activeIndex,
+    paletteId: activePaletteId,
+  } = useContext(ColorEditorContext);
 
-  const colorId = hash(paletteId, index);
-  return useCode(
+  useCode(
     () => [
-      onChange(
-        id,
-        cond(eq(colorId, id), [call([], () => edit(index, paletteId))])
-      ),
-
       onChange(state, [
         cond(
           or(eq(state, State.END), eq(state, State.ACTIVE)),
           call([], () => {
-            ref.current?.getNode().measure((_, __, width, ___, x, y) => {
-              Haptics.trigger("impactLight");
+            ref.current
+              ?.getNode()
+              .measure((_, __, width, ___, pageX, pageY) => {
+                Haptics.trigger("impactLight");
 
-              // set values
-              layout.x.setValue(x + (width - COLOR_SIZE) / 2);
-              layout.y.setValue(y + (width - COLOR_SIZE) / 2);
-              layout.scale.setValue(1);
+                // set values
+                x.setValue(pageX + (width - COLOR_SIZE) / 2);
+                y.setValue(pageY + (width - COLOR_SIZE) / 2);
+                scale.setValue(1);
 
-              id.setValue(colorId);
-            });
+                edit(index, paletteId);
+              });
           })
         ),
       ]),
     ],
     []
+  );
+
+  const editing = index === activeIndex && paletteId === activePaletteId;
+  return useMemo(
+    () => ({
+      editing,
+      opacity: cond(bin(editing), cond(eq(transition, 0), 1, 0), 1),
+    }),
+    [editing]
   );
 };

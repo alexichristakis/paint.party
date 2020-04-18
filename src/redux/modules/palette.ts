@@ -31,22 +31,12 @@ export type PaletteState = Readonly<{
   showEditor: boolean;
   activePalette: string;
   palettes: Palettes;
-  editing: {
-    active: boolean;
-    paletteId: string;
-    index: number;
-  };
 }>;
 
 const initialState: PaletteState = {
   showEditor: false,
   activePalette: "default",
   palettes: DefaultPalettes,
-  editing: {
-    active: false,
-    paletteId: "",
-    index: -1,
-  },
 };
 
 export default (
@@ -77,31 +67,8 @@ export default (
       };
     }
 
-    case ActionTypes.EDIT_COLOR: {
-      const { index, paletteId } = action.payload;
-
-      return immer(state, (draft) => {
-        draft.editing.active = true;
-        draft.editing.paletteId = paletteId;
-        draft.editing.index = index;
-      });
-    }
-
-    case ActionTypes.CLOSE_COLOR_EDITOR: {
-      return immer(state, (draft) => {
-        draft.editing.active = false;
-        draft.editing.paletteId = "";
-        draft.editing.index = -1;
-      });
-    }
-
     case ActionTypes.SET_COLOR: {
-      const { editing } = state;
       let { color, index, paletteId = state.activePalette } = action.payload;
-
-      if (editing.active) {
-        ({ index, paletteId } = editing);
-      }
 
       return immer(state, (draft) => {
         draft.palettes[paletteId].colors[index!] = color;
@@ -153,13 +120,9 @@ export const PaletteActions = {
   createPalette: (name: string) =>
     createAction(ActionTypes.CREATE_PALETTE, { name }),
 
-  closeColorEditor: () => createAction(ActionTypes.CLOSE_COLOR_EDITOR),
-
   enablePalette: (paletteId: string) =>
     createAction(ActionTypes.ENABLE_PALETTE, { paletteId }),
 
-  edit: (index: number, paletteId: string) =>
-    createAction(ActionTypes.EDIT_COLOR, { index, paletteId }),
   set: (color: string, index?: number, paletteId?: string) =>
     createAction(ActionTypes.SET_COLOR, { color, index, paletteId }),
   add: (color: string, paletteId: string) =>

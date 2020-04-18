@@ -42,31 +42,21 @@ const { multiply, call, eq, set, sub, divide } = Animated;
 
 export type EditorConnectedProps = ConnectedProps<typeof connector>;
 
-const mapStateToProps = (state: RootState) => ({
-  color: selectors.editingColor(state),
-  active: selectors.editingActive(state),
-});
+const mapStateToProps = (state: RootState) => ({});
 
-const mapDispatchToProps = {
-  setColor: PaletteActions.set,
-};
+const mapDispatchToProps = {};
 
 export interface EditorProps {
-  id: Animated.Value<number>;
+  color: string;
   transition: Animated.Node<number>;
   x: Animated.Value<number>;
   y: Animated.Value<number>;
   scale: Animated.Value<number>;
+  close: (newColor: string) => void;
 }
 
-export const bInterpolate = (
-  value: number,
-  origin: number,
-  destination: number
-) => origin + value * (destination - origin);
-
 const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
-  ({ id, transition, color, x, y, scale, setColor }) => {
+  ({ close, transition, color, x, y, scale }) => {
     const indicatorPanRef = useRef<PanGestureHandler>(null);
 
     const [pan, undo, confirm] = useValues(
@@ -145,9 +135,8 @@ const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
             const hex = color.toString(16).substring(2);
             const newColor = tinycolor(hex).toHexString();
 
-            setColor(newColor);
+            close(newColor);
           }),
-          set(id, -1),
         ]),
       ],
       []
