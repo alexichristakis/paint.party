@@ -25,9 +25,17 @@ export const INDICATOR_MAX = EDITOR_SIZE - INDICATOR_SIZE + 5;
 export const POPUP_SIZE = COLOR_SIZE / 1.5;
 export const POPUP_BORDER_RADIUS = POPUP_SIZE / 2;
 
-export const CANVAS_PREVIEW_SIZE = 100;
+export const CANVAS_ROW_PREVIEW_SIZE = 80;
+export const CANVAS_PREVIEW_MARGIN = 5;
+export const CANVAS_PREVIEW_SIZE =
+  (SCREEN_WIDTH - 2 * CANVAS_PREVIEW_MARGIN) / 3 - CANVAS_PREVIEW_MARGIN / 2;
+export const CAROUSEL_SIZE = SCREEN_WIDTH - 20;
+export const CAROUSEL_TOP = (SCREEN_HEIGHT - CAROUSEL_SIZE) / 2;
 
-export const DRAW_INTERVAL = 3;
+// export const CANVAS_PREVIEW_SIZE = 100;
+// export const CANVAS_GALLERY_SIZE = (SCREEN_WIDTH - 10) / 3 - 2.5;
+
+export const DRAW_INTERVAL = 0.2;
 
 export const SPRING_CONFIG = {
   damping: 40,

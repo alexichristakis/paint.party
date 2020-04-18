@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="pencil" transform="translate(-5.000000, -6.000000)" stroke="#000000">
+            <g id="Group" transform="translate(6.000000, 7.000000)">
+                <path d="M2,12.0435753 L13.7174891,0.272375989 C14.2389614,-0.250816923 15.334883,0.00244435199 16.1659197,0.837244807 C16.9975946,1.67268643 17.249714,2.77357152 16.72888,3.29676443 L5.07840996,15" id="Stroke-4" stroke-linecap="round" stroke-linejoin="round"></path>
+                <line x1="5" y1="15" x2="0" y2="17" id="Stroke-6" stroke-linecap="round"></line>
+                <line x1="2" y1="12" x2="0" y2="17" id="Stroke-8" stroke-linecap="round" stroke-linejoin="round"></line>
+                <line x1="12" y1="2" x2="15" y2="5" id="Stroke-10"></line>
+            </g>
+        </g>
+    </g>
+</svg>

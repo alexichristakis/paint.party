@@ -8,6 +8,7 @@ import { TapHandler } from "./TapHandler";
 
 export interface TouchableScaleProps {
   onPress?: () => void;
+  enabled?: boolean;
   dependencies?: React.DependencyList;
   style?: StyleProp<Animated.AnimateStyle<ViewStyle>>;
   toScale?: number;
@@ -18,12 +19,13 @@ export const TouchableScale: React.FC<TouchableScaleProps> = ({
   dependencies = [],
   style,
   toScale = 0.95,
+  enabled = true,
   onPress,
 }) => {
   const [value] = useValues([0], []);
   const scale = mix(value, 1, toScale);
 
-  const handleOnPress = () => (onPress ? onPress() : null);
+  const handleOnPress = () => (onPress && enabled ? onPress() : null);
 
   if (onPress)
     return (

@@ -2,6 +2,8 @@ import { createSelector } from "reselect";
 import values from "lodash/values";
 
 import { RootState } from "../types";
+import sortBy from "lodash/sortBy";
+import moment from "moment";
 
 const s = (state: RootState) => state.canvas || {};
 const p = (_: RootState, props: any) => props || {};
@@ -18,6 +20,22 @@ export const canvas = createSelector(
   (canvases, activeCanvas, props) =>
     canvases[props.canvasId ?? activeCanvas] ?? {}
 );
+
+export const activeCanvases = createSelector(canvases, (canvases) => {
+  const currentTime = moment().unix();
+  return sortBy(
+    Object.values(canvases).filter((o) => o.expiresAt > currentTime),
+    (o) => o.expiresAt
+  );
+});
+
+export const expiredCanvases = createSelector(canvases, (canvases) => {
+  const currentTime = moment().unix();
+  return sortBy(
+    Object.values(canvases).filter((o) => o.expiresAt < currentTime),
+    (o) => o.expiresAt
+  );
+});
 
 export const canvasBackgroundColor = createSelector(
   canvas,
@@ -61,4 +79,11 @@ export const previews = createSelector(s, (state) => state.previews ?? {});
 export const previewUrl = createSelector(
   [previews, p],
   (previews, props) => previews[props.id]
+);
+
+export const sortedPreviews = createSelector(
+  [previews, expiredCanvases],
+  (previews, canvases) => {
+    return canvases.map((canvas) => previews[canvas.id]);
+  }
 );

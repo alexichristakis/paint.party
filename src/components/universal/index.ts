@@ -7,3 +7,4 @@ export * from "./TouchableHighlight";
 export * from "./CreateButton";
 export { default as CanvasPreview } from "./CanvasPreview";
 export { default as HorizontalScroll } from "./HorizontalScroll";
+export { default as ZoomHandler } from "./ZoomHandler";
