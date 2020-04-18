@@ -18,6 +18,7 @@ import isNull from "lodash/isNull";
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import { VisualizationActions } from "@redux/modules";
+
 import EditIcon from "@assets/svg/edit.svg";
 import CheckIcon from "@assets/svg/check.svg";
 

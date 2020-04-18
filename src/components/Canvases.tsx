@@ -2,7 +2,6 @@ import React from "react";
 import { StyleSheet, Text } from "react-native";
 import Animated from "react-native-reanimated";
 import { connect, ConnectedProps } from "react-redux";
-import { useValues, onScrollEvent } from "react-native-redash";
 import isEqual from "lodash/isEqual";
 
 import { RootState } from "@redux/types";
@@ -69,9 +68,9 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   emptyState: {
+    ...TextStyles.title,
     marginTop: 30,
     marginHorizontal: 10,
-    ...TextStyles.title,
     fontSize: 50,
   },
   contentContainer: {

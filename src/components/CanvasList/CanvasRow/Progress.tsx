@@ -2,26 +2,18 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { useCode, Easing } from "react-native-reanimated";
 import {
-  useValue,
   mix,
   interpolateColor,
   timing,
   loop,
   useClock,
-  delay,
   useValues,
 } from "react-native-redash";
 import moment from "moment";
 
-import {
-  Colors,
-  DRAW_INTERVAL,
-  CANVAS_PREVIEW_SIZE,
-  CANVAS_PREVIEW_MARGIN,
-  CANVAS_ROW_PREVIEW_SIZE,
-} from "@lib";
+import { Colors, DRAW_INTERVAL, CANVAS_ROW_PREVIEW_SIZE } from "@lib";
 
-const { call, divide, multiply, sub, set, cond, eq } = Animated;
+const { divide, multiply, sub, set, cond, eq } = Animated;
 
 export interface ProgressProps {
   index: number;
@@ -38,7 +30,6 @@ const Progress: React.FC<ProgressProps> = React.memo(
       [time]
     );
 
-    // const delta = Math.max(time - currentTime, 0);
     const value = timing({
       to: 1,
       from: sub(1, divide(delta, DRAW_INTERVAL * 60)),
