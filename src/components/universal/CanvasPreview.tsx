@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { View, ImageURISource, StyleProp, ImageStyle } from "react-native";
+import { View, Image, ImageStyle, ImageProps } from "react-native";
 import storage from "@react-native-firebase/storage";
 import { connect, ConnectedProps } from "react-redux";
-import Image from "react-native-fast-image";
+import FastImage, { FastImageProps } from "react-native-fast-image";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
@@ -23,6 +23,7 @@ export type CanvasPreviewConnectedProps = ConnectedProps<typeof connector>;
 export interface CanvasPreviewProps {
   id: string;
   backgroundColor: string;
+  forceReload?: boolean;
   style?: ImageStyle;
   size?: number;
 }
@@ -35,6 +36,7 @@ const CanvasPreview: React.FC<
   url,
   setUrl,
   style: styleProp,
+  forceReload = false,
   size = CANVAS_PREVIEW_SIZE,
 }) => {
   useEffect(() => {
@@ -54,8 +56,17 @@ const CanvasPreview: React.FC<
     backgroundColor,
   };
 
-  if (url)
-    return <Image source={{ uri: url }} resizeMode={"cover"} style={style} />;
+  if (url) {
+    const props = {
+      source: { uri: url },
+      resizeMode: "cover",
+      style,
+    };
+
+    if (forceReload) return <Image {...(props as ImageProps)} />;
+
+    return <FastImage {...(props as FastImageProps)} />;
+  }
 
   return <View style={style} />;
 };

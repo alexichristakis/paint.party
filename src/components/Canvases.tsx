@@ -28,8 +28,6 @@ export interface CanvasesProps {}
 
 const Canvases: React.FC<CanvasesProps & CanvasesReduxProps> = React.memo(
   ({ openCanvas, activeCanvases, expiredCanvases }) => {
-    const [scrollY] = useValues([0], []);
-
     if (!activeCanvases.length && !expiredCanvases.length) {
       return <Text style={styles.emptyState}>Welcome to PaintParty</Text>;
     }
@@ -37,8 +35,6 @@ const Canvases: React.FC<CanvasesProps & CanvasesReduxProps> = React.memo(
     return (
       <Animated.ScrollView
         style={styles.container}
-        onScroll={onScrollEvent({ y: scrollY })}
-        scrollEventThrottle={1}
         contentContainerStyle={styles.contentContainer}
       >
         {activeCanvases.length ? (
@@ -50,7 +46,7 @@ const Canvases: React.FC<CanvasesProps & CanvasesReduxProps> = React.memo(
         {expiredCanvases.length ? (
           <>
             <Text style={styles.header}>past works:</Text>
-            <Gallery yOffset={scrollY} canvases={expiredCanvases} />
+            <Gallery canvases={expiredCanvases} />
           </>
         ) : null}
       </Animated.ScrollView>

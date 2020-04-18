@@ -17,7 +17,6 @@ import {
   pluralize,
   SCREEN_WIDTH,
   canvasUrl,
-  CANVAS_PREVIEW_SIZE,
   CANVAS_ROW_PREVIEW_SIZE,
 } from "@lib";
 import { Canvas } from "@redux/modules/canvas";
@@ -59,6 +58,7 @@ export const CanvasRow: React.FC<CanvasRowProps> = ({
     >
       <Progress index={index} time={nextDrawAt}>
         <CanvasPreview
+          forceReload
           size={CANVAS_ROW_PREVIEW_SIZE}
           {...{ backgroundColor, id }}
         />
@@ -98,9 +98,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     flexDirection: "row",
   },
-  fill: {
-    position: "absolute",
-  },
   title: {
     ...TextStyles.title,
     marginTop: -10,
@@ -109,7 +106,6 @@ const styles = StyleSheet.create({
   subtitle: {
     ...TextStyles.medium,
     marginTop: 5,
-
     color: Colors.gray,
   },
 });

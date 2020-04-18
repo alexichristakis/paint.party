@@ -1,14 +1,11 @@
 import React, { useContext, useMemo, useRef } from "react";
 import { View, StyleSheet } from "react-native";
-import Animated, { useCode } from "react-native-reanimated";
 import Haptics from "react-native-haptic-feedback";
 
 import { Canvas } from "@redux/modules";
 import { CANVAS_PREVIEW_SIZE, CANVAS_PREVIEW_MARGIN } from "@lib";
 import { PhotoCarouselContext } from "@hooks";
 import Item from "./Item";
-
-const { event, call } = Animated;
 
 // utils
 const generateRows = (canvases: Canvas[]) => {
@@ -37,7 +34,6 @@ const getYOffset = (index: number) =>
   (Math.floor(index / 3) + 1) * CANVAS_PREVIEW_MARGIN;
 
 export interface GalleryProps {
-  yOffset: Animated.Value<number>;
   canvases: Canvas[];
 }
 
