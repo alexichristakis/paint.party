@@ -1,5 +1,4 @@
 import React, { useRef, useContext, useMemo } from "react";
-import { View } from "react-native";
 import Animated, { useCode, Easing } from "react-native-reanimated";
 import { connect, ConnectedProps } from "react-redux";
 import {
@@ -17,9 +16,7 @@ import {
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 
-import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
-import { PaletteActions } from "@redux/modules";
 import { ColorEditorContext } from "@hooks";
 import { COLOR_BORDER_WIDTH, Colors, INDICATOR_SIZE } from "@lib";
 

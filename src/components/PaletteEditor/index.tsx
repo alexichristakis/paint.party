@@ -25,17 +25,21 @@ const mapDispatchToProps = {
 
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
 const PaletteEditor: React.FC<Props> = React.memo(
-  ({ palettes, showPalettes, close }) => (
-    <BottomSheet open={showPalettes} onClose={close} style={styles.container}>
-      <CreatePalette />
-      {palettes.map((palette, index) => (
-        <React.Fragment key={index}>
-          {index ? <View style={styles.separator} /> : null}
-          <Palette palette={palette} />
-        </React.Fragment>
-      ))}
-    </BottomSheet>
-  ),
+  ({ palettes, showPalettes, close }) => {
+    console.log("show palettes", showPalettes);
+
+    return (
+      <BottomSheet open={showPalettes} onClose={close} style={styles.container}>
+        <CreatePalette />
+        {palettes.map((palette, index) => (
+          <React.Fragment key={index}>
+            {index ? <View style={styles.separator} /> : null}
+            <Palette palette={palette} />
+          </React.Fragment>
+        ))}
+      </BottomSheet>
+    );
+  },
   (p, n) =>
     p.palettes.length === n.palettes.length && p.showPalettes === n.showPalettes
 );

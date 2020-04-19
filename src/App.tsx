@@ -39,11 +39,13 @@ const Root = () => {
 
   const isAuthenticated = useSelector(selectors.isAuthenticated);
   const activeCanvas = useSelector(selectors.activeCanvas);
+
   const initialColorEditorState = useColorEditorState();
 
   const showHome = !!activeCanvas.length;
   return (
-    <ColorEditorContext.Provider value={initialColorEditorState}>
+    // <ColorEditorContext.Provider value={initialColorEditorState}>
+    <>
       <NavigationContainer ref={ref}>
         <Stack.Navigator
           screenOptions={{
@@ -63,10 +65,11 @@ const Root = () => {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-      <CreateCanvas />
+      {/* <CreateCanvas /> */}
       <PaletteEditor />
-      <ColorEditor />
-    </ColorEditorContext.Provider>
+    </>
+    // {/* <ColorEditor /> */}
+    // {/* </ColorEditorContext.Provider> */}
   );
 };
 
