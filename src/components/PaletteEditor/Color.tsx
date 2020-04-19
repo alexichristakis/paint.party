@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import Animated from "react-native-reanimated";
 import { connect, ConnectedProps } from "react-redux";
 import { TapGestureHandler, State } from "react-native-gesture-handler";
-import { useValues, onGestureEvent, bin } from "react-native-redash";
+import { useValues, onGestureEvent } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
@@ -19,7 +19,6 @@ export interface ColorProps {
 }
 
 const mapStateToProps = (state: RootState, props: ColorProps) => ({
-  isEditing: selectors.isEditing(state, props),
   color: selectors.color(state, props),
 });
 
@@ -28,30 +27,28 @@ const mapDispatchToProps = {};
 const Color: React.FC<ColorProps & ColorConnectedProps> = ({
   paletteId,
   index,
-  isEditing,
   color: backgroundColor,
 }) => {
   const ref = useRef<Animated.View>(null);
   const [state] = useValues([State.UNDETERMINED], []);
 
-  useColorEditor(index, paletteId, ref, state);
-
-  return useMemo(() => {
-    const handler = onGestureEvent({ state });
-
-    return (
+  const { opacity, editing } = useColorEditor(index, paletteId, ref, state);
+  const handler = onGestureEvent({ state });
+  return useMemo(
+    () => (
       <TapGestureHandler maxDist={50} {...handler}>
         <Animated.View
           ref={ref}
           style={{
             ...styles.color,
             backgroundColor,
-            opacity: bin(!isEditing),
+            opacity,
           }}
         />
       </TapGestureHandler>
-    );
-  }, [backgroundColor, isEditing]);
+    ),
+    [backgroundColor, editing]
+  );
 };
 
 const styles = StyleSheet.create({

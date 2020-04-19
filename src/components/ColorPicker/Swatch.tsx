@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useMemo } from "react";
 import Animated, { Easing, useCode } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import {
@@ -43,11 +43,9 @@ const mapStateToProps = (state: RootState, props: SwatchProps) => ({
   backgroundColor: selectors.color(state, props),
   rotate: selectors.angleIncrement(state, { index: props.index }),
   paletteId: selectors.activePaletteId(state, props),
-  isEditing: selectors.isEditing(state, props),
 });
 
 const mapDispatchToProps = {
-  setColor: PaletteActions.set,
   selectColor: VisualizationActions.selectColor,
 };
 
@@ -60,7 +58,6 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
     backgroundColor,
     openTransition,
     selectColor,
-    isEditing,
   }) => {
     const viewRef = useRef<Animated.View>(null);
     const tapRef = useRef<TapGestureHandler>(null);
@@ -89,6 +86,13 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
       []
     );
 
+    const { opacity, editing } = useColorEditor(
+      index,
+      paletteId,
+      viewRef,
+      longPressState
+    );
+
     const handleOnChoose = () => {
       Haptics.trigger("impactMedium");
       selectColor(backgroundColor);
@@ -98,54 +102,51 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
       backgroundColor,
     ]);
 
-    const tapHandler = onGestureEvent({ state: tapState });
-    const longPressHandler = onGestureEvent({ state: longPressState });
+    return useMemo(() => {
+      const tapHandler = onGestureEvent({ state: tapState });
+      const longPressHandler = onGestureEvent({ state: longPressState });
 
-    const colorTransform = [{ scale: mix(activeTransition, 1, 1.45) }];
-    const colorContainerTransform = [
-      { rotate },
-      { translateX: mix(openTransition, 0, COLOR_WHEEL_RADIUS) },
-    ];
+      const colorTransform = [{ scale: mix(activeTransition, 1, 1.45) }];
+      const colorContainerTransform = [
+        { rotate },
+        { translateX: mix(openTransition, 0, COLOR_WHEEL_RADIUS) },
+      ];
 
-    useColorEditor(index, paletteId, viewRef, longPressState);
-
-    return (
-      <TapGestureHandler
-        {...tapHandler}
-        ref={tapRef}
-        simultaneousHandlers={longPressRef}
-        maxDurationMs={500}
-        maxDeltaX={10}
-        maxDeltaY={10}
-      >
-        <Animated.View
-          style={{
-            ...styles.container,
-            opacity: bin(!isEditing),
-            transform: colorContainerTransform,
-          }}
+      return (
+        <TapGestureHandler
+          {...tapHandler}
+          ref={tapRef}
+          simultaneousHandlers={longPressRef}
+          maxDurationMs={500}
+          maxDeltaX={10}
+          maxDeltaY={10}
         >
-          <LongPressGestureHandler
-            {...longPressHandler}
-            simultaneousHandlers={tapRef}
+          <Animated.View
+            style={{
+              ...styles.container,
+              opacity,
+              transform: colorContainerTransform,
+            }}
           >
-            <Animated.View
-              ref={viewRef}
-              style={{
-                ...styles.color,
-                backgroundColor,
-                transform: colorTransform,
-              }}
-            />
-          </LongPressGestureHandler>
-        </Animated.View>
-      </TapGestureHandler>
-    );
+            <LongPressGestureHandler
+              {...longPressHandler}
+              simultaneousHandlers={tapRef}
+            >
+              <Animated.View
+                ref={viewRef}
+                style={{
+                  ...styles.color,
+                  backgroundColor,
+                  transform: colorTransform,
+                }}
+              />
+            </LongPressGestureHandler>
+          </Animated.View>
+        </TapGestureHandler>
+      );
+    }, [editing, backgroundColor]);
   },
-  (p, n) =>
-    p.backgroundColor === n.backgroundColor &&
-    p.index === n.index &&
-    p.isEditing === n.isEditing
+  (p, n) => p.backgroundColor === n.backgroundColor && p.index === n.index
 );
 
 const styles = StyleSheet.create({

@@ -1,5 +1,4 @@
 import React, { useRef, useContext, useMemo } from "react";
-import { View } from "react-native";
 import Animated, { useCode, Easing } from "react-native-reanimated";
 import { connect, ConnectedProps } from "react-redux";
 import {
@@ -9,87 +8,71 @@ import {
 } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
 import {
-  useValues,
-  bin,
-  onGestureEvent,
   mix,
+  useValues,
+  onGestureEvent,
   withTransition,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 
-import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
-import { PaletteActions } from "@redux/modules";
 import { ColorEditorContext } from "@hooks";
-import { COLOR_BORDER_WIDTH, Colors, INDICATOR_SIZE } from "@lib";
+import { Colors } from "@lib";
 
 import Editor from "./Editor";
 
-const { onChange, neq, and, not, call, cond, eq, set } = Animated;
+const { onChange, call, cond, eq } = Animated;
 
 export type ColorEditorConnectedProps = ConnectedProps<typeof connector>;
 
 export type ColorEditorProps = {};
 
-const mapStateToProps = (state: RootState) => ({
-  active: selectors.editingActive(state),
-});
+const mapStateToProps = (state: RootState) => ({});
 
-const mapDispatchToProps = {
-  closeEditor: PaletteActions.closeColorEditor,
-};
+const mapDispatchToProps = {};
 
-const ColorEditor: React.FC<ColorEditorProps & ColorEditorConnectedProps> = ({
-  closeEditor,
-  active,
-}) => {
-  const colorEditorState = useContext(ColorEditorContext);
-  const { id, layout } = colorEditorState;
+const ColorEditor: React.FC<
+  ColorEditorProps & ColorEditorConnectedProps
+> = ({}) => {
+  const { transition, x, y, color, visible, scale, close } = useContext(
+    ColorEditorContext
+  );
 
   const indicatorPanRef = useRef<PanGestureHandler>(null);
   const tapRef = useRef<TapGestureHandler>(null);
 
   const [tapState] = useValues([State.UNDETERMINED], []);
 
-  const duration = 300;
-  const [transition, pressInTransition] = useMemoOne(
-    () => [
-      withTransition(neq(id, -1), {
-        duration,
-        easing: Easing.bezier(0.33, 0.11, 0.49, 0.83),
-      }),
+  const pressInTransition = useMemoOne(
+    () =>
       withTransition(eq(tapState, State.BEGAN), {
-        duration,
+        duration: 300,
         easing: Easing.inOut(Easing.ease),
       }),
-    ],
     []
   );
 
   // start close of editor
   useCode(
-    () => [onChange(tapState, cond(eq(tapState, State.END), set(id, -1)))],
-    []
-  );
-
-  // handle closing the editor
-  useCode(
     () => [
-      cond(
-        and(eq(id, -1), not(transition), bin(active)),
-        call([], closeEditor)
+      onChange(
+        tapState,
+        cond(
+          eq(tapState, State.END),
+          call([], () => close())
+        )
       ),
     ],
-    [active]
+    []
   );
 
   return useMemo(() => {
     const tapHandler = onGestureEvent({ state: tapState });
 
     return (
-      <View
-        style={[styles.container, { opacity: active ? 1 : 0 }]}
-        pointerEvents={active ? "auto" : "none"}
+      <Animated.View
+        style={[styles.container, { opacity: cond(eq(transition, 0), 0, 1) }]}
+        pointerEvents={visible ? "auto" : "none"}
       >
         <TapGestureHandler
           ref={tapRef}
@@ -111,11 +94,11 @@ const ColorEditor: React.FC<ColorEditorProps & ColorEditorConnectedProps> = ({
             transform: [{ scale: mix(pressInTransition, 1, 0.95) }],
           }}
         >
-          <Editor id={id} transition={transition} {...layout} />
+          <Editor {...{ color, close, transition, scale, x, y }} />
         </Animated.View>
-      </View>
+      </Animated.View>
     );
-  }, [active]);
+  }, [visible, color]);
 };
 
 const styles = StyleSheet.create({
@@ -127,18 +110,6 @@ const styles = StyleSheet.create({
   background: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: Colors.gray,
-  },
-  editor: {
-    overflow: "hidden",
-    position: "absolute",
-    borderWidth: COLOR_BORDER_WIDTH,
-  },
-  indicator: {
-    width: INDICATOR_SIZE,
-    height: INDICATOR_SIZE,
-    borderRadius: INDICATOR_SIZE / 2,
-    borderColor: Colors.white,
-    borderWidth: 4,
   },
 });
 

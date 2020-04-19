@@ -1,4 +1,10 @@
-import React, { useRef, useState, useLayoutEffect, useCallback } from "react";
+import React, {
+  useRef,
+  useState,
+  useLayoutEffect,
+  useCallback,
+  useEffect,
+} from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import {
   NativeViewGestureHandler,
@@ -6,7 +12,7 @@ import {
   State,
   TapGestureHandler,
 } from "react-native-gesture-handler";
-import Animated, { Extrapolate } from "react-native-reanimated";
+import Animated, { Extrapolate, debug } from "react-native-reanimated";
 import {
   bin,
   clamp,
@@ -96,6 +102,8 @@ export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
         ),
       []
     );
+
+    useCode(() => [debug("open", shouldOpen)], []);
 
     useLayoutEffect(() => {
       shouldOpen.setValue(bin(open));

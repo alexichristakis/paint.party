@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useMemo } from "react";
 import { StatusBar } from "react-native";
 
 import {
@@ -6,7 +6,10 @@ import {
   NavigationContainerRef,
 } from "@react-navigation/native";
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
-import { createNativeStackNavigator } from "react-native-screens/native-stack";
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationOptions,
+} from "react-native-screens/native-stack";
 import { Provider, useSelector } from "react-redux";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -34,24 +37,23 @@ export type StackParamList = {
 
 const Stack = createNativeStackNavigator<StackParamList>();
 
-const Root = () => {
+const screenOptions: NativeStackNavigationOptions = {
+  headerShown: false,
+  gestureEnabled: false,
+  stackAnimation: "fade",
+};
+
+const Root: React.FC = () => {
   const ref = useRef<NavigationContainerRef>(null);
 
   const isAuthenticated = useSelector(selectors.isAuthenticated);
   const activeCanvas = useSelector(selectors.activeCanvas);
-  const initialColorEditorState = useColorEditorState();
 
   const showHome = !!activeCanvas.length;
-  return (
-    <ColorEditorContext.Provider value={initialColorEditorState}>
+  return useMemo(
+    () => (
       <NavigationContainer ref={ref}>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-            gestureEnabled: false,
-            stackAnimation: "fade",
-          }}
-        >
+        <Stack.Navigator screenOptions={screenOptions}>
           {isAuthenticated ? (
             showHome ? (
               <Stack.Screen name="CANVAS" component={Canvas} />
@@ -63,26 +65,36 @@ const Root = () => {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-      <CreateCanvas />
-      <PaletteEditor />
-      <ColorEditor />
-    </ColorEditorContext.Provider>
+    ),
+    [isAuthenticated, showHome]
   );
 };
 
 const App: React.FC = () => {
+  const colorEditorState = useColorEditorState();
+  return useMemo(
+    () => (
+      <ColorEditorContext.Provider value={colorEditorState}>
+        <Root />
+        <CreateCanvas />
+        <PaletteEditor />
+        <ColorEditor />
+      </ColorEditorContext.Provider>
+    ),
+    [colorEditorState.visible]
+  );
+};
+
+const Connected: React.FC = () => {
   const store = createStore();
   const persistor = persistStore(store);
 
-  // persistor.purge();
-
   useNotificationEvents();
-
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <StatusBar barStyle="dark-content" />
-        <Root />
+        <App />
       </PersistGate>
     </Provider>
   );
@@ -91,5 +103,4 @@ const App: React.FC = () => {
 const codePushOptions: CodePushOptions = {
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
 };
-
-export default CodePush(codePushOptions)(gestureHandlerRootHOC(App));
+export default CodePush(codePushOptions)(gestureHandlerRootHOC(Connected));
