@@ -17,7 +17,7 @@ import { useMemoOne } from "use-memo-one";
 
 import { RootState } from "@redux/types";
 import { ColorEditorContext } from "@hooks";
-import { COLOR_BORDER_WIDTH, Colors, INDICATOR_SIZE } from "@lib";
+import { Colors } from "@lib";
 
 import Editor from "./Editor";
 
@@ -43,14 +43,12 @@ const ColorEditor: React.FC<
 
   const [tapState] = useValues([State.UNDETERMINED], []);
 
-  const duration = 300;
-  const [pressInTransition] = useMemoOne(
-    () => [
+  const pressInTransition = useMemoOne(
+    () =>
       withTransition(eq(tapState, State.BEGAN), {
-        duration,
+        duration: 300,
         easing: Easing.inOut(Easing.ease),
       }),
-    ],
     []
   );
 
@@ -112,18 +110,6 @@ const styles = StyleSheet.create({
   background: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: Colors.gray,
-  },
-  editor: {
-    overflow: "hidden",
-    position: "absolute",
-    borderWidth: COLOR_BORDER_WIDTH,
-  },
-  indicator: {
-    width: INDICATOR_SIZE,
-    height: INDICATOR_SIZE,
-    borderRadius: INDICATOR_SIZE / 2,
-    borderColor: Colors.white,
-    borderWidth: 4,
   },
 });
 

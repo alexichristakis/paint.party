@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback, useMemo } from "react";
+import React, { useContext, useState, useCallback } from "react";
 import Animated, { useCode, Easing } from "react-native-reanimated";
 import { bin, useValues, useTransition } from "react-native-redash";
 import { State } from "react-native-gesture-handler";
