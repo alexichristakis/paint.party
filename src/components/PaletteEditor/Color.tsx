@@ -34,8 +34,8 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = ({
 
   const { opacity, editing } = useColorEditor(index, paletteId, ref, state);
   const handler = onGestureEvent({ state });
-  return useMemo(() => {
-    return (
+  return useMemo(
+    () => (
       <TapGestureHandler maxDist={50} {...handler}>
         <Animated.View
           ref={ref}
@@ -46,8 +46,9 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = ({
           }}
         />
       </TapGestureHandler>
-    );
-  }, [backgroundColor, opacity, editing, handler]);
+    ),
+    [backgroundColor, editing]
+  );
 };
 
 const styles = StyleSheet.create({

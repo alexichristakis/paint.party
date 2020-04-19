@@ -1,13 +1,11 @@
-import React, { useCallback, useState, useMemo } from "react";
-import { StyleSheet, Text } from "react-native";
+import React, { useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
 import { connect, ConnectedProps } from "react-redux";
 
 import { RootState } from "@redux/types";
 import * as selectors from "@redux/selectors";
-import { CanvasActions, AppActions, PaletteActions } from "@redux/modules";
-import { SB_HEIGHT, TextStyles, Colors } from "@lib";
+import { CanvasActions, PaletteActions } from "@redux/modules";
 import { PhotoCarouselContext, usePhotoCarouselState } from "@hooks";
 
 import ActionButton from "@components/ActionButton";
@@ -19,12 +17,8 @@ import { StackParamList } from "../App";
 const connector = connect(
   (state: RootState) => ({
     activeCanvas: selectors.activeCanvas(state),
-    activeCanvases: selectors.activeCanvases(state),
-    expiredCanvases: selectors.expiredCanvases(state),
   }),
   {
-    logout: AppActions.logout,
-    openCanvas: CanvasActions.open,
     unsubscribe: CanvasActions.close,
     fetchCanvases: CanvasActions.fetch,
     openPalettes: PaletteActions.openEditor,
@@ -52,9 +46,9 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
     }, [activeCanvas])
   );
 
-  const initialPhotoCarouselState = usePhotoCarouselState();
+  const photoCarouselState = usePhotoCarouselState();
   return (
-    <PhotoCarouselContext.Provider value={initialPhotoCarouselState}>
+    <PhotoCarouselContext.Provider value={photoCarouselState}>
       <Canvases />
       <ActionButton
         onPressAction1={openCanvasCreator}

@@ -1,20 +1,25 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import times from "lodash/times";
 
 import { Canvas } from "@redux/modules";
-import { CanvasPreview } from "@components/universal";
-import { SCREEN_WIDTH } from "@lib";
+import { CANVAS_PREVIEW_SIZE } from "@lib";
+
+import Item from "./Item";
 
 export interface RowProps {
   canvases: Canvas[];
 }
 
 const Row: React.FC<RowProps> = ({ canvases }) => {
-  const size = (SCREEN_WIDTH - 10) / 3 - 2.5;
+  //
   return (
     <View style={styles.container}>
-      {canvases.map((canvas, i) => (
-        <CanvasPreview key={i} {...canvas} {...{ size }} />
+      {canvases.map((canvas) => (
+        <Item key={canvas.id} canvas={canvas} />
+      ))}
+      {times(3 - canvases.length, (j) => (
+        <View key={j} style={styles.filler} />
       ))}
     </View>
   );
@@ -26,6 +31,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginHorizontal: 5,
     marginTop: 5,
+  },
+  filler: {
+    width: CANVAS_PREVIEW_SIZE,
   },
 });
 
