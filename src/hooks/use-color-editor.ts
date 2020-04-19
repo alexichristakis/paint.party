@@ -124,11 +124,8 @@ export const useColorEditor = (
   );
 
   const editing = index === activeIndex && paletteId === activePaletteId;
-  return useMemo(
-    () => ({
-      editing,
-      opacity: cond(bin(editing), cond(eq(transition, 0), 1, 0), 1),
-    }),
-    [editing]
-  );
+  return {
+    editing,
+    opacity: cond(bin(editing), cond(eq(transition, 0), 1, 0), 1),
+  };
 };

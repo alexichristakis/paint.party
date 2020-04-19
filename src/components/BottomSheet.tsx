@@ -105,9 +105,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
 
     useCode(() => [debug("open", shouldOpen)], []);
 
-    console.log("render bottom sheet", open);
-    useEffect(() => {
-      console.log("opening", open);
+    useLayoutEffect(() => {
       shouldOpen.setValue(bin(open));
       shouldClose.setValue(bin(!open));
     }, [open]);

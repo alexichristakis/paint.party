@@ -8,10 +8,9 @@ import {
 } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
 import {
-  useValues,
-  bin,
-  onGestureEvent,
   mix,
+  useValues,
+  onGestureEvent,
   withTransition,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
@@ -22,7 +21,7 @@ import { COLOR_BORDER_WIDTH, Colors, INDICATOR_SIZE } from "@lib";
 
 import Editor from "./Editor";
 
-const { onChange, neq, and, not, call, cond, eq, set } = Animated;
+const { onChange, call, cond, eq } = Animated;
 
 export type ColorEditorConnectedProps = ConnectedProps<typeof connector>;
 
@@ -30,9 +29,7 @@ export type ColorEditorProps = {};
 
 const mapStateToProps = (state: RootState) => ({});
 
-const mapDispatchToProps = {
-  // closeEditor: PaletteActions.closeColorEditor,
-};
+const mapDispatchToProps = {};
 
 const ColorEditor: React.FC<
   ColorEditorProps & ColorEditorConnectedProps
@@ -70,17 +67,6 @@ const ColorEditor: React.FC<
     ],
     []
   );
-
-  // handle closing the editor
-  // useCode(
-  //   () => [
-  //     cond(
-  //       and(eq(id, -1), not(transition), bin(active)),
-  //       call([], closeEditor)
-  //     ),
-  //   ],
-  //   [active]
-  // );
 
   return useMemo(() => {
     const tapHandler = onGestureEvent({ state: tapState });
