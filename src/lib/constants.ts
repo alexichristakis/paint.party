@@ -35,7 +35,7 @@ export const CAROUSEL_TOP = (SCREEN_HEIGHT - CAROUSEL_SIZE) / 2;
 // export const CANVAS_PREVIEW_SIZE = 100;
 // export const CANVAS_GALLERY_SIZE = (SCREEN_WIDTH - 10) / 3 - 2.5;
 
-export const DRAW_INTERVAL = 0.2;
+export const DRAW_INTERVAL = 3;
 
 export const SPRING_CONFIG = {
   damping: 40,

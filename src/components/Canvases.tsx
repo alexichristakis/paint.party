@@ -25,34 +25,35 @@ const connector = connect(
 export type CanvasesReduxProps = ConnectedProps<typeof connector>;
 export interface CanvasesProps {}
 
-const Canvases: React.FC<CanvasesProps & CanvasesReduxProps> = React.memo(
-  ({ openCanvas, activeCanvases, expiredCanvases }) => {
-    if (!activeCanvases.length && !expiredCanvases.length) {
-      return <Text style={styles.emptyState}>Welcome to PaintParty</Text>;
-    }
+const Canvases: React.FC<CanvasesProps & CanvasesReduxProps> = ({
+  openCanvas,
+  activeCanvases,
+  expiredCanvases,
+}) => {
+  if (!activeCanvases.length && !expiredCanvases.length) {
+    return <Text style={styles.emptyState}>Welcome to PaintParty</Text>;
+  }
 
-    return (
-      <Animated.ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      >
-        {activeCanvases.length ? (
-          <>
-            <Text style={styles.header}>active:</Text>
-            <CanvasList onPressCanvas={openCanvas} canvases={activeCanvases} />
-          </>
-        ) : null}
-        {expiredCanvases.length ? (
-          <>
-            <Text style={styles.header}>past works:</Text>
-            <Gallery canvases={expiredCanvases} />
-          </>
-        ) : null}
-      </Animated.ScrollView>
-    );
-  },
-  (p, n) => isEqual(p, n)
-);
+  return (
+    <Animated.ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      {activeCanvases.length ? (
+        <>
+          <Text style={styles.header}>active:</Text>
+          <CanvasList onPressCanvas={openCanvas} canvases={activeCanvases} />
+        </>
+      ) : null}
+      {expiredCanvases.length ? (
+        <>
+          <Text style={styles.header}>past works:</Text>
+          <Gallery canvases={expiredCanvases} />
+        </>
+      ) : null}
+    </Animated.ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

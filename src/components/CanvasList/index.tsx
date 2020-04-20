@@ -13,18 +13,16 @@ export interface CanvasListProps {
   canvases: Canvas[];
 }
 
-const CanvasList: React.FC<CanvasListProps> = ({ onPressCanvas, canvases }) => {
-  return (
-    <>
-      {sortBy(canvases, (o) => o.nextDrawAt).map((canvas, i) => (
-        <React.Fragment key={i}>
-          {i ? <Animated.View style={styles.separator} /> : null}
-          <CanvasRow index={i} onPress={onPressCanvas} canvas={canvas} />
-        </React.Fragment>
-      ))}
-    </>
-  );
-};
+const CanvasList: React.FC<CanvasListProps> = ({ onPressCanvas, canvases }) => (
+  <>
+    {sortBy(canvases, (o) => o.nextDrawAt).map((canvas, i) => (
+      <React.Fragment key={i}>
+        {i ? <Animated.View style={styles.separator} /> : null}
+        <CanvasRow index={i} onPress={onPressCanvas} canvas={canvas} />
+      </React.Fragment>
+    ))}
+  </>
+);
 
 const styles = StyleSheet.create({
   separator: {
