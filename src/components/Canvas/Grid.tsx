@@ -2,47 +2,70 @@ import React from "react";
 import { View } from "react-native";
 import times from "lodash/times";
 import Svg, { Rect } from "react-native-svg";
-import { useSelector } from "react-redux";
+import { useSelector, connect, ConnectedProps } from "react-redux";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
-import { CANVAS_DIMENSIONS, CANVAS_SIZE, CELL_SIZE } from "@lib";
+import {
+  CANVAS_DIMENSIONS,
+  CANVAS_SIZE,
+  CELL_SIZE,
+  coordinatesFromIndex,
+} from "@lib";
 
 export interface GridProps {
   captureRef: React.RefObject<View>;
   backgroundColor: string;
 }
 
-const Cell = ({ i, j }: { i: number; j: number }) => {
+export interface CellProps {
+  color?: string | null;
+  index: number;
+}
+
+const Cell: React.FC<CellProps> = ({ color, index }) => {
   const fill = useSelector((state: RootState) =>
-    selectors.cellColor(state, i * CANVAS_DIMENSIONS + j)
+    selectors.cellColor(state, index)
   );
 
-  if (fill)
+  const { x, y } = coordinatesFromIndex(index);
+  if (fill || color)
     return (
       <Rect
-        x={CELL_SIZE * j}
-        y={CELL_SIZE * i}
+        x={x}
+        y={y}
         width={CELL_SIZE}
         height={CELL_SIZE}
-        fill={fill}
+        fill={color ?? fill}
       />
     );
 
   return null;
 };
 
-export default React.memo(
-  ({ captureRef, backgroundColor }: GridProps) => (
+const ColorPreview: React.FC = () => {
+  const color = useSelector(selectors.selectedColor);
+  const index = useSelector(selectors.selectedCell);
+
+  return <Cell key={"selected"} color={color} index={index} />;
+};
+
+type GridConnectedProps = ConnectedProps<typeof connector>;
+
+const Grid: React.FC<GridProps & GridConnectedProps> = React.memo(
+  ({ captureRef, backgroundColor }) => (
     <View ref={captureRef} style={{ backgroundColor }}>
       <Svg width={CANVAS_SIZE} height={CANVAS_SIZE}>
-        {times(CANVAS_DIMENSIONS, (i) =>
-          times(CANVAS_DIMENSIONS, (j) => (
-            <Cell key={`${i}-${j}`} {...{ i, j }} />
+        {times(CANVAS_DIMENSIONS, (y) =>
+          times(CANVAS_DIMENSIONS, (x) => (
+            <Cell key={`${x}-${y}`} index={y * CANVAS_DIMENSIONS + x} />
           ))
         )}
+        <ColorPreview />
       </Svg>
     </View>
-  ),
-  (p, n) => p.backgroundColor === n.backgroundColor
+  )
 );
+
+const connector = connect((state: RootState) => ({}), {});
+export default connector(Grid);
