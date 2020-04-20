@@ -10,9 +10,10 @@ import { View } from "react-native";
 import database from "@react-native-firebase/database";
 
 import * as selectors from "@redux/selectors";
-import { VisualizationActions, PaletteActions } from "@redux/modules";
+import { VisualizationActions } from "@redux/modules";
 
 import { useReduxAction } from "./use-redux-action";
+import { CANVAS_DIMENSIONS } from "@lib";
 
 export type DrawingState = {
   color: string;
@@ -75,7 +76,11 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
   }, [captureRef]);
 
   const selectCell = useCallback(
-    (cell: number) => onSelect({ cell, color: "" }),
+    (cell: number) =>
+      onSelect({
+        cell: Math.max(0, Math.min(cell, Math.pow(CANVAS_DIMENSIONS, 2) - 1)),
+        color: "",
+      }),
     []
   );
   const selectColor = useCallback(
