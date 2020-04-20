@@ -10,8 +10,6 @@ const s = (state: RootState) => state.visualization;
 
 export const canvasVizId = createSelector(s, (state) => state.id);
 export const canvasEnabled = createSelector(s, (state) => state.enabled);
-export const selectedCell = createSelector(s, (state) => state.selectedCell);
-export const selectedColor = createSelector(s, (state) => state.selectedColor);
 export const cells = createSelector(s, (s) => s.cells ?? {});
 export const cellColor = createSelector(
   [cells, (_: RootState, i: number) => i],
@@ -27,9 +25,15 @@ export const cellColor = createSelector(
 );
 export const live = createSelector(s, (canvas) => canvas.live);
 
-export const selectedCellLatestUpdate = createSelector(
-  [cells, selectedCell, activeCanvasEntity],
-  (cells, cell, canvas) => {
+export const isLoadingCanvas = createSelector(s, (state) => state.loading);
+
+export const cellLatestUpdate = createSelector(
+  [
+    cells,
+    activeCanvasEntity,
+    (_: RootState, props: any) => props.cell as number,
+  ],
+  (cells, canvas, cell) => {
     const updates = Object.values(cells[cell] ?? {}) ?? [];
 
     if (updates.length) {

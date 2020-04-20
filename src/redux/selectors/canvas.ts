@@ -1,9 +1,9 @@
 import { createSelector } from "reselect";
+import moment from "moment";
+import sortBy from "lodash/sortBy";
 import values from "lodash/values";
 
 import { RootState } from "../types";
-import sortBy from "lodash/sortBy";
-import moment from "moment";
 
 const s = (state: RootState) => state.canvas || {};
 const p = (_: RootState, props: any) => props || {};
@@ -62,11 +62,6 @@ export const canvasActiveAt = createSelector(
 export const isCreatingCanvas = createSelector(
   s,
   (state) => state.creatingCanvas
-);
-
-export const isLoadingCanvas = createSelector(
-  s,
-  (state) => state.loadingCanvas
 );
 
 export const showCanvasCreator = createSelector(

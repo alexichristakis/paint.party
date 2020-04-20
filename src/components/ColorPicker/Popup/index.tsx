@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useContext, useMemo } from "react";
 import Animated, { useCode } from "react-native-reanimated";
 import { State, PanGestureHandler } from "react-native-gesture-handler";
 import {
-  onGestureEvent,
   withTransition,
   canvas2Polar,
   withSpringTransition,
   vec,
   translate,
   spring,
+  useGestureHandler,
 } from "react-native-redash";
 import { StyleSheet } from "react-native";
 import { ConnectedProps, connect } from "react-redux";
@@ -26,6 +26,8 @@ import {
 
 import Label from "./Label";
 import Indicator from "./Indicator";
+import { useMemoOne } from "use-memo-one";
+import { DrawContext } from "@hooks";
 
 const {
   onChange,
@@ -91,21 +93,30 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
       []
     );
 
-    const handler = onGestureEvent({
-      absoluteX: position.x,
-      absoluteY: position.y,
-      translationX: drag.x,
-      translationY: drag.y,
-      state,
-    });
+    const handler = useGestureHandler(
+      {
+        absoluteX: position.x,
+        absoluteY: position.y,
+        translationX: drag.x,
+        translationY: drag.y,
+        state,
+      },
+      []
+    );
 
     const active = eq(state, State.ACTIVE);
-    const activeTransition = withTransition(active);
-    const activeSpringTransition = withSpringTransition(active);
+    const [activeTransition, activeSpringTransition] = useMemoOne(
+      () => [withTransition(active), withSpringTransition(active)],
+      [state]
+    );
 
-    const { theta, radius } = canvas2Polar(
-      { x: position.x, y: position.y },
-      { y: SCREEN_HEIGHT, x: SCREEN_WIDTH / 2 }
+    const { theta, radius } = useMemoOne(
+      () =>
+        canvas2Polar(
+          { x: position.x, y: position.y },
+          { y: SCREEN_HEIGHT, x: SCREEN_WIDTH / 2 }
+        ),
+      []
     );
 
     useCode(
@@ -152,22 +163,26 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
       [angleIncrement, numColors]
     );
 
-    return (
-      <PanGestureHandler {...handler}>
-        <Animated.View
-          style={{
-            ...styles.container,
-            opacity: openTransition,
-            transform: translate(translation),
-          }}
-        >
-          <Label transition={activeTransition} />
-          <Indicator
-            transition={activeSpringTransition}
-            {...{ activeIndex, state }}
-          />
-        </Animated.View>
-      </PanGestureHandler>
+    const { cell } = useContext(DrawContext);
+    return useMemo(
+      () => (
+        <PanGestureHandler {...handler}>
+          <Animated.View
+            style={{
+              ...styles.container,
+              opacity: openTransition,
+              transform: translate(translation),
+            }}
+          >
+            <Label cell={cell} transition={activeTransition} />
+            <Indicator
+              transition={activeSpringTransition}
+              {...{ cell, activeIndex, state }}
+            />
+          </Animated.View>
+        </PanGestureHandler>
+      ),
+      [cell]
     );
   },
   (p, n) => p.numColors === n.numColors && p.angleIncrement === n.angleIncrement

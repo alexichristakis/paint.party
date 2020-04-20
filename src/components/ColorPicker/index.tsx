@@ -8,7 +8,6 @@ import { View, StyleSheet } from "react-native";
 import isEqual from "lodash/isEqual";
 
 import { RootState } from "@redux/types";
-import { PaletteActions } from "@redux/modules";
 import { COLOR_WHEEL_RADIUS, COLOR_SIZE } from "@lib";
 
 import Button from "./Button";
@@ -19,20 +18,17 @@ const { eq } = Animated;
 
 export interface ColorPickerProps {
   visible: Animated.Value<0 | 1>;
-  onDraw: () => void;
 }
 
 export type ColorPickerConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (_: RootState) => ({});
-const mapDispatchToProps = {
-  openPalettes: PaletteActions.openEditor,
-};
+const mapDispatchToProps = {};
 
 const ColorPicker: React.FC<
   ColorPickerProps & ColorPickerConnectedProps
 > = React.memo(
-  ({ visible, onDraw, openPalettes }) => {
+  ({ visible }) => {
     const [tapState, popupDragState] = useValues<State>(
       [State.UNDETERMINED, State.UNDETERMINED],
       []
@@ -55,8 +51,6 @@ const ColorPicker: React.FC<
           state={tapState}
           visible={visible}
           openTransition={openTransition}
-          onPress={openPalettes}
-          onDraw={onDraw}
         />
         <ColorWheel
           angle={rotation}

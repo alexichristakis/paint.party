@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useContext } from "react";
 import Animated, { useCode, Easing } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import { State, PanGestureHandler } from "react-native-gesture-handler";
@@ -19,6 +19,7 @@ import { RootState } from "@redux/types";
 import { useVectors } from "@lib";
 
 import Swatch from "./Swatch";
+import { DrawContext } from "@hooks";
 
 const { divide, pow, set, eq, sub, cond, add, multiply } = Animated;
 
@@ -93,6 +94,7 @@ const ColorWheel: React.FC<
       transform: [{ rotate }, { rotate: mix(openTransition, -Math.PI / 4, 0) }],
     };
 
+    const { selectColor } = useContext(DrawContext);
     return (
       <PanGestureHandler ref={panRef} {...panHandler}>
         <Animated.View style={[styles.container, containerAnimatedStyle]}>
@@ -104,6 +106,7 @@ const ColorWheel: React.FC<
               <Swatch
                 key={index}
                 active={eq(activeIndex, index)}
+                onPress={selectColor}
                 {...{ index, openTransition }}
               />
             ))}

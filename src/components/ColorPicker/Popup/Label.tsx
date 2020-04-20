@@ -14,18 +14,19 @@ import { useOnLayout } from "@hooks";
 export type LabelConnectedProps = ConnectedProps<typeof connector>;
 
 export interface LabelProps {
+  cell: number;
   transition: Animated.Node<number>;
 }
 
-const mapStateToProps = (state: RootState) => ({
-  cell: selectors.selectedCellLatestUpdate(state),
+const mapStateToProps = (state: RootState, props: LabelProps) => ({
+  update: selectors.cellLatestUpdate(state, props),
 });
 
 const mapDispatchToProps = {};
 
 const Label: React.FC<LabelProps & LabelConnectedProps> = React.memo(
-  ({ transition, cell }) => {
-    const { time, color } = cell;
+  ({ transition, update }) => {
+    const { time, color } = update;
     const { width, onLayout } = useOnLayout();
 
     const transform = [{ translateX: mix(transition, 0, -width) }];
@@ -44,7 +45,7 @@ const Label: React.FC<LabelProps & LabelConnectedProps> = React.memo(
       </View>
     );
   },
-  (p, n) => isEqual(p.cell, n.cell)
+  (p, n) => isEqual(p.update, n.update)
 );
 
 const styles = StyleSheet.create({

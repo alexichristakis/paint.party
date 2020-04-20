@@ -18,10 +18,11 @@ export interface IndicatorProps {
   state: Animated.Value<State>;
   activeIndex: Animated.Value<number>;
   transition: Animated.Node<number>;
+  cell: number;
 }
 
-const mapStateToProps = (state: RootState) => ({
-  cell: selectors.selectedCellLatestUpdate(state),
+const mapStateToProps = (state: RootState, props: IndicatorProps) => ({
+  color: selectors.cellLatestUpdate(state, props).color,
 });
 
 const mapDispatchToProps = {
@@ -31,9 +32,7 @@ const mapDispatchToProps = {
 const Indicator: React.FC<
   IndicatorProps & IndicatorConnectedProps
 > = React.memo(
-  ({ cell, state, setColor, activeIndex, transition }) => {
-    const { color: backgroundColor } = cell;
-
+  ({ color, state, setColor, activeIndex, transition }) => {
     useCode(
       () => [
         onChange(
@@ -41,13 +40,13 @@ const Indicator: React.FC<
           cond(and(eq(state, State.END), greaterOrEq(activeIndex, 0)), [
             call([activeIndex], ([index]) => {
               Haptics.trigger("impactHeavy");
-              setColor(cell.color, index);
+              setColor(color, index);
             }),
             set(activeIndex, -1),
           ])
         ),
       ],
-      [cell.color]
+      [color]
     );
 
     const width = mix(transition, POPUP_SIZE, COLOR_SIZE);
@@ -65,13 +64,13 @@ const Indicator: React.FC<
           borderWidth,
           width,
           height,
-          backgroundColor,
+          backgroundColor: color,
           transform: [{ translateX }],
         }}
       />
     );
   },
-  (p, n) => p.cell.color === n.cell.color
+  (p, n) => p.color === n.color
 );
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
