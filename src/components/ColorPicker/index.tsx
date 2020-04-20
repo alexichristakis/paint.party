@@ -8,7 +8,6 @@ import { View, StyleSheet } from "react-native";
 import isEqual from "lodash/isEqual";
 
 import { RootState } from "@redux/types";
-import { PaletteActions } from "@redux/modules";
 import { COLOR_WHEEL_RADIUS, COLOR_SIZE } from "@lib";
 
 import Button from "./Button";

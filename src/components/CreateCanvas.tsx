@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  useImperativeHandle,
-  useLayoutEffect,
-} from "react";
+import React, { useRef, useState } from "react";
 import { TextInput, StyleSheet, Text } from "react-native";
 import { ConnectedProps, connect, useSelector } from "react-redux";
 
