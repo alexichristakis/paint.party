@@ -48,25 +48,6 @@ export const cellLatestUpdate = createSelector(
     };
   }
 );
-/*
-export const selectedCellLatestUpdate = createSelector(
-  [cells, selectedCell, activeCanvasEntity],
-  (cells, cell, canvas) => {
-    const updates = Object.values(cells[cell] ?? {}) ?? [];
-
-    if (updates.length) {
-      const sorted = sortBy(updates, (o) => o.time);
-
-      return sorted[updates.length - 1];
-    }
-
-    return {
-      color: canvas.backgroundColor,
-      time: canvas.createdAt,
-    };
-  }
-);
-*/
 
 export const livePositions = createSelector([live, uid], (live, uid) =>
   Object.values(omit(live ?? {}, uid ?? ""))

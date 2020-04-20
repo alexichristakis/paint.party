@@ -2,7 +2,6 @@ import React, {
   useState,
   useEffect,
   useCallback,
-  useContext,
   useMemo,
   useRef,
 } from "react";
@@ -26,18 +25,6 @@ export type DrawingState = {
 };
 
 export const DrawContext = React.createContext({} as DrawingState);
-
-export const connectToDraw = <
-  P,
-  T extends Partial<DrawingState> = Partial<DrawingState>
->(
-  select: (state: DrawingState) => T
-) => (WrappedComponent: React.FC<P & T>) => (props: P) => {
-  const context = useContext(DrawContext);
-  const selectors = select(context);
-
-  return <WrappedComponent {...selectors} {...props} />;
-};
 
 export interface DrawingProviderProps {
   captureRef: React.RefObject<View>;
@@ -63,7 +50,7 @@ export const DrawingProvider: React.FC = ({ children }) => {
   }, [canvas]);
 
   useEffect(() => {
-    database().ref(canvas).child(`live/${uid}`).set(cell);
+    if (cell > -1) database().ref(canvas).child(`live/${uid}`).set(cell);
   }, [cell]);
 
   const reset = useCallback(() => onSelect({ color: "", cell: -1 }), []);

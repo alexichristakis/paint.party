@@ -6,14 +6,14 @@ import { connect, ConnectedProps } from "react-redux";
 import isEqual from "lodash/isEqual";
 
 import * as selectors from "@redux/selectors";
-import { coordinatesToIndex, onPress } from "@lib";
 import { RootState } from "@redux/types";
+import { coordinatesToIndex, onPress } from "@lib";
+import { DrawContext } from "@hooks";
 
 import Grid from "./Grid";
 import CellHighlight from "./CellHighlight";
 import PositionsOverlay from "./PositionsOverlay";
 import ZoomPanHandler from "./ZoomPanHandler";
-import { DrawContext } from "@hooks";
 
 const { useCode, not, set, cond, call } = Animated;
 const { UNDETERMINED } = State;

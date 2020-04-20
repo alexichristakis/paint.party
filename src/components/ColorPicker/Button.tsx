@@ -1,40 +1,23 @@
-import React, { useEffect, useContext, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import Animated, { Easing, onChange, useCode } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import { State, TapGestureHandler } from "react-native-gesture-handler";
 import {
-  useValues,
-  onGestureEvent,
   mix,
   withTransition,
-  useSpringTransition,
-  bin,
   useTransition,
   useGestureHandler,
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
-import { connect, ConnectedProps } from "react-redux";
-import isNull from "lodash/isNull";
 
-import * as selectors from "@redux/selectors";
-import { RootState } from "@redux/types";
-import { VisualizationActions, PaletteActions } from "@redux/modules";
+import { PaletteActions } from "@redux/modules";
 
 import EditIcon from "@assets/svg/edit.svg";
 import CheckIcon from "@assets/svg/check.svg";
-import { DrawContext, useReduxAction, connectToDraw } from "@hooks";
+import { DrawContext, useReduxAction } from "@hooks";
 
 const { set, or, eq, cond, call } = Animated;
-
-const config = {
-  damping: 40,
-  mass: 1,
-  stiffness: 300,
-  overshootClamping: false,
-  restSpeedThreshold: 0.1,
-  restDisplacementThreshold: 0.1,
-};
 
 export interface ButtonProps {
   state: Animated.Value<State>;
