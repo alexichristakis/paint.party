@@ -1,9 +1,9 @@
 import { createSelector } from "reselect";
+import moment from "moment";
+import sortBy from "lodash/sortBy";
 import values from "lodash/values";
 
 import { RootState } from "../types";
-import sortBy from "lodash/sortBy";
-import moment from "moment";
 
 const s = (state: RootState) => state.canvas || {};
 const p = (_: RootState, props: any) => props || {};
