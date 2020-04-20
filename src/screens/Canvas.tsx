@@ -11,7 +11,7 @@ import { Visualization, Header } from "@components/Canvas";
 import ColorPicker from "@components/ColorPicker";
 import { LoadingOverlay } from "@components/universal";
 import { DrawingProvider } from "@hooks";
-import { SCREEN_HEIGHT, SCREEN_WIDTH, Colors } from "@lib";
+import { Colors } from "@lib";
 
 import { StackParamList } from "../App";
 
@@ -29,13 +29,12 @@ export interface CanvasProps {
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = React.memo(
   ({ loadingCanvas }) => {
     const [positionsVisible, pickerVisible] = useValues<0 | 1>([0, 0], []);
-    const captureRef = useRef<View>(null);
 
     return (
       <View style={styles.container}>
         <Header {...{ positionsVisible, pickerVisible }} />
-        <DrawingProvider captureRef={captureRef}>
-          <Visualization {...{ captureRef, pickerVisible, positionsVisible }} />
+        <DrawingProvider>
+          <Visualization {...{ pickerVisible, positionsVisible }} />
           <ColorPicker visible={pickerVisible} />
         </DrawingProvider>
         <LoadingOverlay loading={loadingCanvas} />

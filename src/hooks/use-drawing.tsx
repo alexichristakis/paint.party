@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useContext,
   useMemo,
+  useRef,
 } from "react";
 import { useSelector } from "react-redux";
 import { View } from "react-native";
@@ -16,6 +17,7 @@ import { useReduxAction } from "./use-redux-action";
 import { CANVAS_DIMENSIONS } from "@lib";
 
 export type DrawingState = {
+  captureRef: React.RefObject<View>;
   color: string;
   cell: number;
   selectCell: (index: number) => void;
@@ -41,10 +43,8 @@ export interface DrawingProviderProps {
   captureRef: React.RefObject<View>;
 }
 
-export const DrawingProvider: React.FC<DrawingProviderProps> = ({
-  captureRef,
-  children,
-}) => {
+export const DrawingProvider: React.FC = ({ children }) => {
+  const captureRef = useRef<View>(null);
   const [{ color, cell }, onSelect] = useState({ color: "", cell: -1 });
 
   const uid = useSelector(selectors.uid);
@@ -90,13 +90,14 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
 
   const state = useMemo(
     () => ({
+      captureRef,
       color,
       cell,
       selectColor,
       selectCell,
       draw,
     }),
-    [color, cell, selectColor, selectCell, draw]
+    [color, cell, selectColor, selectCell, captureRef, draw]
   );
 
   return <DrawContext.Provider value={state}>{children}</DrawContext.Provider>;

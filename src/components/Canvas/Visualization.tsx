@@ -1,20 +1,13 @@
 import React, { useCallback, useContext, useMemo } from "react";
-import { View } from "react-native";
 import { State, TapGestureHandler } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
-import {
-  onGestureEvent,
-  useValue,
-  useVector,
-  useGestureHandler,
-} from "react-native-redash";
+import { useValue, useVector, useGestureHandler } from "react-native-redash";
 import { connect, ConnectedProps } from "react-redux";
 import isEqual from "lodash/isEqual";
 
 import * as selectors from "@redux/selectors";
 import { coordinatesToIndex, onPress } from "@lib";
 import { RootState } from "@redux/types";
-import { VisualizationActions } from "@redux/modules";
 
 import Grid from "./Grid";
 import CellHighlight from "./CellHighlight";
@@ -32,7 +25,6 @@ const mapDispatchToProps = {};
 
 export type VisualizationReduxProps = ConnectedProps<typeof connector>;
 export interface VisualizationProps {
-  captureRef: React.RefObject<View>;
   positionsVisible: Animated.Value<0 | 1>;
   pickerVisible: Animated.Value<0 | 1>;
 }
@@ -40,7 +32,7 @@ export interface VisualizationProps {
 const Visualization: React.FC<
   VisualizationProps & VisualizationReduxProps
 > = React.memo(
-  ({ pickerVisible, positionsVisible, captureRef, backgroundColor }) => {
+  ({ pickerVisible, positionsVisible, backgroundColor }) => {
     const tap = useVector(0, 0, []);
     const tapState = useValue(UNDETERMINED, []);
     const tapGestureHandler = useGestureHandler(
@@ -48,7 +40,7 @@ const Visualization: React.FC<
       []
     );
 
-    const { selectCell, cell } = useContext(DrawContext);
+    const { captureRef, selectCell, cell } = useContext(DrawContext);
 
     const handleOnPressCell = useCallback(
       ([x, y]: Readonly<number[]>) => selectCell(coordinatesToIndex(x, y)),
@@ -82,6 +74,7 @@ const Visualization: React.FC<
       ),
       [
         cell,
+        captureRef,
         tapGestureHandler,
         backgroundColor,
         pickerVisible,
