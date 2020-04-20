@@ -26,8 +26,6 @@ const mapDispatchToProps = {
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
 const PaletteEditor: React.FC<Props> = React.memo(
   ({ palettes, showPalettes, close }) => {
-    console.log("show palettes", showPalettes);
-
     return (
       <BottomSheet open={showPalettes} onClose={close} style={styles.container}>
         <CreatePalette />
