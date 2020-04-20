@@ -1,18 +1,11 @@
-import React, {
-  useRef,
-  useState,
-  useLayoutEffect,
-  useCallback,
-  useEffect,
-} from "react";
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import React, { useRef, useLayoutEffect, useCallback } from "react";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import {
   NativeViewGestureHandler,
   PanGestureHandler,
   State,
-  TapGestureHandler,
 } from "react-native-gesture-handler";
-import Animated, { Extrapolate, debug } from "react-native-reanimated";
+import Animated, { Extrapolate, useCode } from "react-native-reanimated";
 import {
   bin,
   clamp,
@@ -22,23 +15,13 @@ import {
   useValues,
   withSpring,
   useClocks,
-  contains,
+  useValue,
 } from "react-native-redash";
 
 import { Colors, SB_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH } from "@lib";
 import { useMemoOne } from "use-memo-one";
 
-const {
-  interpolate,
-  round,
-  useCode,
-  cond,
-  not,
-  call,
-  set,
-  clockRunning,
-  sub,
-} = Animated;
+const { interpolate, call, cond, not, set, clockRunning, sub } = Animated;
 
 const { UNDETERMINED } = State;
 
@@ -56,7 +39,7 @@ export interface BottomSheetProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   open: boolean;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 const FULLY_OPEN = SB_HEIGHT;
@@ -67,33 +50,37 @@ export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
   ({ open, style, children, scrollRef, onClose }) => {
     const [clock] = useClocks(1, []);
 
-    const [lastSnap, setLastSnap] = useState(SCREEN_HEIGHT);
-
-    const masterDrawerRef = useRef<TapGestureHandler>(null);
     const scrollHandlerRef = useRef<NativeViewGestureHandler>(null);
     const panRef = useRef<PanGestureHandler>(null);
 
-    const [dragY, velocityY, scrollY, lastScrollY, offset] = useValues(
+    const [drag, velocity, scroll, lastScroll, offset] = useValues(
       [0, 0, 0, 0, SCREEN_HEIGHT],
       []
     );
     const [shouldOpen, shouldClose] = useValues([bin(open), 0], []);
-    const [gestureState] = useValues([UNDETERMINED], []);
+    const panState = useValue(UNDETERMINED, []);
 
     const panHandler = onGestureEvent({
-      state: gestureState,
-      translationY: dragY,
-      velocityY,
+      state: panState,
+      translationY: drag,
+      velocityY: velocity,
     });
+
+    const handleOnSnap = ([value]: readonly number[]) => {
+      if (value === CLOSED) {
+        onClose();
+      }
+    };
 
     const translateY = useMemoOne(
       () =>
         clamp(
           withSpring({
-            value: sub(dragY, lastScrollY),
-            velocity: velocityY,
-            state: gestureState,
+            value: sub(drag, lastScroll),
+            velocity: velocity,
+            state: panState,
             snapPoints: [FULLY_OPEN, SNAP_OPEN, CLOSED],
+            onSnap: handleOnSnap,
             offset,
             config,
           }),
@@ -103,35 +90,10 @@ export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
       []
     );
 
-    useCode(() => [debug("open", shouldOpen)], []);
-
     useLayoutEffect(() => {
       shouldOpen.setValue(bin(open));
       shouldClose.setValue(bin(!open));
     }, [open]);
-
-    const handleOnSnap = useCallback(
-      ([value]: readonly number[]) => {
-        if (value !== lastSnap) {
-          setLastSnap(value);
-        }
-
-        if (value === CLOSED && lastSnap !== CLOSED && onClose) {
-          onClose();
-        }
-      },
-      [lastSnap]
-    );
-
-    useCode(
-      () => [
-        cond(
-          contains([SB_HEIGHT, CLOSED, SNAP_OPEN], round(translateY)),
-          call([round(translateY)], handleOnSnap)
-        ),
-      ],
-      [lastSnap, translateY]
-    );
 
     const reset = [set(shouldOpen, 0), set(shouldClose, 0)];
     useCode(
@@ -158,7 +120,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
               config,
             })
           ),
-          cond(not(clockRunning(clock)), reset),
+          cond(not(clockRunning(clock)), [reset, call([], onClose)]),
         ]),
       ],
       []
@@ -175,13 +137,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
       shouldClose.setValue(1);
     }, []);
 
-    return (
-      <TapGestureHandler
-        ref={masterDrawerRef}
-        maxDurationMs={100000}
-        maxDeltaY={lastSnap - FULLY_OPEN}
-      >
-        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+    if (open)
+      return (
+        <>
           <Animated.View
             onTouchEndCapture={handleOnPressOverlay}
             pointerEvents={open ? "auto" : "none"}
@@ -191,7 +149,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
             ref={panRef}
             maxPointers={1}
             minDist={10}
-            simultaneousHandlers={[scrollHandlerRef, masterDrawerRef]}
+            simultaneousHandlers={scrollHandlerRef}
             {...panHandler}
           >
             <Animated.View
@@ -200,29 +158,29 @@ export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
             >
               <NativeViewGestureHandler
                 ref={scrollHandlerRef}
-                waitFor={masterDrawerRef}
                 simultaneousHandlers={panRef}
               >
                 <Animated.ScrollView
                   ref={scrollRef}
                   bounces={false}
                   scrollEventThrottle={16}
-                  onScrollBeginDrag={onScrollEvent({ y: lastScrollY })}
-                  onScroll={onScrollEvent({ y: scrollY })}
+                  onScrollBeginDrag={onScrollEvent({ y: lastScroll })}
+                  onScroll={onScrollEvent({ y: scroll })}
                   style={[styles.container, { transform: [{ translateY }] }]}
                   contentContainerStyle={[
                     { paddingTop: 10, paddingBottom: 110 },
                     style,
                   ]}
                 >
-                  {open ? children : null}
+                  {children}
                 </Animated.ScrollView>
               </NativeViewGestureHandler>
             </Animated.View>
           </PanGestureHandler>
-        </View>
-      </TapGestureHandler>
-    );
+        </>
+      );
+
+    return null;
   },
   (p, n) => p.open === n.open
 );
