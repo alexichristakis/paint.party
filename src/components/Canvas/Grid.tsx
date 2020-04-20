@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View } from "react-native";
 import times from "lodash/times";
 import Svg, { Rect } from "react-native-svg";
@@ -12,6 +12,7 @@ import {
   CELL_SIZE,
   coordinatesFromIndex,
 } from "@lib";
+import { DrawContext } from "@hooks";
 
 export interface GridProps {
   captureRef: React.RefObject<View>;
@@ -44,10 +45,10 @@ const Cell: React.FC<CellProps> = ({ color, index }) => {
 };
 
 const ColorPreview: React.FC = () => {
-  const color = useSelector(selectors.selectedColor);
-  const index = useSelector(selectors.selectedCell);
+  const { color, cell } = useContext(DrawContext);
 
-  return <Cell key={"selected"} color={color} index={index} />;
+  if (color.length) return <Cell key={"selected"} color={color} index={cell} />;
+  return null;
 };
 
 type GridConnectedProps = ConnectedProps<typeof connector>;

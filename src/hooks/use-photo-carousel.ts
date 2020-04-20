@@ -15,7 +15,7 @@ export type PhotoCarouselState = {
   close: () => void;
 };
 
-export const PhotoCarouselContext = React.createContext<PhotoCarouselState>(
+export const PhotoCarouselContext = React.createContext(
   {} as PhotoCarouselState
 );
 

@@ -35,6 +35,7 @@ export interface SwatchProps {
   index: number;
   active: Animated.Node<0 | 1>;
   openTransition: Animated.Node<number>;
+  onPress: (color: string) => void;
 }
 
 export type SwatchConnectedProps = ConnectedProps<typeof connector>;
@@ -45,9 +46,7 @@ const mapStateToProps = (state: RootState, props: SwatchProps) => ({
   paletteId: selectors.activePaletteId(state, props),
 });
 
-const mapDispatchToProps = {
-  selectColor: VisualizationActions.selectColor,
-};
+const mapDispatchToProps = {};
 
 const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
   ({
@@ -57,7 +56,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
     rotate,
     backgroundColor,
     openTransition,
-    selectColor,
+    onPress: handleOnPress,
   }) => {
     const viewRef = useRef<Animated.View>(null);
     const tapRef = useRef<TapGestureHandler>(null);
@@ -95,7 +94,7 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
 
     const handleOnChoose = () => {
       Haptics.trigger("impactMedium");
-      selectColor(backgroundColor);
+      handleOnPress(backgroundColor);
     };
 
     useCode(() => [onPress(tapState, call([], handleOnChoose))], [

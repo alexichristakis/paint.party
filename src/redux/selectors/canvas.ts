@@ -64,11 +64,6 @@ export const isCreatingCanvas = createSelector(
   (state) => state.creatingCanvas
 );
 
-export const isLoadingCanvas = createSelector(
-  s,
-  (state) => state.loadingCanvas
-);
-
 export const showCanvasCreator = createSelector(
   s,
   (state) => state.showCreator

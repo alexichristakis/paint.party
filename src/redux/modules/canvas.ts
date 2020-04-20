@@ -26,7 +26,6 @@ export type CanvasState = Readonly<{
   creatingCanvas: boolean;
   fetchingCanvases: boolean;
   joiningCanvas: boolean;
-  loadingCanvas: boolean;
 }>;
 
 const initialState: CanvasState = {
@@ -34,7 +33,6 @@ const initialState: CanvasState = {
   activeCanvas: "",
   creatingCanvas: false,
   fetchingCanvases: false,
-  loadingCanvas: false,
   joiningCanvas: false,
   canvases: {},
   previews: {},
@@ -64,14 +62,7 @@ export default (
     case ActionTypes.OPEN_CANVAS: {
       const { id } = action.payload;
 
-      return { ...state, loadingCanvas: true, activeCanvas: id };
-    }
-
-    case ActionTypes.OPEN_CANVAS_SUCCESS: {
-      return {
-        ...state,
-        loadingCanvas: false,
-      };
+      return { ...state, activeCanvas: id };
     }
 
     case ActionTypes.JOIN_CANVAS: {
@@ -90,7 +81,6 @@ export default (
         draft.activeCanvas = canvas.id;
         draft.canvases[canvas.id] = canvas;
         draft.showCreator = false;
-        draft.loadingCanvas = false;
         draft.creatingCanvas = false;
         draft.joiningCanvas = false;
       });
