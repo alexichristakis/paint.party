@@ -1,5 +1,4 @@
 import React from "react";
-import { useContextSelector as useContext } from "use-context-selector";
 import { View } from "react-native";
 import times from "lodash/times";
 import Svg, { Rect } from "react-native-svg";
@@ -13,7 +12,6 @@ import {
   CELL_SIZE,
   coordinatesFromIndex,
 } from "@lib";
-import { DrawContext, drawingContextSelectors } from "@hooks";
 
 export interface GridProps {
   backgroundColor: string;
@@ -45,8 +43,8 @@ const Cell: React.FC<CellProps> = ({ color, index }) => {
 };
 
 const ColorPreview: React.FC = () => {
-  const color = useContext(DrawContext, drawingContextSelectors.color);
-  const cell = useContext(DrawContext, drawingContextSelectors.cell);
+  const color = useSelector(selectors.selectedColor);
+  const cell = useSelector(selectors.selectedCell);
 
   if (color.length) {
     return <Cell key={"selected"} color={color} index={cell} />;
@@ -57,12 +55,7 @@ const ColorPreview: React.FC = () => {
 type GridConnectedProps = ConnectedProps<typeof connector>;
 
 const Grid: React.FC<GridProps & GridConnectedProps> = React.memo(
-  ({ backgroundColor }) => {
-    const captureRef = useContext(
-      DrawContext,
-      drawingContextSelectors.captureRef
-    );
-
+  ({ backgroundColor, captureRef }) => {
     return (
       <View ref={captureRef} style={{ backgroundColor }}>
         <Svg width={CANVAS_SIZE} height={CANVAS_SIZE}>
@@ -78,5 +71,8 @@ const Grid: React.FC<GridProps & GridConnectedProps> = React.memo(
   }
 );
 
-const connector = connect((state: RootState) => ({}), {});
+const connector = connect(
+  (state: RootState) => ({ captureRef: selectors.captureRef(state) }),
+  {}
+);
 export default connector(Grid);

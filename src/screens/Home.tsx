@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from "react-redux";
 
 import { RootState } from "@redux/types";
 import * as selectors from "@redux/selectors";
-import { CanvasActions, PaletteActions } from "@redux/modules";
+import { CanvasActions, PaletteActions, ModalActions } from "@redux/modules";
 import { PhotoCarouselContext, usePhotoCarouselState } from "@hooks";
 
 import ActionButton from "@components/ActionButton";
@@ -21,8 +21,8 @@ const connector = connect(
   {
     unsubscribe: CanvasActions.close,
     fetchCanvases: CanvasActions.fetch,
-    openPalettes: PaletteActions.openEditor,
-    openCanvasCreator: CanvasActions.openCreator,
+    openPalettes: ModalActions.openPaletteEditor,
+    openCanvasCreator: ModalActions.openCreateCanvas,
   }
 );
 

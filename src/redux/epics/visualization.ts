@@ -1,7 +1,6 @@
 import { isOfType } from "typesafe-actions";
 import { Observable } from "rxjs";
 import moment from "moment";
-import uniq from "lodash/uniq";
 import {
   map,
   filter,
@@ -112,11 +111,12 @@ const subscribeToCanvas: Epic<Actions, Actions, RootState> = (
 const drawOnCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
     filter(isOfType(ActionTypes.DRAW)),
-    switchMap(async ({ payload }) => {
+    switchMap(async () => {
       const uid = selectors.uid(state$.value);
       const activeCanvas = selectors.activeCanvas(state$.value);
 
-      const { cell, color } = payload;
+      const color = selectors.selectedColor(state$.value);
+      const cell = selectors.selectedCell(state$.value);
 
       await database()
         .ref(activeCanvas)
@@ -144,11 +144,11 @@ const drawOnCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
 const capturePreview: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
     filter(isOfType(ActionTypes.DRAW)),
-    tap(async (action) => {
-      const { canvasRef } = action.payload;
-
-      const uri = await captureRef(canvasRef);
+    tap(async () => {
+      const ref = selectors.captureRef(state$.value);
       const canvasId = selectors.canvasVizId(state$.value);
+
+      const uri = await captureRef(ref);
       return Promise.resolve().then(() =>
         storage()
           .ref(canvasId)

@@ -29,10 +29,7 @@ const ColorPicker: React.FC<
   ColorPickerProps & ColorPickerConnectedProps
 > = React.memo(
   ({ visible }) => {
-    const [tapState, popupDragState] = useValues<State>(
-      [State.UNDETERMINED, State.UNDETERMINED],
-      []
-    );
+    const [popupDragState] = useValues<State>([State.UNDETERMINED], []);
     const [rotation, activeIndex] = useValues<number>([0, -1], []);
     const popupPosition = useVector(0, 0, []);
 
@@ -47,11 +44,7 @@ const ColorPicker: React.FC<
 
     return (
       <View style={styles.container} pointerEvents={"box-none"}>
-        <Button
-          state={tapState}
-          visible={visible}
-          openTransition={openTransition}
-        />
+        <Button visible={visible} openTransition={openTransition} />
         <ColorWheel
           angle={rotation}
           isDragging={eq(popupDragState, State.ACTIVE)}

@@ -8710,11 +8710,6 @@ url-parse-lax@^1.0.0:
   dependencies:
     prepend-http "^1.0.1"
 
-use-context-selector@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/use-context-selector/-/use-context-selector-1.1.1.tgz#1180ad98dcc585aee39c458a3e5582392a1afcf9"
-  integrity sha512-MDcSTShyTB+PMlbIeN0kWzTeognnXyH6ffZL+fHwaTegNRQvpzbELIZW80Bdmjn+xckxfVugfz2WqTXcFsA8UA==
-
 use-memo-one@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/use-memo-one/-/use-memo-one-1.1.1.tgz#39e6f08fe27e422a7d7b234b5f9056af313bd22c"

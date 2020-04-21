@@ -7,29 +7,39 @@ import {
   withTransition,
   useTransition,
   useGestureHandler,
+  useValue,
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
-import { useContextSelector as useContext } from "use-context-selector";
+import { connect, ConnectedProps } from "react-redux";
 
-import { PaletteActions } from "@redux/modules";
+import * as selectors from "@redux/selectors";
+import { PaletteActions, DrawActions, ModalActions } from "@redux/modules";
 
 import EditIcon from "@assets/svg/edit.svg";
 import CheckIcon from "@assets/svg/check.svg";
-import { DrawContext, useReduxAction, drawingContextSelectors } from "@hooks";
+import { useReduxAction } from "@hooks";
+import { RootState } from "@redux/types";
 
 const { set, or, eq, cond, call } = Animated;
 
+const connector = connect(
+  (state: RootState) => ({
+    color: selectors.selectedColor(state),
+  }),
+  { draw: DrawActions.draw }
+);
+
 export interface ButtonProps {
-  state: Animated.Value<State>;
   visible: Animated.Value<0 | 1>;
   openTransition: Animated.Node<number>;
 }
 
-const Button: React.FC<ButtonProps> = React.memo(
-  ({ state, visible, openTransition }) => {
-    const draw = useContext(DrawContext, drawingContextSelectors.draw);
-    const color = useContext(DrawContext, drawingContextSelectors.color);
+export type ButtonConnectedProps = ConnectedProps<typeof connector>;
+
+const Button: React.FC<ButtonProps & ButtonConnectedProps> = React.memo(
+  ({ visible, openTransition, draw, color }) => {
+    const state = useValue(State.UNDETERMINED, []);
 
     const pressInTransition = useMemoOne(
       () =>
@@ -46,7 +56,7 @@ const Button: React.FC<ButtonProps> = React.memo(
     });
 
     const tapHandler = useGestureHandler({ state }, []);
-    const openPalettes = useReduxAction(PaletteActions.openEditor);
+    const openPalettes = useReduxAction(ModalActions.openPaletteEditor);
 
     useCode(
       () => [
@@ -118,4 +128,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Button;
+export default connector(Button);

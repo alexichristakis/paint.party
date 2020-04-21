@@ -40,5 +40,3 @@ export const numColors = createSelector(colors, (colors) => colors.length);
 export const angleIncrement = createSelector([numColors, p], (num, p) =>
   !isUndefined(p.index) ? ((2 * Math.PI) / num) * p.index : (2 * Math.PI) / num
 );
-
-export const showPaletteEditor = createSelector(s, (state) => state.showEditor);

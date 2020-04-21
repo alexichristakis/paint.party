@@ -4,11 +4,12 @@ import { mix } from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import { State } from "react-native-gesture-handler";
 import Haptics from "react-native-haptic-feedback";
+import { useMemoOne } from "use-memo-one";
 
 import { RootState } from "@redux/types";
-import { POPUP_SIZE, COLOR_SIZE, COLOR_BORDER_WIDTH } from "@lib";
+import * as selectors from "@redux/selectors";
 import { PaletteActions } from "@redux/modules";
-import { useMemoOne } from "use-memo-one";
+import { POPUP_SIZE, COLOR_SIZE, COLOR_BORDER_WIDTH } from "@lib";
 
 const { onChange, greaterOrEq, set, eq, divide, cond, and, call } = Animated;
 
@@ -20,16 +21,15 @@ export interface IndicatorProps {
   transition: Animated.Node<number>;
 }
 
-export interface IndicatorInternalProps {
-  color: string;
-}
-
-const connector = connect((_: RootState) => ({}), {
-  setColor: PaletteActions.set,
-});
+const connector = connect(
+  (state: RootState) => ({ color: selectors.cellLatestUpdate(state).color }),
+  {
+    setColor: PaletteActions.set,
+  }
+);
 
 const Indicator: React.FC<
-  IndicatorProps & IndicatorInternalProps & IndicatorConnectedProps
+  IndicatorProps & IndicatorConnectedProps
 > = React.memo(
   ({ color, state, setColor, activeIndex, transition }) => {
     useCode(

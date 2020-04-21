@@ -14,7 +14,6 @@ import { StyleSheet } from "react-native";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
-import { useContextSelector as useContext } from "use-context-selector";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
@@ -25,11 +24,9 @@ import {
   COLOR_WHEEL_RADIUS,
   useVectors,
 } from "@lib";
-import { DrawContext, drawingContextSelectors } from "@hooks";
 
 import Label from "./Label";
 import Indicator from "./Indicator";
-import Content from "./Content";
 
 const {
   onChange,
@@ -175,12 +172,8 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
             transform: translate(translation),
           }}
         >
-          {/* <Label transition={activeTransition} />
-          <Indicator
-            transition={activeSpringTransition}
-            {...{ activeIndex, state }}
-          /> */}
-          <Content {...{ transition, activeIndex, state }} />
+          <Label {...{ transition }} />
+          <Indicator {...{ activeIndex, transition, state }} />
         </Animated.View>
       </PanGestureHandler>
     );

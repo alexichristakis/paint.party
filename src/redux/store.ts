@@ -11,8 +11,9 @@ import rootEpic from "./epics";
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
+  blacklist: ["draw", "modal"],
   migrate: createMigrate(migrations as any, { debug: __DEV__ }),
-  version: 1
+  version: 1,
 };
 
 export default () => {

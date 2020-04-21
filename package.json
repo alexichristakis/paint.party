@@ -46,7 +46,6 @@
     "rxjs": "^6.5.5",
     "tinycolor2": "^1.4.1",
     "typesafe-actions": "^5.1.0",
-    "use-context-selector": "^1.1.1",
     "use-memo-one": "^1.1.1"
   },
   "devDependencies": {

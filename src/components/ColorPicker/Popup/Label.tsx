@@ -6,17 +6,24 @@ import moment from "moment";
 
 import { Colors, TextStyles, POPUP_SIZE } from "@lib";
 import { useOnLayout } from "@hooks";
+import { connect, ConnectedProps } from "react-redux";
+import * as selectors from "@redux/selectors";
+import { RootState } from "@redux/types";
 
 export interface LabelProps {
   transition: Animated.Node<number>;
 }
 
-export interface LabelInternalProps {
-  time: number;
-  color: string;
-}
+const connector = connect(
+  (state: RootState) => ({
+    ...selectors.cellLatestUpdate(state),
+  }),
+  {}
+);
 
-const Label: React.FC<LabelProps & LabelInternalProps> = React.memo(
+export type LabelConnectedProps = ConnectedProps<typeof connector>;
+
+const Label: React.FC<LabelProps & LabelConnectedProps> = React.memo(
   ({ transition, time, color }) => {
     const { width, onLayout } = useOnLayout();
 
@@ -60,4 +67,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Label;
+export default connector(Label);
