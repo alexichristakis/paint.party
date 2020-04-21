@@ -1,4 +1,4 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef } from "react";
 import Animated, { useCode, Easing } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import { State, PanGestureHandler } from "react-native-gesture-handler";
@@ -16,12 +16,22 @@ import times from "lodash/times";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
+import { DrawActions } from "@redux/modules";
 import { useVectors } from "@lib";
 
 import Swatch from "./Swatch";
-import { DrawContext } from "@hooks";
 
 const { divide, pow, set, eq, sub, cond, add, multiply } = Animated;
+
+const connector = connect(
+  (state: RootState, props: ColorWheelProps) => ({
+    numColors: selectors.numColors(state, props),
+    enabled: selectors.drawEnabled(state),
+  }),
+  {
+    selectColor: DrawActions.selectColor,
+  }
+);
 
 export interface ColorWheelProps {
   angle: Animated.Value<number>;
@@ -32,16 +42,18 @@ export interface ColorWheelProps {
 
 export type ColorWheelConnectedProps = ConnectedProps<typeof connector>;
 
-const mapStateToProps = (state: RootState, props: ColorWheelProps) => ({
-  numColors: selectors.numColors(state, props),
-  enabled: selectors.canvasEnabled(state),
-});
-const mapDispatchToProps = {};
-
 const ColorWheel: React.FC<
   ColorWheelProps & ColorWheelConnectedProps
 > = React.memo(
-  ({ numColors, enabled, activeIndex, angle, openTransition, isDragging }) => {
+  ({
+    numColors,
+    enabled,
+    activeIndex,
+    selectColor,
+    angle,
+    openTransition,
+    isDragging,
+  }) => {
     const enabledTransition = useTransition(enabled, {
       easing: Easing.inOut(Easing.ease),
     });
@@ -94,7 +106,6 @@ const ColorWheel: React.FC<
       transform: [{ rotate }, { rotate: mix(openTransition, -Math.PI / 4, 0) }],
     };
 
-    const { selectColor } = useContext(DrawContext);
     return (
       <PanGestureHandler ref={panRef} {...panHandler}>
         <Animated.View style={[styles.container, containerAnimatedStyle]}>
@@ -126,5 +137,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(ColorWheel);

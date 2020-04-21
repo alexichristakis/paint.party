@@ -2,31 +2,29 @@ import React from "react";
 import Animated from "react-native-reanimated";
 import { mix } from "react-native-redash";
 import { StyleSheet, View, Text } from "react-native";
-import { ConnectedProps, connect } from "react-redux";
-import isEqual from "lodash/isEqual";
 import moment from "moment";
 
-import * as selectors from "@redux/selectors";
-import { RootState } from "@redux/types";
 import { Colors, TextStyles, POPUP_SIZE } from "@lib";
 import { useOnLayout } from "@hooks";
-
-export type LabelConnectedProps = ConnectedProps<typeof connector>;
+import { connect, ConnectedProps } from "react-redux";
+import * as selectors from "@redux/selectors";
+import { RootState } from "@redux/types";
 
 export interface LabelProps {
-  cell: number;
   transition: Animated.Node<number>;
 }
 
-const mapStateToProps = (state: RootState, props: LabelProps) => ({
-  update: selectors.cellLatestUpdate(state, props),
-});
+const connector = connect(
+  (state: RootState) => ({
+    ...selectors.cellLatestUpdate(state),
+  }),
+  {}
+);
 
-const mapDispatchToProps = {};
+export type LabelConnectedProps = ConnectedProps<typeof connector>;
 
 const Label: React.FC<LabelProps & LabelConnectedProps> = React.memo(
-  ({ transition, update }) => {
-    const { time, color } = update;
+  ({ transition, time, color }) => {
     const { width, onLayout } = useOnLayout();
 
     const transform = [{ translateX: mix(transition, 0, -width) }];
@@ -45,7 +43,7 @@ const Label: React.FC<LabelProps & LabelConnectedProps> = React.memo(
       </View>
     );
   },
-  (p, n) => isEqual(p.update, n.update)
+  (p, n) => p.color === n.color && p.time === n.time
 );
 
 const styles = StyleSheet.create({
@@ -69,5 +67,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(Label);

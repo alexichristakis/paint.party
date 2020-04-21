@@ -4,11 +4,15 @@ import { AppState } from "./modules/app";
 import { CanvasState } from "./modules/canvas";
 import { PaletteState } from "./modules/palette";
 import { VisualizationState } from "./modules/visualization";
+import { DrawState } from "./modules/draw";
+import { ModalState } from "./modules/modal";
 import {
   AppActions,
   CanvasActions,
   PaletteActions,
   VisualizationActions,
+  DrawActions,
+  ModalActions,
 } from "./modules";
 
 export enum PaletteActionTypes {
@@ -18,8 +22,6 @@ export enum PaletteActionTypes {
   ADD_COLOR = "palette/ADD",
   REMOVE_COLOR = "palette/REMOVE",
   ENABLE_PALETTE = "palette/ENABLE",
-  OPEN_PALETTE_EDITOR = "palette/OPEN_EDITOR",
-  CLOSE_PALETTE_EDITOR = "palette/CLOSE_EDITOR",
 }
 
 export enum AppActionTypes {
@@ -32,8 +34,6 @@ export enum AppActionTypes {
 }
 
 export enum CanvasActionTypes {
-  OPEN_CANVAS_CREATOR = "canvas/OPEN_CREATOR",
-  CLOSE_CANVAS_CREATOR = "canvas/CLOSE_CREATOR",
   FETCH_CANVASES = "canvas/FETCH",
   FETCH_CANVASES_SUCCESS = "canvas/FETCH_SUCCESS",
   OPEN_CANVAS = "canvas/OPEN",
@@ -47,12 +47,24 @@ export enum CanvasActionTypes {
   CLOSE_CANVAS = "canvas/CLOSE",
 }
 
+export enum ModalActionTypes {
+  OPEN_CREATE_CANVAS = "modal/OPEN_CREATE_CANVAS",
+  CLOSE_CREATE_CANVAS = "modal/CLOSE_CREATOR",
+  OPEN_PALETTE_EDITOR = "modal/OPEN_PALETTE_EDITOR",
+  CLOSE_PALETTE_EDITOR = "modal/CLOSE_PALETTE_EDITOR",
+}
+
+export enum DrawActionTypes {
+  SELECT_COLOR = "draw/SELECT_COLOR",
+  SELECT_CELL = "draw/SELECT_CELL",
+  DRAW = "draw/DRAW",
+  DRAW_SUCCESS = "draw/DRAW_SUCCESS",
+  ENABLE = "draw/ENABLE",
+}
+
 export enum VisualizationActionTypes {
-  ENABLE_CANVAS = "viz/ENABLE",
   SUBSCRIBE = "viz/SUBSCRIBE",
   SUBSCRIBE_SUCCESS = "viz/SUBSCRIBE_SUCCESS",
-  DRAW = "viz/DRAW",
-  DRAW_SUCCESS = "viz/DRAW_SUCCESS",
   SET_LIVE_POSITIONS = "viz/SET_LIVE_POSITIONS",
   UPDATE_CANVAS = "viz/UPDATE",
   UPDATE_CANVAS_SUCCESS = "viz/UPDATE_SUCCESS",
@@ -64,13 +76,17 @@ export type RootState = {
   canvas: CanvasState;
   palette: PaletteState;
   visualization: VisualizationState;
+  draw: DrawState;
+  modal: ModalState;
 };
 
 export type ActionUnion = ActionsUnion<
   typeof AppActions &
     typeof CanvasActions &
     typeof PaletteActions &
-    typeof VisualizationActions
+    typeof VisualizationActions &
+    typeof DrawActions &
+    typeof ModalActions
 >;
 
 export const ActionTypes = {
@@ -78,6 +94,8 @@ export const ActionTypes = {
   ...CanvasActionTypes,
   ...PaletteActionTypes,
   ...VisualizationActionTypes,
+  ...DrawActionTypes,
+  ...ModalActionTypes,
 };
 
 interface Action<T extends string> {

@@ -15,11 +15,7 @@ import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import CodePush, { CodePushOptions } from "react-native-code-push";
 
-import {
-  useNotificationEvents,
-  useColorEditorState,
-  ColorEditorContext,
-} from "@hooks";
+import { useNotificationEvents, ColorEditorProvider } from "@hooks";
 import * as selectors from "@redux/selectors";
 import createStore from "@redux/store";
 
@@ -44,44 +40,40 @@ const screenOptions: NativeStackNavigationOptions = {
 };
 
 const Root: React.FC = () => {
-  const ref = useRef<NavigationContainerRef>(null);
-
   const isAuthenticated = useSelector(selectors.isAuthenticated);
   const activeCanvas = useSelector(selectors.activeCanvas);
 
   const showHome = !!activeCanvas.length;
   return useMemo(
     () => (
-      <NavigationContainer ref={ref}>
-        <Stack.Navigator screenOptions={screenOptions}>
-          {isAuthenticated ? (
-            showHome ? (
-              <Stack.Screen name="CANVAS" component={Canvas} />
-            ) : (
-              <Stack.Screen name="HOME" component={Home} />
-            )
+      <Stack.Navigator screenOptions={screenOptions}>
+        {isAuthenticated ? (
+          showHome ? (
+            <Stack.Screen name="CANVAS" component={Canvas} />
           ) : (
-            <Stack.Screen name="LANDING" component={Landing} />
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
+            <Stack.Screen name="HOME" component={Home} />
+          )
+        ) : (
+          <Stack.Screen name="LANDING" component={Landing} />
+        )}
+      </Stack.Navigator>
     ),
     [isAuthenticated, showHome]
   );
 };
 
 const App: React.FC = () => {
-  const colorEditorState = useColorEditorState();
-  return useMemo(
-    () => (
-      <ColorEditorContext.Provider value={colorEditorState}>
+  const ref = useRef<NavigationContainerRef>(null);
+
+  return (
+    <NavigationContainer ref={ref}>
+      <ColorEditorProvider>
         <Root />
         <CreateCanvas />
         <PaletteEditor />
         <ColorEditor />
-      </ColorEditorContext.Provider>
-    ),
-    [colorEditorState.visible]
+      </ColorEditorProvider>
+    </NavigationContainer>
   );
 };
 

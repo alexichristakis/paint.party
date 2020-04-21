@@ -64,11 +64,6 @@ export const isCreatingCanvas = createSelector(
   (state) => state.creatingCanvas
 );
 
-export const showCanvasCreator = createSelector(
-  s,
-  (state) => state.showCreator
-);
-
 export const previews = createSelector(s, (state) => state.previews ?? {});
 
 export const previewUrl = createSelector(

@@ -5,11 +5,11 @@ import omit from "lodash/omit";
 import { RootState } from "../types";
 import { uid } from "./app";
 import { activeCanvasEntity } from "./canvas";
+import { selectedCell } from "./draw";
 
 const s = (state: RootState) => state.visualization;
 
 export const canvasVizId = createSelector(s, (state) => state.id);
-export const canvasEnabled = createSelector(s, (state) => state.enabled);
 export const cells = createSelector(s, (s) => s.cells ?? {});
 export const cellColor = createSelector(
   [cells, (_: RootState, i: number) => i],
@@ -28,19 +28,13 @@ export const live = createSelector(s, (canvas) => canvas.live);
 export const isLoadingCanvas = createSelector(s, (state) => state.loading);
 
 export const cellLatestUpdate = createSelector(
-  [
-    cells,
-    activeCanvasEntity,
-    (_: RootState, props: any) => props.cell as number,
-  ],
+  [cells, activeCanvasEntity, selectedCell],
   (cells, canvas, cell) => {
-    const updates = Object.values(cells[cell] ?? {}) ?? [];
+    const updates = cells[cell] ?? {};
 
-    if (updates.length) {
-      const sorted = sortBy(updates, (o) => o.time);
+    const sorted = sortBy(updates, (o) => o.time);
 
-      return sorted[updates.length - 1];
-    }
+    if (sorted.length) return sorted[sorted.length - 1];
 
     return {
       color: canvas.backgroundColor,

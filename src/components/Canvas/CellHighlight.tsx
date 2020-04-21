@@ -10,6 +10,10 @@ import {
   useClocks,
   mix,
 } from "react-native-redash";
+import { connect } from "react-redux";
+
+import * as selectors from "@redux/selectors";
+import { RootState } from "@redux/types";
 import { CELL_SIZE, coordinatesFromIndex, Colors } from "@lib";
 
 const { set } = Animated;
@@ -32,7 +36,7 @@ export interface CellHighlightProps {
 const BORDER_WIDTH = 3;
 
 export const CellHighlight: React.FC<CellHighlightProps> = React.memo(
-  ({ borderColor = Colors.nearBlack, cell, visible }) => {
+  ({ borderColor = Colors.nearBlack, visible, cell }) => {
     const [top, left] = useValues<number>([0, 0], []);
     const [loopClock] = useClocks(1, []);
 
@@ -105,4 +109,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CellHighlight;
+const connector = connect(
+  (state: RootState) => ({ cell: selectors.selectedCell(state) }),
+  {}
+);
+
+export default connector(CellHighlight);

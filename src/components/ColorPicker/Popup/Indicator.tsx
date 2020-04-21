@@ -4,11 +4,12 @@ import { mix } from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import { State } from "react-native-gesture-handler";
 import Haptics from "react-native-haptic-feedback";
+import { useMemoOne } from "use-memo-one";
 
-import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
-import { POPUP_SIZE, COLOR_SIZE, COLOR_BORDER_WIDTH } from "@lib";
+import * as selectors from "@redux/selectors";
 import { PaletteActions } from "@redux/modules";
+import { POPUP_SIZE, COLOR_SIZE, COLOR_BORDER_WIDTH } from "@lib";
 
 const { onChange, greaterOrEq, set, eq, divide, cond, and, call } = Animated;
 
@@ -18,16 +19,14 @@ export interface IndicatorProps {
   state: Animated.Value<State>;
   activeIndex: Animated.Value<number>;
   transition: Animated.Node<number>;
-  cell: number;
 }
 
-const mapStateToProps = (state: RootState, props: IndicatorProps) => ({
-  color: selectors.cellLatestUpdate(state, props).color,
-});
-
-const mapDispatchToProps = {
-  setColor: PaletteActions.set,
-};
+const connector = connect(
+  (state: RootState) => ({ color: selectors.cellLatestUpdate(state).color }),
+  {
+    setColor: PaletteActions.set,
+  }
+);
 
 const Indicator: React.FC<
   IndicatorProps & IndicatorConnectedProps
@@ -49,23 +48,27 @@ const Indicator: React.FC<
       [color]
     );
 
-    const width = mix(transition, POPUP_SIZE, COLOR_SIZE);
-    const height = mix(transition, POPUP_SIZE, COLOR_SIZE);
-    const borderRadius = divide(height, 2);
-    const borderWidth = mix(transition, 0, COLOR_BORDER_WIDTH);
-    const translateX = mix(transition, 0, -(COLOR_SIZE - POPUP_SIZE) / 2);
+    const style = useMemoOne(() => {
+      const size = mix(transition, POPUP_SIZE, COLOR_SIZE);
+
+      return {
+        width: size,
+        height: size,
+        borderRadius: divide(size, 2),
+        borderWidth: mix(transition, 0, COLOR_BORDER_WIDTH),
+        transform: [
+          { translateX: mix(transition, 0, -(COLOR_SIZE - POPUP_SIZE) / 2) },
+        ],
+      };
+    }, []);
 
     return (
       <Animated.View
         style={{
           position: "absolute",
           left: 5,
-          borderRadius,
-          borderWidth,
-          width,
-          height,
           backgroundColor: color,
-          transform: [{ translateX }],
+          ...style,
         }}
       />
     );
@@ -73,5 +76,4 @@ const Indicator: React.FC<
   (p, n) => p.color === n.color
 );
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(Indicator);

@@ -5,7 +5,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 
 import * as selectors from "@redux/selectors";
-import { CanvasActions, VisualizationActions } from "@redux/modules";
+import { CanvasActions, DrawActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { Countdown } from "@components/universal";
 import { SB_HEIGHT, canvasUrl } from "@lib";
@@ -21,7 +21,7 @@ const mapStateToProps = (state: RootState) => ({
   canvasActiveAt: selectors.canvasActiveAt(state),
 });
 const mapDispatchToProps = {
-  enable: VisualizationActions.enableCanvas,
+  enable: DrawActions.enableCanvas,
   close: CanvasActions.close,
 };
 

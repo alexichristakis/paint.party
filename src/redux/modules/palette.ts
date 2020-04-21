@@ -28,13 +28,11 @@ export type Palette = {
 export type Palettes = { [id: string]: Palette };
 
 export type PaletteState = Readonly<{
-  showEditor: boolean;
   activePalette: string;
   palettes: Palettes;
 }>;
 
 const initialState: PaletteState = {
-  showEditor: false,
   activePalette: "default",
   palettes: DefaultPalettes,
 };
@@ -92,29 +90,12 @@ export default (
       });
     }
 
-    case ActionTypes.OPEN_PALETTE_EDITOR: {
-      return {
-        ...state,
-        showEditor: true,
-      };
-    }
-
-    case ActionTypes.CLOSE_PALETTE_EDITOR: {
-      return {
-        ...state,
-        showEditor: false,
-      };
-    }
-
     default:
       return state;
   }
 };
 
 export const PaletteActions = {
-  openEditor: () => createAction(ActionTypes.OPEN_PALETTE_EDITOR),
-  closeEditor: () => createAction(ActionTypes.CLOSE_PALETTE_EDITOR),
-
   reset: () => createAction(ActionTypes.RESET_COLORS),
 
   createPalette: (name: string) =>

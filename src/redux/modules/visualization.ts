@@ -5,7 +5,7 @@ import { createAction, ActionUnion, ActionTypes } from "../types";
 
 export type CellUpdate = {
   id: string;
-  time: string;
+  time: number;
   author: string;
   color: string;
 };
@@ -18,7 +18,6 @@ export type Positions = { [uid: string]: number };
 export type VisualizationState = {
   id: string;
   loading: boolean;
-  enabled: boolean;
   cells: Cells | null;
   live: Positions | null;
 };
@@ -26,7 +25,6 @@ export type VisualizationState = {
 export const initialCanvasViz: VisualizationState = {
   id: "",
   loading: false,
-  enabled: false,
   live: null,
   cells: null,
 };
@@ -36,10 +34,6 @@ export default (
   action: ActionUnion
 ): VisualizationState => {
   switch (action.type) {
-    case ActionTypes.ENABLE_CANVAS: {
-      return { ...state, enabled: true };
-    }
-
     case ActionTypes.SUBSCRIBE: {
       return { ...initialCanvasViz, loading: true };
     }
@@ -49,10 +43,6 @@ export default (
       return { ...state, id, live, cells, loading: false };
     }
 
-    case ActionTypes.DRAW: {
-      return { ...state, loading: true };
-    }
-
     case ActionTypes.SET_LIVE_POSITIONS: {
       const { positions } = action.payload;
 
@@ -60,14 +50,6 @@ export default (
         ...state,
         live: positions,
       };
-    }
-
-    case ActionTypes.DRAW_SUCCESS: {
-      return immer(state, (draft) => {
-        draft.enabled = false;
-        draft.loading = false;
-        return draft;
-      });
     }
 
     case ActionTypes.UPDATE_CANVAS: {
@@ -88,8 +70,6 @@ export default (
 };
 
 export const VisualizationActions = {
-  enableCanvas: () => createAction(ActionTypes.ENABLE_CANVAS),
-
   subscribe: () => createAction(ActionTypes.SUBSCRIBE),
   subscribeSuccess: (id: string, cells: Cells | null, live: Positions | null) =>
     createAction(ActionTypes.SUBSCRIBE_SUCCESS, { id, cells, live }),

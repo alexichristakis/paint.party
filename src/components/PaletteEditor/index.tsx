@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 
-import { PaletteActions } from "@redux/modules";
+import { PaletteActions, ModalActions } from "@redux/modules";
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import { Colors } from "@lib";
@@ -17,10 +17,10 @@ export type PaletteEditorConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState) => ({
   palettes: Object.values(selectors.palettes(state)),
-  showPalettes: state.palette.showEditor,
+  showPalettes: selectors.showPaletteEditor(state),
 });
 const mapDispatchToProps = {
-  close: PaletteActions.closeEditor,
+  close: ModalActions.closePaletteEditor,
 };
 
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;

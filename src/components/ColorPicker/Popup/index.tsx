@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import Animated, { useCode } from "react-native-reanimated";
 import { State, PanGestureHandler } from "react-native-gesture-handler";
 import {
@@ -13,6 +13,7 @@ import {
 import { StyleSheet } from "react-native";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
+import { useMemoOne } from "use-memo-one";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
@@ -26,8 +27,6 @@ import {
 
 import Label from "./Label";
 import Indicator from "./Indicator";
-import { useMemoOne } from "use-memo-one";
-import { DrawContext } from "@hooks";
 
 const {
   onChange,
@@ -105,10 +104,11 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
     );
 
     const active = eq(state, State.ACTIVE);
-    const [activeTransition, activeSpringTransition] = useMemoOne(
-      () => [withTransition(active), withSpringTransition(active)],
-      [state]
-    );
+    const transition = useMemoOne(() => withTransition(active), []);
+    // const [activeTransition, activeSpringTransition] = useMemoOne(
+    //   () => [withTransition(active), withSpringTransition(active)],
+    //   [state]
+    // );
 
     const { theta, radius } = useMemoOne(
       () =>
@@ -163,26 +163,19 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
       [angleIncrement, numColors]
     );
 
-    const { cell } = useContext(DrawContext);
-    return useMemo(
-      () => (
-        <PanGestureHandler {...handler}>
-          <Animated.View
-            style={{
-              ...styles.container,
-              opacity: openTransition,
-              transform: translate(translation),
-            }}
-          >
-            <Label cell={cell} transition={activeTransition} />
-            <Indicator
-              transition={activeSpringTransition}
-              {...{ cell, activeIndex, state }}
-            />
-          </Animated.View>
-        </PanGestureHandler>
-      ),
-      [cell]
+    return (
+      <PanGestureHandler {...handler}>
+        <Animated.View
+          style={{
+            ...styles.container,
+            opacity: openTransition,
+            transform: translate(translation),
+          }}
+        >
+          <Label {...{ transition }} />
+          <Indicator {...{ activeIndex, transition, state }} />
+        </Animated.View>
+      </PanGestureHandler>
     );
   },
   (p, n) => p.numColors === n.numColors && p.angleIncrement === n.angleIncrement

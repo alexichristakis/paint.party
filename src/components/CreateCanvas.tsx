@@ -15,7 +15,7 @@ import {
 } from "./universal";
 import { TextStyles, TextSizes, Colors } from "@lib";
 
-import { CanvasActions } from "@redux/modules";
+import { CanvasActions, ModalActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { BottomSheet } from "./BottomSheet";
 
@@ -24,12 +24,12 @@ export interface CreateCanvasProps {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  show: selectors.showCanvasCreator(state),
+  show: selectors.showCreateCanvas(state),
 });
 
 const mapDispatchToProps = {
   createCanvas: CanvasActions.create,
-  closeCreator: CanvasActions.closeCreator,
+  closeCreator: ModalActions.closeCreateCanvas,
 };
 
 export type CreateCanvasConnectedProps = ConnectedProps<typeof connector>;

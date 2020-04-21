@@ -19,7 +19,6 @@ export type Canvas = {
 export type NewCanvas = Pick<Canvas, "name" | "backgroundColor" | "expiresAt">;
 
 export type CanvasState = Readonly<{
-  showCreator: boolean;
   activeCanvas: string;
   canvases: { [canvasId: string]: Canvas };
   previews: { [canvasId: string]: string };
@@ -29,7 +28,6 @@ export type CanvasState = Readonly<{
 }>;
 
 const initialState: CanvasState = {
-  showCreator: false,
   activeCanvas: "",
   creatingCanvas: false,
   fetchingCanvases: false,
@@ -80,7 +78,6 @@ export default (
       return immer(state, (draft) => {
         draft.activeCanvas = canvas.id;
         draft.canvases[canvas.id] = canvas;
-        draft.showCreator = false;
         draft.creatingCanvas = false;
         draft.joiningCanvas = false;
       });
@@ -111,14 +108,6 @@ export default (
       return { ...state, activeCanvas: "" };
     }
 
-    case ActionTypes.OPEN_CANVAS_CREATOR: {
-      return { ...state, showCreator: true };
-    }
-
-    case ActionTypes.CLOSE_CANVAS_CREATOR: {
-      return { ...state, showCreator: false };
-    }
-
     case ActionTypes.SET_CANVAS_PREVIEW: {
       const { id, url } = action.payload;
 
@@ -134,9 +123,6 @@ export default (
 };
 
 export const CanvasActions = {
-  openCreator: () => createAction(ActionTypes.OPEN_CANVAS_CREATOR),
-  closeCreator: () => createAction(ActionTypes.CLOSE_CANVAS_CREATOR),
-
   fetch: () => createAction(ActionTypes.FETCH_CANVASES),
   fetchSuccess: (canvases: Canvas[]) =>
     createAction(ActionTypes.FETCH_CANVASES_SUCCESS, { canvases }),

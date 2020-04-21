@@ -82,6 +82,15 @@ export const useColorEditorState = (): ColorEditorState => {
   };
 };
 
+export const ColorEditorProvider: React.FC = ({ children }) => {
+  const state = useColorEditorState();
+  return (
+    <ColorEditorContext.Provider value={state}>
+      {children}
+    </ColorEditorContext.Provider>
+  );
+};
+
 export const useColorEditor = (
   index: number,
   paletteId: string,

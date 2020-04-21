@@ -18,7 +18,7 @@ export interface Countdown {
 const ZEROED = "0:00";
 export const Countdown: React.FC<Countdown> = React.memo(
   ({ style, enable, toDate }) => {
-    const enabled = useSelector(selectors.canvasEnabled);
+    const enabled = useSelector(selectors.drawEnabled);
 
     const [count, setCount] = useState(ZEROED);
 
@@ -51,6 +51,6 @@ export const Countdown: React.FC<Countdown> = React.memo(
 
 const styles = StyleSheet.create({
   count: {
-    ...TextStyles.title
-  }
+    ...TextStyles.title,
+  },
 });
