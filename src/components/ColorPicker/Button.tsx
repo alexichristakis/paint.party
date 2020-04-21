@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import Animated, { Easing, onChange, useCode } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import { State, TapGestureHandler } from "react-native-gesture-handler";
@@ -10,12 +10,13 @@ import {
 } from "react-native-redash";
 import Haptics from "react-native-haptic-feedback";
 import { useMemoOne } from "use-memo-one";
+import { useContextSelector as useContext } from "use-context-selector";
 
 import { PaletteActions } from "@redux/modules";
 
 import EditIcon from "@assets/svg/edit.svg";
 import CheckIcon from "@assets/svg/check.svg";
-import { DrawContext, useReduxAction } from "@hooks";
+import { DrawContext, useReduxAction, drawingContextSelectors } from "@hooks";
 
 const { set, or, eq, cond, call } = Animated;
 
@@ -25,13 +26,10 @@ export interface ButtonProps {
   openTransition: Animated.Node<number>;
 }
 
-export type ButtonConnectedProps = {
-  color: string;
-};
-
 const Button: React.FC<ButtonProps> = React.memo(
   ({ state, visible, openTransition }) => {
-    const { draw, color } = useContext(DrawContext);
+    const draw = useContext(DrawContext, drawingContextSelectors.draw);
+    const color = useContext(DrawContext, drawingContextSelectors.color);
 
     const pressInTransition = useMemoOne(
       () =>

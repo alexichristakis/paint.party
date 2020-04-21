@@ -1,4 +1,5 @@
-import React, { useContext } from "react";
+import React from "react";
+import { useContextSelector as useContext } from "use-context-selector";
 import { View } from "react-native";
 import times from "lodash/times";
 import Svg, { Rect } from "react-native-svg";
@@ -12,10 +13,9 @@ import {
   CELL_SIZE,
   coordinatesFromIndex,
 } from "@lib";
-import { DrawContext } from "@hooks";
+import { DrawContext, drawingContextSelectors } from "@hooks";
 
 export interface GridProps {
-  captureRef: React.RefObject<View>;
   backgroundColor: string;
 }
 
@@ -45,27 +45,37 @@ const Cell: React.FC<CellProps> = ({ color, index }) => {
 };
 
 const ColorPreview: React.FC = () => {
-  const { color, cell } = useContext(DrawContext);
+  const color = useContext(DrawContext, drawingContextSelectors.color);
+  const cell = useContext(DrawContext, drawingContextSelectors.cell);
 
-  if (color.length) return <Cell key={"selected"} color={color} index={cell} />;
+  if (color.length) {
+    return <Cell key={"selected"} color={color} index={cell} />;
+  }
   return null;
 };
 
 type GridConnectedProps = ConnectedProps<typeof connector>;
 
 const Grid: React.FC<GridProps & GridConnectedProps> = React.memo(
-  ({ captureRef, backgroundColor }) => (
-    <View ref={captureRef} style={{ backgroundColor }}>
-      <Svg width={CANVAS_SIZE} height={CANVAS_SIZE}>
-        {times(CANVAS_DIMENSIONS, (y) =>
-          times(CANVAS_DIMENSIONS, (x) => (
-            <Cell key={`${x}-${y}`} index={y * CANVAS_DIMENSIONS + x} />
-          ))
-        )}
-        <ColorPreview />
-      </Svg>
-    </View>
-  )
+  ({ backgroundColor }) => {
+    const captureRef = useContext(
+      DrawContext,
+      drawingContextSelectors.captureRef
+    );
+
+    return (
+      <View ref={captureRef} style={{ backgroundColor }}>
+        <Svg width={CANVAS_SIZE} height={CANVAS_SIZE}>
+          {times(CANVAS_DIMENSIONS, (y) =>
+            times(CANVAS_DIMENSIONS, (x) => (
+              <Cell key={`${x}-${y}`} index={y * CANVAS_DIMENSIONS + x} />
+            ))
+          )}
+          <ColorPreview />
+        </Svg>
+      </View>
+    );
+  }
 );
 
 const connector = connect((state: RootState) => ({}), {});

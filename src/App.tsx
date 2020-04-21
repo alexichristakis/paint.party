@@ -19,6 +19,7 @@ import {
   useNotificationEvents,
   useColorEditorState,
   ColorEditorContext,
+  DrawingProvider,
 } from "@hooks";
 import * as selectors from "@redux/selectors";
 import createStore from "@redux/store";
@@ -75,7 +76,9 @@ const App: React.FC = () => {
   return useMemo(
     () => (
       <ColorEditorContext.Provider value={colorEditorState}>
-        <Root />
+        <DrawingProvider>
+          <Root />
+        </DrawingProvider>
         <CreateCanvas />
         <PaletteEditor />
         <ColorEditor />

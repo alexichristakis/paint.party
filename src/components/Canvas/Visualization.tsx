@@ -1,14 +1,15 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { State, TapGestureHandler } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { useValue, useVector, useGestureHandler } from "react-native-redash";
 import { connect, ConnectedProps } from "react-redux";
 import isEqual from "lodash/isEqual";
+import { useContextSelector as useContext } from "use-context-selector";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
 import { coordinatesToIndex, onPress } from "@lib";
-import { DrawContext } from "@hooks";
+import { DrawContext, drawingContextSelectors } from "@hooks";
 
 import Grid from "./Grid";
 import CellHighlight from "./CellHighlight";
@@ -40,7 +41,10 @@ const Visualization: React.FC<
       []
     );
 
-    const { captureRef, selectCell, cell } = useContext(DrawContext);
+    const selectCell = useContext(
+      DrawContext,
+      drawingContextSelectors.selectCell
+    );
 
     const handleOnPressCell = useCallback(
       ([x, y]: Readonly<number[]>) => selectCell(coordinatesToIndex(x, y)),
@@ -65,21 +69,14 @@ const Visualization: React.FC<
         >
           <TapGestureHandler {...tapGestureHandler}>
             <Animated.View>
-              <Grid {...{ captureRef, backgroundColor }} />
+              <Grid {...{ backgroundColor }} />
               <PositionsOverlay visible={positionsVisible} />
-              <CellHighlight cell={cell} visible={pickerVisible} />
+              <CellHighlight visible={pickerVisible} />
             </Animated.View>
           </TapGestureHandler>
         </ZoomPanHandler>
       ),
-      [
-        cell,
-        captureRef,
-        tapGestureHandler,
-        backgroundColor,
-        pickerVisible,
-        positionsVisible,
-      ]
+      [tapGestureHandler, backgroundColor, pickerVisible, positionsVisible]
     );
   },
   (p, n) => isEqual(p, n)

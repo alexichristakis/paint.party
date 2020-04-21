@@ -11,6 +11,8 @@ import {
   mix,
 } from "react-native-redash";
 import { CELL_SIZE, coordinatesFromIndex, Colors } from "@lib";
+import { useContextSelector as useContext } from "use-context-selector";
+import { DrawContext, drawingContextSelectors } from "@hooks";
 
 const { set } = Animated;
 
@@ -25,16 +27,17 @@ const config = {
 
 export interface CellHighlightProps {
   borderColor?: string;
-  cell: number;
   visible: Animated.Value<0 | 1>;
 }
 
 const BORDER_WIDTH = 3;
 
 export const CellHighlight: React.FC<CellHighlightProps> = React.memo(
-  ({ borderColor = Colors.nearBlack, cell, visible }) => {
+  ({ borderColor = Colors.nearBlack, visible }) => {
     const [top, left] = useValues<number>([0, 0], []);
     const [loopClock] = useClocks(1, []);
+
+    const cell = useContext(DrawContext, drawingContextSelectors.cell);
 
     const { x, y } = coordinatesFromIndex(cell);
     useCode(

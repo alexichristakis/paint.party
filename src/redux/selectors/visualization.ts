@@ -34,13 +34,11 @@ export const cellLatestUpdate = createSelector(
     (_: RootState, props: any) => props.cell as number,
   ],
   (cells, canvas, cell) => {
-    const updates = Object.values(cells[cell] ?? {}) ?? [];
+    const updates = cells[cell] ?? {};
 
-    if (updates.length) {
-      const sorted = sortBy(updates, (o) => o.time);
+    const sorted = sortBy(updates, (o) => o.time);
 
-      return sorted[updates.length - 1];
-    }
+    if (sorted.length) return sorted[sorted.length - 1];
 
     return {
       color: canvas.backgroundColor,

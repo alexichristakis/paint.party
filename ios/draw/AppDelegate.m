@@ -17,16 +17,11 @@
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
-#ifdef FB_SONARKIT_ENABLED
-#import <flipper-plugin-react-native-performance/FlipperReactPerformancePlugin.h>
-#endif
-
-
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
   [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
-  [client addPlugin: [FlipperReactPerformancePlugin sharedInstance]];
+//  [client addPlugin: [FlipperReactPerformancePlugin sharedInstance]];
   [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
   [client addPlugin:[FlipperKitReactPlugin new]];
   [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
@@ -63,12 +58,12 @@ static void InitializeFlipper(UIApplication *application) {
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
 
-
-#ifdef DEBUG
-#ifdef FB_SONARKIT_ENABLED
-  [[FlipperReactPerformancePlugin sharedInstance] setBridge:bridge];
-#endif
-#endif
+//
+//#ifdef DEBUG
+//#ifdef FB_SONARKIT_ENABLED
+//  [[FlipperReactPerformancePlugin sharedInstance] setBridge:bridge];
+//#endif
+//#endif
 
   return YES;
 }
