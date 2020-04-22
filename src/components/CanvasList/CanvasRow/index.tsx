@@ -9,19 +9,17 @@ import {
   useValue,
   withSpring,
 } from "react-native-redash";
+import { useMemoOne } from "use-memo-one";
+import { connect, ConnectedProps } from "react-redux";
 
 import { Colors, canvasUrl } from "@lib";
+import { RootState } from "@redux/types";
 import { Canvas, CanvasActions } from "@redux/modules/canvas";
 import { TouchableHighlight } from "@components/universal";
 import { useOnLayout } from "@hooks";
 
 import Buttons from "./Buttons";
 import Content from "./Content";
-import { connect, ConnectedProps } from "react-redux";
-import { RootState } from "@redux/types";
-import { useMemoOne } from "use-memo-one";
-
-const { cond, set, onChange, multiply } = Animated;
 
 const connector = connect((state: RootState) => ({}), {
   leaveCanvas: CanvasActions.leave,

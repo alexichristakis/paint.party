@@ -1,7 +1,8 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
+
 import { TextStyles, Colors } from "@lib";
-import { TouchableScale } from "@components/universal/TouchableScale";
+import { TouchableScale } from "@components/universal";
 
 export interface CanvasRowButtonsProps {
   onPress: () => void;

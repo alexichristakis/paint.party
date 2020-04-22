@@ -5,6 +5,7 @@ export * from "./BackgroundColorPicker";
 export * from "./LoadingOverlay";
 export * from "./TouchableHighlight";
 export * from "./CreateButton";
+export * from "./TouchableScale";
 export { default as CanvasPreview } from "./CanvasPreview";
 export { default as HorizontalScroll } from "./HorizontalScroll";
 export { default as ZoomHandler } from "./ZoomHandler";

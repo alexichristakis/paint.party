@@ -1,7 +1,6 @@
 import immer from "immer";
 import { Alert } from "react-native";
 import keyBy from "lodash/keyBy";
-import merge from "lodash/merge";
 
 import { createAction, ActionUnion, ActionTypes } from "../types";
 

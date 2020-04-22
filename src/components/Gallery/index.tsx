@@ -2,7 +2,6 @@ import React, { useMemo, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 
 import { Canvas } from "@redux/modules";
-import { CANVAS_PREVIEW_MARGIN } from "@lib";
 
 import Row from "./Row";
 

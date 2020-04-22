@@ -11,9 +11,9 @@ import { PhotoCarouselProvider } from "@hooks";
 import ActionButton from "@components/ActionButton";
 import Canvases from "@components/Canvases";
 import { Carousel } from "@components/Gallery";
+import { LoadingOverlay } from "@components/universal";
 
 import { StackParamList } from "../App";
-import { LoadingOverlay } from "@components/universal";
 
 const connector = connect(
   (state: RootState) => ({
