@@ -16,12 +16,11 @@ import { Colors, DRAW_INTERVAL, CANVAS_ROW_PREVIEW_SIZE } from "@lib";
 const { divide, multiply, sub, set, cond, eq } = Animated;
 
 export interface ProgressProps {
-  index: number;
   time: number;
 }
 
 const Progress: React.FC<ProgressProps> = React.memo(
-  ({ index, time = 0, children }) => {
+  ({ time = 0, children }) => {
     const currentTime = moment().unix();
 
     const clock = useClock([]);
@@ -48,7 +47,7 @@ const Progress: React.FC<ProgressProps> = React.memo(
                 1,
                 loop({
                   clock,
-                  duration: 600 + Math.random() * index * 100,
+                  duration: 600 + (Math.random() - 0.5) * 200,
                   easing: Easing.inOut(Easing.ease),
                   boomerang: true,
                   autoStart: true,

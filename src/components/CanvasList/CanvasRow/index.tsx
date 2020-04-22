@@ -7,39 +7,59 @@ import {
   ViewStyle,
   Share,
 } from "react-native";
-import moment from "moment";
-import Animated from "react-native-reanimated";
+import Animated, { useCode, interpolate } from "react-native-reanimated";
 import Haptics from "react-native-haptic-feedback";
-
+import { PanGestureHandler, State } from "react-native-gesture-handler";
 import {
-  TextStyles,
-  Colors,
-  pluralize,
-  SCREEN_WIDTH,
-  canvasUrl,
-  CANVAS_ROW_PREVIEW_SIZE,
-} from "@lib";
+  useValues,
+  useGestureHandler,
+  useValue,
+  withSpring,
+  spring,
+} from "react-native-redash";
+
+import { Colors, canvasUrl } from "@lib";
 import { Canvas } from "@redux/modules/canvas";
-import { TouchableHighlight, CanvasPreview } from "@components/universal";
+import { TouchableHighlight } from "@components/universal";
+import { useOnLayout } from "@hooks";
 
-import Clock from "@assets/svg/clock.svg";
-import Pencil from "@assets/svg/pencil.svg";
+import Buttons from "./Buttons";
+import Content from "./Content";
 
-import Progress from "./Progress";
+const { cond, set, onChange, multiply } = Animated;
 
 export interface CanvasRowProps {
-  index: number;
-  style?: StyleProp<Animated.AnimateStyle<ViewStyle>>;
-  onPress: (canvasId: string) => void;
   canvas: Canvas;
+  onPress: (canvasId: string) => void;
 }
 
-export const CanvasRow: React.FC<CanvasRowProps> = ({
-  onPress,
-  index,
-  style,
-  canvas: { id, name, backgroundColor, authors, nextDrawAt, expiresAt },
-}) => {
+const config = {
+  damping: 40,
+  mass: 1,
+  stiffness: 300,
+  overshootClamping: false,
+  restSpeedThreshold: 0.1,
+  restDisplacementThreshold: 0.1,
+};
+
+export const CanvasRow: React.FC<CanvasRowProps> = ({ onPress, canvas }) => {
+  const { onLayout, width } = useOnLayout();
+
+  const { name, id } = canvas;
+
+  const state = useValue(State.UNDETERMINED, []);
+  const pressed = useValue<0 | 1>(0, []);
+  const [drag, velocity] = useValues<number>([0, 0], []);
+
+  const handler = useGestureHandler(
+    {
+      state,
+      translationX: drag,
+      velocityX: velocity,
+    },
+    []
+  );
+
   const handleOnLongPress = () => {
     Haptics.trigger("impactMedium");
     Share.share({
@@ -50,62 +70,74 @@ export const CanvasRow: React.FC<CanvasRowProps> = ({
 
   const handleOnPress = () => onPress(id);
 
+  const translateX = withSpring({
+    value: drag,
+    velocity,
+    state,
+    snapPoints: [0, -width],
+    config,
+  });
+
+  const buttonContainer = {
+    right: 0,
+    position: "absolute",
+    opacity: interpolate(translateX, {
+      inputRange: [-width, 0],
+      outputRange: [1, 0],
+    }),
+    transform: [
+      {
+        translateX: interpolate(translateX, {
+          inputRange: [-2 * width, -width, 0],
+          outputRange: [-width / 2, 0, width],
+        }),
+      },
+      {
+        scale: interpolate(translateX, {
+          inputRange: [-2 * width, -width, 0],
+          outputRange: [1.1, 1, 0.8],
+        }),
+      },
+    ],
+  };
+
   return (
-    <TouchableHighlight
-      style={[styles.container, style]}
-      onPress={handleOnPress}
-      onLongPress={handleOnLongPress}
-    >
-      <Progress index={index} time={nextDrawAt}>
-        <CanvasPreview
-          forceReload
-          size={CANVAS_ROW_PREVIEW_SIZE}
-          {...{ backgroundColor, id }}
-        />
-      </Progress>
-      <View style={styles.right}>
-        <Text style={styles.title}>{name}</Text>
-        <View style={styles.row}>
-          <Text style={styles.subtitle}>
-            <Clock width={12} height={12} />{" "}
-            {moment.unix(expiresAt).fromNow(true)} left
-          </Text>
-          <Text style={styles.subtitle}>
-            <Pencil width={12} height={12} /> {pluralize("author", authors)}
-          </Text>
-        </View>
-      </View>
-    </TouchableHighlight>
+    <PanGestureHandler {...handler} maxDeltaY={10} activeOffsetX={[-10, 10]}>
+      <Animated.View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Animated.View onLayout={onLayout} style={buttonContainer}>
+          <Buttons />
+        </Animated.View>
+        <Animated.View
+          style={{
+            flex: 1,
+            backgroundColor: Colors.background,
+            transform: [{ translateX }],
+          }}
+        >
+          <TouchableHighlight
+            style={styles.container}
+            onPress={handleOnPress}
+            onLongPress={handleOnLongPress}
+          >
+            <Content canvas={canvas} />
+          </TouchableHighlight>
+        </Animated.View>
+      </Animated.View>
+    </PanGestureHandler>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 5,
-    paddingTop: 5,
-  },
-  right: {
-    alignSelf: "stretch",
-    justifyContent: "space-between",
-    width: SCREEN_WIDTH - CANVAS_ROW_PREVIEW_SIZE - 40,
-  },
-  row: {
-    alignItems: "center",
     justifyContent: "space-between",
     flexDirection: "row",
-  },
-  title: {
-    ...TextStyles.title,
-    marginTop: -10,
-    fontSize: 26,
-  },
-  subtitle: {
-    ...TextStyles.medium,
-    marginTop: 5,
-    color: Colors.gray,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
   },
 });

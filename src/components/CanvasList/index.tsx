@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import Animated from "react-native-reanimated";
 import sortBy from "lodash/sortBy";
+import { NativeViewGestureHandler } from "react-native-gesture-handler";
 
 import { Canvas } from "@redux/modules/canvas";
 import { Colors } from "@lib";
@@ -18,7 +19,7 @@ const CanvasList: React.FC<CanvasListProps> = ({ onPressCanvas, canvases }) => (
     {sortBy(canvases, (o) => o.nextDrawAt).map((canvas, i) => (
       <React.Fragment key={i}>
         {i ? <Animated.View style={styles.separator} /> : null}
-        <CanvasRow index={i} onPress={onPressCanvas} canvas={canvas} />
+        <CanvasRow onPress={onPressCanvas} canvas={canvas} />
       </React.Fragment>
     ))}
   </>

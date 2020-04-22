@@ -46,3 +46,13 @@ export const usePhotoCarouselState = (): PhotoCarouselState => {
     y,
   };
 };
+
+export const PhotoCarouselProvider: React.FC = ({ children }) => {
+  const state = usePhotoCarouselState();
+
+  return (
+    <PhotoCarouselContext.Provider value={state}>
+      {children}
+    </PhotoCarouselContext.Provider>
+  );
+};
