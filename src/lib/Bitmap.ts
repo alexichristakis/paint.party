@@ -12,9 +12,9 @@ export class Bitmap {
     this.height = height;
 
     this.pixel = new Array(width);
-    for (var x = 0; x < width; x++) {
+    for (let x = 0; x < width; x++) {
       this.pixel[x] = new Array(height);
-      for (var y = 0; y < height; y++) {
+      for (let y = 0; y < height; y++) {
         this.pixel[x][y] = backgroundColor;
       }
     }
@@ -23,9 +23,9 @@ export class Bitmap {
   private sample = (v: number) => ~~(Math.max(0, Math.min(1, v)) * 255);
   private gamma = (v: number) => this.sample(Math.pow(v, 0.45455));
   private row = (pixel: Color[][], width: number, y: number) => {
-    var data = "\0";
-    for (var x = 0; x < width; x++) {
-      var r = pixel[x][y];
+    let data = "\0";
+    for (let x = 0; x < width; x++) {
+      const r = pixel[x][y];
       data += String.fromCharCode(
         this.gamma(r[0]),
         this.gamma(r[1]),
@@ -38,16 +38,16 @@ export class Bitmap {
   };
 
   private rows = (pixel: Color[][], width: number, height: number) => {
-    var data = "";
-    for (var y = 0; y < height; y++) data += this.row(pixel, width, y);
+    let data = "";
+    for (let y = 0; y < height; y++) data += this.row(pixel, width, y);
 
     return data;
   };
 
   private adler = (data: string) => {
-    var s1 = 1,
+    let s1 = 1,
       s2 = 0;
-    for (var i = 0; i < data.length; i++) {
+    for (let i = 0; i < data.length; i++) {
       s1 = (s1 + data.charCodeAt(i)) % 65521;
       s2 = (s2 + s1) % 65521;
     }
@@ -64,11 +64,11 @@ export class Bitmap {
   };
 
   private deflate = (data: string) => {
-    var compressed = "\x78\x01";
-    var i = 0;
+    let compressed = "\x78\x01";
+    let i = 0;
     do {
-      var block = data.slice(i, i + 65535);
-      var len = block.length;
+      const block = data.slice(i, i + 65535);
+      const len = block.length;
       compressed += String.fromCharCode(
         (i += block.length) === data.length ? 1 : 0 << 0,
         len & 255,
@@ -83,9 +83,9 @@ export class Bitmap {
   };
 
   private crc32 = (data: string) => {
-    var c = ~0;
-    for (var i = 0; i < data.length; i++)
-      for (var b = data.charCodeAt(i) | 0x100; b != 1; b >>>= 1)
+    let c = ~0;
+    for (let i = 0; i < data.length; i++)
+      for (let b = data.charCodeAt(i) | 0x100; b != 1; b >>>= 1)
         c = (c >>> 1) ^ ((c ^ b) & 1 ? 0xedb88320 : 0);
     return ~c;
   };
@@ -97,7 +97,7 @@ export class Bitmap {
   };
 
   dataURL = () => {
-    var png =
+    const png =
       "\x89PNG\r\n\x1a\n" +
       this.chunk(
         "IHDR",

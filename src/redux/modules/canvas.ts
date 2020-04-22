@@ -1,7 +1,6 @@
 import immer from "immer";
 import { Alert } from "react-native";
 import keyBy from "lodash/keyBy";
-import merge from "lodash/merge";
 
 import { createAction, ActionUnion, ActionTypes } from "../types";
 
@@ -24,14 +23,12 @@ export type CanvasState = Readonly<{
   previews: { [canvasId: string]: string };
   creatingCanvas: boolean;
   fetchingCanvases: boolean;
-  joiningCanvas: boolean;
 }>;
 
 const initialState: CanvasState = {
   activeCanvas: "",
   creatingCanvas: false,
   fetchingCanvases: false,
-  joiningCanvas: false,
   canvases: {},
   previews: {},
 };
@@ -41,6 +38,8 @@ export default (
   action: ActionUnion
 ): CanvasState => {
   switch (action.type) {
+    case ActionTypes.JOIN_CANVAS:
+    case ActionTypes.LEAVE_CANVAS:
     case ActionTypes.FETCH_CANVASES: {
       return { ...state, fetchingCanvases: true };
     }
@@ -53,7 +52,16 @@ export default (
 
         draft.fetchingCanvases = false;
         draft.creatingCanvas = false;
-        draft.canvases = merge(draft.canvases, newCanvases);
+        draft.canvases = newCanvases;
+      });
+    }
+
+    case ActionTypes.LEAVE_CANVAS_SUCCESS: {
+      const { id } = action.payload;
+
+      return immer(state, (draft) => {
+        delete draft.canvases[id];
+        draft.fetchingCanvases = false;
       });
     }
 
@@ -61,10 +69,6 @@ export default (
       const { id } = action.payload;
 
       return { ...state, activeCanvas: id };
-    }
-
-    case ActionTypes.JOIN_CANVAS: {
-      return { ...state, joiningCanvas: true };
     }
 
     case ActionTypes.CREATE_CANVAS: {
@@ -79,7 +83,6 @@ export default (
         draft.activeCanvas = canvas.id;
         draft.canvases[canvas.id] = canvas;
         draft.creatingCanvas = false;
-        draft.joiningCanvas = false;
       });
     }
 
@@ -90,7 +93,7 @@ export default (
       );
 
       return immer(state, (draft) => {
-        draft.joiningCanvas = false;
+        draft.fetchingCanvases = false;
       });
     }
 
@@ -137,6 +140,11 @@ export const CanvasActions = {
   joinSuccess: (canvas: Canvas) =>
     createAction(ActionTypes.JOIN_CANVAS_SUCCESS, { canvas }),
   joinFailure: () => createAction(ActionTypes.JOIN_CANVAS_FAILURE),
+
+  leave: (id: string) => createAction(ActionTypes.LEAVE_CANVAS, { id }),
+  leaveSuccess: (id: string) =>
+    createAction(ActionTypes.LEAVE_CANVAS_SUCCESS, { id }),
+  leaveFailure: () => createAction(ActionTypes.LEAVE_CANVAS_FAILURE),
 
   setPreviewUrl: (id: string, url: string) =>
     createAction(ActionTypes.SET_CANVAS_PREVIEW, { id, url }),

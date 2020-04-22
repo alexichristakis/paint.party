@@ -1,12 +1,13 @@
 import React, { useRef, useState } from "react";
 import { TextInput, StyleSheet, Text } from "react-native";
 import { ConnectedProps, connect, useSelector } from "react-redux";
-
-import moment from "moment";
 import { useValues } from "react-native-redash";
+import moment from "moment";
 
 import * as selectors from "@redux/selectors";
 import { NewCanvas } from "@redux/modules/canvas";
+import { CanvasActions, ModalActions } from "@redux/modules";
+import { RootState } from "@redux/types";
 import {
   Input,
   Slider,
@@ -15,8 +16,6 @@ import {
 } from "./universal";
 import { TextStyles, TextSizes, Colors } from "@lib";
 
-import { CanvasActions, ModalActions } from "@redux/modules";
-import { RootState } from "@redux/types";
 import { BottomSheet } from "./BottomSheet";
 
 export interface CreateCanvasProps {

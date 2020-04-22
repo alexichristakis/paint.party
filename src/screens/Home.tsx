@@ -5,18 +5,20 @@ import { connect, ConnectedProps } from "react-redux";
 
 import { RootState } from "@redux/types";
 import * as selectors from "@redux/selectors";
-import { CanvasActions, PaletteActions, ModalActions } from "@redux/modules";
-import { PhotoCarouselContext, usePhotoCarouselState } from "@hooks";
+import { CanvasActions, ModalActions } from "@redux/modules";
+import { PhotoCarouselProvider } from "@hooks";
 
 import ActionButton from "@components/ActionButton";
 import Canvases from "@components/Canvases";
 import { Carousel } from "@components/Gallery";
+import { LoadingOverlay } from "@components/universal";
 
 import { StackParamList } from "../App";
 
 const connector = connect(
   (state: RootState) => ({
     activeCanvas: selectors.activeCanvas(state),
+    loadingCanvases: selectors.isFetchingCanvases(state),
   }),
   {
     unsubscribe: CanvasActions.close,
@@ -34,6 +36,7 @@ export interface HomeProps {
 const Home: React.FC<HomeProps & HomeReduxProps> = ({
   fetchCanvases,
   activeCanvas,
+  loadingCanvases,
   unsubscribe,
   openPalettes,
   openCanvasCreator,
@@ -46,16 +49,18 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
     }, [activeCanvas])
   );
 
-  const photoCarouselState = usePhotoCarouselState();
   return (
-    <PhotoCarouselContext.Provider value={photoCarouselState}>
-      <Canvases />
+    <>
+      <PhotoCarouselProvider>
+        <Canvases />
+        <Carousel />
+      </PhotoCarouselProvider>
       <ActionButton
         onPressAction1={openCanvasCreator}
         onPressAction2={openPalettes}
       />
-      <Carousel />
-    </PhotoCarouselContext.Provider>
+      <LoadingOverlay loading={loadingCanvases} />
+    </>
   );
 };
 

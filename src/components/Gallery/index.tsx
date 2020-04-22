@@ -2,7 +2,6 @@ import React, { useMemo, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 
 import { Canvas } from "@redux/modules";
-import { CANVAS_PREVIEW_MARGIN } from "@lib";
 
 import Row from "./Row";
 
@@ -35,7 +34,7 @@ const Gallery: React.FC<GalleryProps> = ({ canvases }) => {
     const rows = generateRows(canvases);
 
     return (
-      <View ref={ref}>
+      <View style={styles.container} ref={ref}>
         {rows.map(({ canvases }, index) => (
           <Row key={index} {...{ canvases }} />
         ))}
@@ -46,9 +45,7 @@ const Gallery: React.FC<GalleryProps> = ({ canvases }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    marginHorizontal: CANVAS_PREVIEW_MARGIN,
-    marginTop: CANVAS_PREVIEW_MARGIN,
+    marginTop: 12,
   },
 });
 

@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
 import { StyleSheet, Text } from "react-native";
-import Animated from "react-native-reanimated";
+import {
+  ScrollView,
+  NativeViewGestureHandler,
+} from "react-native-gesture-handler";
 import { connect, ConnectedProps } from "react-redux";
 import isEqual from "lodash/isEqual";
 
@@ -35,7 +38,7 @@ const Canvases: React.FC<CanvasesProps & CanvasesReduxProps> = ({
   }
 
   return (
-    <Animated.ScrollView
+    <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
     >
@@ -51,7 +54,7 @@ const Canvases: React.FC<CanvasesProps & CanvasesReduxProps> = ({
           <Gallery canvases={expiredCanvases} />
         </>
       ) : null}
-    </Animated.ScrollView>
+    </ScrollView>
   );
 };
 

@@ -66,7 +66,7 @@ export default (
     }
 
     case ActionTypes.SET_COLOR: {
-      let { color, index, paletteId = state.activePalette } = action.payload;
+      const { color, index, paletteId = state.activePalette } = action.payload;
 
       return immer(state, (draft) => {
         draft.palettes[paletteId].colors[index!] = color;

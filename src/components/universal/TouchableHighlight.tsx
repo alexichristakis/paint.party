@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { StyleSheet, StyleProp, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import Animated, { useCode, onChange } from "react-native-reanimated";
 import {
   TapGestureHandler,
@@ -16,10 +16,10 @@ import {
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 
-import { TextStyles, Colors, SCREEN_WIDTH } from "@lib";
+import { Colors } from "@lib";
 import { useOnLayout } from "@hooks";
 
-const { or, eq, and, cond, call } = Animated;
+const { or, set, defined, eq, and, cond, call } = Animated;
 
 export interface TouchableHighlightProps {
   style?: StyleProp<Animated.AnimateStyle<ViewStyle>>;
@@ -29,125 +29,93 @@ export interface TouchableHighlightProps {
   onLongPress?: () => void;
 }
 
-export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
-  enabled = true,
-  waitFor,
-  onPress,
-  onLongPress,
-  style,
-  children,
-}) => {
-  const { onLayout, height } = useOnLayout();
+export const TouchableHighlight: React.FC<TouchableHighlightProps> = React.memo(
+  ({ enabled = true, waitFor, onPress, onLongPress, style, children }) => {
+    const { onLayout, height, width } = useOnLayout();
 
-  const longPressRef = useRef<LongPressGestureHandler>(null);
-  const tapRef = useRef<TapGestureHandler>(null);
+    const longPressRef = useRef<LongPressGestureHandler>(null);
+    const tapRef = useRef<TapGestureHandler>(null);
 
-  const [longPressState, tapState] = useValues(
-    [State.UNDETERMINED, State.UNDETERMINED],
-    []
-  );
+    const [longPressState, tapState] = useValues(
+      [State.UNDETERMINED, State.UNDETERMINED],
+      []
+    );
 
-  const [x, y] = useValues([0, 0], []);
+    const [x, y] = useValues([0, 0], []);
 
-  const [longPressHandler, tapHandler] = useMemoOne(
-    () => [
-      onGestureEvent({ state: longPressState }),
-      onGestureEvent({ state: tapState, x, y }),
-    ],
-    []
-  );
+    const [longPressHandler, tapHandler] = useMemoOne(
+      () => [
+        onGestureEvent({ state: longPressState }),
+        onGestureEvent({ state: tapState, x, y }),
+      ],
+      []
+    );
 
-  useCode(
-    () => [
-      onChange(tapState, cond(eq(tapState, State.END), call([], onPress))),
-      onChange(
-        longPressState,
-        cond(
+    useCode(
+      () => [
+        onChange(tapState, cond(eq(tapState, State.END), [call([], onPress)])),
+        onChange(
+          longPressState,
+          cond(
+            eq(longPressState, State.ACTIVE),
+            call([], onLongPress ? onLongPress : onPress)
+          )
+        ),
+      ],
+      []
+    );
+
+    const onPressIn = withTransition(
+      and(
+        or(
+          eq(tapState, State.ACTIVE),
+          eq(tapState, State.BEGAN),
           eq(longPressState, State.ACTIVE),
-          call([], onLongPress ? onLongPress : onPress)
-        )
-      ),
-    ],
-    []
-  );
+          eq(longPressState, State.BEGAN)
+        ),
+        bin(enabled)
+      )
+    );
 
-  const onPressIn = withTransition(
-    and(
-      or(
-        eq(tapState, State.ACTIVE),
-        eq(tapState, State.BEGAN),
-        eq(longPressState, State.ACTIVE),
-        eq(longPressState, State.BEGAN)
-      ),
-      bin(enabled)
-    )
-  );
+    const fill = useMemoOne(
+      () => ({
+        position: "absolute",
+        backgroundColor: mixColor(
+          onPressIn,
+          Colors.background,
+          Colors.grayBlue
+        ),
+        borderRadius: mix(onPressIn, height, 0),
+        width: mix(onPressIn, 0, width),
+        height: mix(onPressIn, 0, height),
+        top: mix(onPressIn, y, 0),
+        left: mix(onPressIn, x, 0),
+      }),
+      [width, height]
+    );
 
-  const backgroundColor = mixColor(
-    onPressIn,
-    Colors.background,
-    Colors.grayBlue
-  );
-
-  const fillBorderRadius = mix(onPressIn, height, 0);
-  const fillWidth = mix(onPressIn, 0, SCREEN_WIDTH);
-  const fillHeight = mix(onPressIn, 0, height);
-  const fillTop = mix(onPressIn, y, 0);
-  const fillLeft = mix(onPressIn, x, 0);
-
-  return (
-    <TapGestureHandler
-      ref={tapRef}
-      waitFor={waitFor}
-      simultaneousHandlers={longPressRef}
-      maxDurationMs={500}
-      {...tapHandler}
-    >
-      <Animated.View style={[style, styles.container]} onLayout={onLayout}>
-        <Animated.View
-          style={[
-            styles.fill,
-            {
-              backgroundColor,
-              borderRadius: fillBorderRadius,
-              top: fillTop,
-              left: fillLeft,
-              width: fillWidth,
-              height: fillHeight,
-            },
-          ]}
-        />
-        <LongPressGestureHandler
-          ref={longPressRef}
-          simultaneousHandlers={[tapRef]}
-          {...longPressHandler}
-        >
-          <Animated.View style={style}>{children}</Animated.View>
-        </LongPressGestureHandler>
-      </Animated.View>
-    </TapGestureHandler>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 10,
+    return (
+      <TapGestureHandler
+        ref={tapRef}
+        waitFor={waitFor}
+        maxDist={10}
+        simultaneousHandlers={longPressRef}
+        maxDurationMs={500}
+        {...tapHandler}
+      >
+        <Animated.View onLayout={onLayout}>
+          <Animated.View style={fill} />
+          <LongPressGestureHandler
+            ref={longPressRef}
+            simultaneousHandlers={[tapRef]}
+            maxDist={10}
+            {...longPressHandler}
+          >
+            <Animated.View style={style}>{children}</Animated.View>
+          </LongPressGestureHandler>
+        </Animated.View>
+      </TapGestureHandler>
+    );
   },
-  row: {
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexDirection: "row",
-  },
-  fill: {
-    position: "absolute",
-  },
-  title: {
-    ...TextStyles.title,
-  },
-  subtitle: {
-    ...TextStyles.medium,
-    marginTop: 5,
-
-    color: Colors.gray,
-  },
-});
+  (p, n) => p.enabled === n.enabled
+);

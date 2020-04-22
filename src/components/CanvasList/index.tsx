@@ -6,7 +6,7 @@ import sortBy from "lodash/sortBy";
 import { Canvas } from "@redux/modules/canvas";
 import { Colors } from "@lib";
 
-import { CanvasRow } from "./CanvasRow";
+import CanvasRow from "./CanvasRow";
 
 export interface CanvasListProps {
   onPressCanvas: (canvasId: string) => void;
@@ -16,9 +16,9 @@ export interface CanvasListProps {
 const CanvasList: React.FC<CanvasListProps> = ({ onPressCanvas, canvases }) => (
   <>
     {sortBy(canvases, (o) => o.nextDrawAt).map((canvas, i) => (
-      <React.Fragment key={i}>
+      <React.Fragment key={canvas.id}>
         {i ? <Animated.View style={styles.separator} /> : null}
-        <CanvasRow index={i} onPress={onPressCanvas} canvas={canvas} />
+        <CanvasRow onPress={onPressCanvas} canvas={canvas} />
       </React.Fragment>
     ))}
   </>
