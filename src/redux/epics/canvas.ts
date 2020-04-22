@@ -1,32 +1,15 @@
-import { Observable } from "rxjs";
 import moment from "moment";
 import uniq from "lodash/uniq";
-import {
-  map,
-  filter,
-  catchError,
-  takeUntil,
-  switchMap,
-  tap,
-  ignoreElements,
-} from "rxjs/operators";
+import { filter, switchMap } from "rxjs/operators";
 import { isOfType } from "typesafe-actions";
 import { Epic } from "redux-observable";
-import database, {
-  FirebaseDatabaseTypes,
-} from "@react-native-firebase/database";
+
 import firestore from "@react-native-firebase/firestore";
 
 import * as selectors from "../selectors";
-import {
-  CanvasActions,
-  VisualizationActions,
-  VisualizationState,
-} from "../modules";
+import { CanvasActions } from "../modules";
 import { Canvas } from "../modules/canvas";
 import { RootState, ActionUnion as Actions, ActionTypes } from "../types";
-import { Notifications } from "react-native-notifications";
-import { DRAW_INTERVAL, canvasUrl } from "@lib";
 
 const createCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
@@ -78,6 +61,35 @@ const joinCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
     })
   );
 
+const leaveCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
+  action$.pipe(
+    filter(isOfType(ActionTypes.LEAVE_CANVAS)),
+    switchMap(async ({ payload }) => {
+      const { id } = payload;
+
+      const canvas = await firestore().collection("canvases").doc(id).get();
+
+      const canvasMetadata = canvas.data();
+
+      if (!canvasMetadata) {
+        return CanvasActions.leaveFailure();
+      }
+
+      const uid = selectors.uid(state$.value);
+
+      await firestore()
+        .collection("canvases")
+        .doc(id)
+        .update({
+          authors: (canvasMetadata.authors as string[]).filter(
+            (e) => e !== uid
+          ),
+        });
+
+      return CanvasActions.leaveSuccess(id);
+    })
+  );
+
 const fetchCanvases: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
     filter(isOfType(ActionTypes.FETCH_CANVASES)),
@@ -97,21 +109,6 @@ const fetchCanvases: Epic<Actions, Actions, RootState> = (action$, state$) =>
       return CanvasActions.fetchSuccess(canvases);
     })
   );
-
-// const closeCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
-//   action$.pipe(
-//     filter(isOfType(ActionTypes.CLOSE_CANVAS)),
-//     tap(async () => {
-//       const uid = selectors.uid(state$.value);
-//       const id = selectors.canvasVizId(state$.value);
-
-//       await database()
-//         .ref(id)
-//         .child(`live/${uid}`)
-//         .remove();
-//     }),
-//     ignoreElements()
-//   );
 
 // const updateLivePosition: Epic<Actions, Actions, RootState> = (
 //   action$,
@@ -135,6 +132,7 @@ const fetchCanvases: Epic<Actions, Actions, RootState> = (action$, state$) =>
 
 export default [
   // closeCanvas,
+  leaveCanvas,
   createCanvas,
   joinCanvas,
   fetchCanvases,

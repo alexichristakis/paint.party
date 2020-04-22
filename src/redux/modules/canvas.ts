@@ -40,6 +40,7 @@ export default (
 ): CanvasState => {
   switch (action.type) {
     case ActionTypes.JOIN_CANVAS:
+    case ActionTypes.LEAVE_CANVAS:
     case ActionTypes.FETCH_CANVASES: {
       return { ...state, fetchingCanvases: true };
     }
@@ -52,7 +53,16 @@ export default (
 
         draft.fetchingCanvases = false;
         draft.creatingCanvas = false;
-        draft.canvases = merge(draft.canvases, newCanvases);
+        draft.canvases = newCanvases;
+      });
+    }
+
+    case ActionTypes.LEAVE_CANVAS_SUCCESS: {
+      const { id } = action.payload;
+
+      return immer(state, (draft) => {
+        delete draft.canvases[id];
+        draft.fetchingCanvases = false;
       });
     }
 
@@ -135,8 +145,7 @@ export const CanvasActions = {
   leave: (id: string) => createAction(ActionTypes.LEAVE_CANVAS, { id }),
   leaveSuccess: (id: string) =>
     createAction(ActionTypes.LEAVE_CANVAS_SUCCESS, { id }),
-  leaveFailure: (id: string) =>
-    createAction(ActionTypes.LEAVE_CANVAS_FAILURE, { id }),
+  leaveFailure: () => createAction(ActionTypes.LEAVE_CANVAS_FAILURE),
 
   setPreviewUrl: (id: string, url: string) =>
     createAction(ActionTypes.SET_CANVAS_PREVIEW, { id, url }),

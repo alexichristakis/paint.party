@@ -1,13 +1,6 @@
-import React from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  StyleProp,
-  ViewStyle,
-  Share,
-} from "react-native";
-import Animated, { useCode, interpolate } from "react-native-reanimated";
+import React, { useCallback } from "react";
+import { StyleSheet, Share } from "react-native";
+import Animated, { interpolate } from "react-native-reanimated";
 import Haptics from "react-native-haptic-feedback";
 import { PanGestureHandler, State } from "react-native-gesture-handler";
 import {
@@ -15,23 +8,31 @@ import {
   useGestureHandler,
   useValue,
   withSpring,
-  spring,
 } from "react-native-redash";
 
 import { Colors, canvasUrl } from "@lib";
-import { Canvas } from "@redux/modules/canvas";
+import { Canvas, CanvasActions } from "@redux/modules/canvas";
 import { TouchableHighlight } from "@components/universal";
 import { useOnLayout } from "@hooks";
 
 import Buttons from "./Buttons";
 import Content from "./Content";
+import { connect, ConnectedProps } from "react-redux";
+import { RootState } from "@redux/types";
+import { useMemoOne } from "use-memo-one";
 
 const { cond, set, onChange, multiply } = Animated;
+
+const connector = connect((state: RootState) => ({}), {
+  leaveCanvas: CanvasActions.leave,
+});
 
 export interface CanvasRowProps {
   canvas: Canvas;
   onPress: (canvasId: string) => void;
 }
+
+export type CanvasRowConnectedProps = ConnectedProps<typeof connector>;
 
 const config = {
   damping: 40,
@@ -42,13 +43,16 @@ const config = {
   restDisplacementThreshold: 0.1,
 };
 
-export const CanvasRow: React.FC<CanvasRowProps> = ({ onPress, canvas }) => {
+const CanvasRow: React.FC<CanvasRowProps & CanvasRowConnectedProps> = ({
+  onPress,
+  leaveCanvas,
+  canvas,
+}) => {
   const { onLayout, width } = useOnLayout();
 
   const { name, id } = canvas;
 
   const state = useValue(State.UNDETERMINED, []);
-  const pressed = useValue<0 | 1>(0, []);
   const [drag, velocity] = useValues<number>([0, 0], []);
 
   const handler = useGestureHandler(
@@ -60,46 +64,55 @@ export const CanvasRow: React.FC<CanvasRowProps> = ({ onPress, canvas }) => {
     []
   );
 
-  const handleOnLongPress = () => {
+  const handleOnLongPress = useCallback(() => {
     Haptics.trigger("impactMedium");
     Share.share({
       title: `share ${name}`,
       message: canvasUrl(id),
     });
-  };
+  }, [name, id]);
 
-  const handleOnPress = () => onPress(id);
+  const handleOnPress = useCallback(() => onPress(id), [id]);
 
-  const translateX = withSpring({
-    value: drag,
-    velocity,
-    state,
-    snapPoints: [0, -width],
-    config,
-  });
+  const handleOnPressLeave = useCallback(() => leaveCanvas(id), [id]);
 
-  const buttonContainer = {
-    right: 0,
-    position: "absolute",
-    opacity: interpolate(translateX, {
-      inputRange: [-width, 0],
-      outputRange: [1, 0],
+  const translateX = useMemoOne(
+    () =>
+      withSpring({
+        value: drag,
+        velocity,
+        state,
+        snapPoints: [0, -width],
+        config,
+      }),
+    [width]
+  );
+
+  const buttonContainer = useMemoOne(
+    () => ({
+      right: 0,
+      position: "absolute",
+      opacity: interpolate(translateX, {
+        inputRange: [-width, 0],
+        outputRange: [1, 0],
+      }),
+      transform: [
+        {
+          translateX: interpolate(translateX, {
+            inputRange: [-2 * width, -width, 0],
+            outputRange: [-width / 2, 0, width],
+          }),
+        },
+        {
+          scale: interpolate(translateX, {
+            inputRange: [-2 * width, -width, 0],
+            outputRange: [1.1, 1, 0.8],
+          }),
+        },
+      ],
     }),
-    transform: [
-      {
-        translateX: interpolate(translateX, {
-          inputRange: [-2 * width, -width, 0],
-          outputRange: [-width / 2, 0, width],
-        }),
-      },
-      {
-        scale: interpolate(translateX, {
-          inputRange: [-2 * width, -width, 0],
-          outputRange: [1.1, 1, 0.8],
-        }),
-      },
-    ],
-  };
+    [width]
+  );
 
   return (
     <PanGestureHandler {...handler} maxDeltaY={10} activeOffsetX={[-10, 10]}>
@@ -110,7 +123,7 @@ export const CanvasRow: React.FC<CanvasRowProps> = ({ onPress, canvas }) => {
         }}
       >
         <Animated.View onLayout={onLayout} style={buttonContainer}>
-          <Buttons />
+          <Buttons onPress={handleOnPressLeave} />
         </Animated.View>
         <Animated.View
           style={{
@@ -141,3 +154,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
 });
+
+export default connector(CanvasRow);

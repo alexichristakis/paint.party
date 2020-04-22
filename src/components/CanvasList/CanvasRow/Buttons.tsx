@@ -1,13 +1,20 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { TextStyles, Colors } from "@lib";
+import { TouchableScale } from "@components/universal/TouchableScale";
 
-const Buttons: React.FC = () => {
+export interface CanvasRowButtonsProps {
+  onPress: () => void;
+}
+
+const Buttons: React.FC<CanvasRowButtonsProps> = ({ onPress }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.button}>
-        <Text style={styles.label}>leave</Text>
-      </View>
+      <TouchableScale onPress={onPress}>
+        <View style={styles.button}>
+          <Text style={styles.label}>leave</Text>
+        </View>
+      </TouchableScale>
       {/* <View style={styles.button}>
         <Text style={styles.label}>rename</Text>
       </View> */}
