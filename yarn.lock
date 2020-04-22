@@ -1112,39 +1112,39 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/eslint-plugin/-/eslint-plugin-1.1.0.tgz#e42b1bef12d2415411519fd528e64b593b1363dc"
   integrity sha512-W/J0fNYVO01tioHjvYWQ9m6RgndVtbElzYozBq1ZPrHO/iCzlqoySHl4gO/fpCl9QEFjvJfjPgtPMTMlsoq5DQ==
 
-"@react-native-firebase/app-types@6.4.0":
-  version "6.4.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app-types/-/app-types-6.4.0.tgz#f3d8c1d63f5bc5f6d5f9683caa428b189a968839"
-  integrity sha512-c8rYdh4DJReKjTl/jUjPNrCwhbAlNcgCch3n3rCOuATjYleiSt3zhskn37aRQeCOKohvNzuxvYy5ZYtzAxMYmw==
+"@react-native-firebase/app-types@6.4.1":
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app-types/-/app-types-6.4.1.tgz#b43c82a41af2693eae76748cf804188e25b7f3e3"
+  integrity sha512-gWLhJl8RKFqOaeDR362yy0W58dcGAl+xkXdiBi+THBQjyupsepFhX4e4IGKko8OAOa9cmfC7hv+97paUXZNpXQ==
 
-"@react-native-firebase/app@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-6.4.0.tgz#cc3f22ebed03397fc85e855634f4db3729d242d9"
-  integrity sha512-QCV+SY0hdx3OTR+KQngvF/ejuPkEP8V5pr0ie8hic/yV6vcGtrMEN/NGSvgILjbPYRhspYDZSi4HdTgc70WUIA==
+"@react-native-firebase/app@^6.4.1":
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-6.4.1.tgz#4abec05affb229bf26e9af0389191c34b654a663"
+  integrity sha512-yecbgEkDjR/gHXSs60p78kQCXwWnwkwpYCbu9+qY6xhVsCLGccaBxQ81Doo9B1aaQhZIEXQaaz2VdJtCjMhADQ==
   dependencies:
-    "@react-native-firebase/app-types" "6.4.0"
+    "@react-native-firebase/app-types" "6.4.1"
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
-"@react-native-firebase/auth@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-6.4.0.tgz#f4f10de7c065549a8d1d019f08b9939d9242b333"
-  integrity sha512-OobhjpdcH/qcENKQjZE7I7y03SezU3ZOVmKFItesWovfPqlqFdRHTYQ18jqZsDC6YhrlxiIDE40ra8xRPCN5KA==
+"@react-native-firebase/auth@^6.4.1":
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-6.4.1.tgz#356e1cfffbb25ceea5053e2c109659a04c4b3ac2"
+  integrity sha512-SOb6wWWbc4CgPdRD+LY780t3WxmUpVIuVunUyFeCZX79dwda8kYOSpSfS6g530TrvmjD7iZlLy9OnahEZmQ3vg==
 
-"@react-native-firebase/database@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/database/-/database-6.4.0.tgz#0cdaaa15d2d8b8d85dc1a378e46dd5d8a005e38d"
-  integrity sha512-ebtyXeL7oMZ416NingUxCfGbti6FQJwZ3UdCHFtBLeFebrfMY/BgVbtc0kq2Bhxq6WgPZ0vjwIv0k7+ZMsM7tw==
+"@react-native-firebase/database@^6.4.1":
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/database/-/database-6.4.1.tgz#05ab94d2cb1935ec1bfdac53bbfee62c2d1eca58"
+  integrity sha512-lGcBfGYyyF7f8OYJFfarSQ6RWYKHR0hYiyYByEXBeg8B+liKMkpMvwgacAU4GNW+Q/gyLLpFhOe6o6yu+OLaZg==
 
-"@react-native-firebase/firestore@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-6.4.0.tgz#b45a3a7649ebc6fa4be8b3d4051dea8b8b9ea55b"
-  integrity sha512-iiR0hJ1d1Ka6n23fczfWHjfX0j7mLAFqSJFBA252yKKcOxN7Z7fe8rx/Ueq+gDwquc3lWo7aITzWHrE1u1TQxw==
+"@react-native-firebase/firestore@^6.4.1":
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-6.4.1.tgz#627f48630f710a367dabb3e75047425de5b2e344"
+  integrity sha512-dO1pcu9vbCTezDchm81OpVk4qwBJOITNIg+J1hmbvZM27h1iu1DB57y2pwXvFBeksNktXLiFG6Owfr3B1oP8ZQ==
 
-"@react-native-firebase/storage@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-6.4.0.tgz#6b1310fa17efa10c585eab92e8b84ff1a9f4780a"
-  integrity sha512-Iqe2qgoJTOyRkH5AjPHGqysb3AVY3HmG/AUA51fm4xTCzMJBg3S9RIniIRaeq5sBxYGdRSQPXThZiMPCVhSBIA==
+"@react-native-firebase/storage@^6.4.1":
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-6.4.1.tgz#81f6da93f29db7b78f63fb4ddf66a9c9c761d53c"
+  integrity sha512-fLIcwBITXi+D9iIgLjqZyJFwX75b0f+gXTWJEk3OskV8yMMQ0agIwUTQesFF4ZBSW8ALiteXrSKTeswhYpoQvA==
 
 "@react-navigation/core@^5.3.4":
   version "5.3.4"
@@ -1525,11 +1525,6 @@
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/@types/tinycolor2/-/tinycolor2-1.4.2.tgz#721ca5c5d1a2988b4a886e35c2ffc5735b6afbdf"
   integrity sha512-PeHg/AtdW6aaIO2a+98Xj7rWY4KC1E6yOy7AFknJQ7VXUGNrMlyxDFxJo7HqLtjQms/ZhhQX52mLVW/EX3JGOw==
-
-"@types/tinycolor@^1.1.27":
-  version "1.1.27"
-  resolved "https://registry.yarnpkg.com/@types/tinycolor/-/tinycolor-1.1.27.tgz#d01d05a681d0ce28923b021d5f3d752ea0478089"
-  integrity sha1-0B0FpoHQziiSOwIdXz11LqBHgIk=
 
 "@types/yargs-parser@*":
   version "15.0.0"
@@ -7057,10 +7052,10 @@ react-native-reanimated@^1.8.0:
   dependencies:
     fbjs "^1.0.0"
 
-react-native-redash@^12.4.2:
-  version "12.4.2"
-  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-12.4.2.tgz#216e12853f4d66bf0e7aa192aec6b0b5d4e4e355"
-  integrity sha512-RL9NjwIaN2TjA4YQiQdUpLxFyzz5hAvKPXuMboU5TMG/qKYJ7oFYMHAmk/jZZ1mo/C86otUYNepFoCa9jJfd4g==
+react-native-redash@^12.5.1:
+  version "12.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-12.5.1.tgz#53e617e21cc77480931585f59dcb75c99f763b54"
+  integrity sha512-PEIoAfcX4wPOi4/a0tIXoAt5Q62I4F6Ae+imodJcm65ntXEbsqL703B7zCdzWven5EmjlbVSDquoReSZnRbtqg==
   dependencies:
     abs-svg-path "^0.1.1"
     normalize-svg-path "^1.0.1"
