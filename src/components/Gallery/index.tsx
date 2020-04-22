@@ -35,7 +35,7 @@ const Gallery: React.FC<GalleryProps> = ({ canvases }) => {
     const rows = generateRows(canvases);
 
     return (
-      <View ref={ref}>
+      <View style={styles.container} ref={ref}>
         {rows.map(({ canvases }, index) => (
           <Row key={index} {...{ canvases }} />
         ))}
@@ -46,9 +46,7 @@ const Gallery: React.FC<GalleryProps> = ({ canvases }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    marginHorizontal: CANVAS_PREVIEW_MARGIN,
-    marginTop: CANVAS_PREVIEW_MARGIN,
+    marginTop: 12,
   },
 });
 
