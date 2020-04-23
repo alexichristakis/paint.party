@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { StyleProp, ViewStyle } from "react-native";
-import Animated, { useCode, onChange, Value } from "react-native-reanimated";
+import Animated, { Value } from "react-native-reanimated";
 import {
   TapGestureHandler,
   LongPressGestureHandler,
@@ -20,7 +20,7 @@ import flatten from "lodash/flatten";
 import { Colors } from "@lib";
 import { useOnLayout } from "@hooks";
 
-const { or, set, defined, eq, and, cond, call } = Animated;
+const { or, eq, and } = Animated;
 
 export interface TouchableHighlightProps {
   style?: StyleProp<Animated.AnimateStyle<ViewStyle>>;
@@ -68,7 +68,7 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
 
   const fill = useMemoOne(
     () => ({
-      position: "absolute",
+      position: "absolute" as const,
       backgroundColor: mixColor(onPressIn, Colors.background, Colors.grayBlue),
       borderRadius: mix(onPressIn, height, 0),
       width: mix(onPressIn, 0, width),
@@ -89,7 +89,7 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
       maxDurationMs={500}
       {...tapHandler}
     >
-      <Animated.View onLayout={onLayout}>
+      <Animated.View onLayout={onLayout} style={style}>
         <Animated.View style={fill} />
         <LongPressGestureHandler
           ref={longPressRef}
@@ -97,7 +97,7 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
           maxDist={5}
           {...longPressHandler}
         >
-          <Animated.View style={style}>{children}</Animated.View>
+          <Animated.View>{children}</Animated.View>
         </LongPressGestureHandler>
       </Animated.View>
     </TapGestureHandler>

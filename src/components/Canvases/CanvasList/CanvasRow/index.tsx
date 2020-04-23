@@ -197,7 +197,6 @@ const CanvasRow: React.FC<
             <TouchableHighlight
               tapState={tapState}
               longPressState={longPressState}
-              style={styles.contentContainer}
             >
               <Content {...canvas} />
             </TouchableHighlight>
@@ -213,13 +212,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: "space-between",
-    flexDirection: "row",
-    paddingVertical: 15,
-    paddingHorizontal: 10,
   },
 });
 

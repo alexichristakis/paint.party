@@ -86,7 +86,7 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 10,
+    paddingVertical: 10,
   },
   name: {
     ...TextStyles.medium,

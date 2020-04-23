@@ -21,7 +21,7 @@ export interface ContentProps extends Canvas {}
 
 const Content: React.FC<ContentProps> = React.memo(
   ({ id, name, backgroundColor, authors, nextDrawAt, expiresAt }) => (
-    <>
+    <View style={styles.container}>
       <Progress time={nextDrawAt}>
         <CanvasPreview
           forceReload
@@ -41,12 +41,19 @@ const Content: React.FC<ContentProps> = React.memo(
           </Text>
         </View>
       </View>
-    </>
+    </View>
   ),
   (p, n) => p.id === n.id && p.nextDrawAt === n.nextDrawAt && p.name === n.name
 );
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+    flexDirection: "row",
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+  },
   right: {
     alignSelf: "stretch",
     justifyContent: "space-between",
