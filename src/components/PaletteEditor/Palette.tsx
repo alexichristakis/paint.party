@@ -1,11 +1,6 @@
 import React from "react";
 import { StyleSheet, ScrollView, Text } from "react-native";
-import {
-  useTransition,
-  mixColor,
-  useValues,
-  useValue,
-} from "react-native-redash";
+import { useTransition, mixColor, useValue } from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
 import times from "lodash/times";
@@ -14,7 +9,7 @@ import * as selectors from "@redux/selectors";
 import { Palette as PaletteType, PaletteActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN, onPress } from "@lib";
-import { TouchableHighlight, HorizontalScroll } from "@components/universal";
+import { TouchableHighlight } from "@components/universal";
 
 import Color from "./Color";
 import { useCode, call } from "react-native-reanimated";

@@ -10,7 +10,6 @@ import * as selectors from "../selectors";
 import { CanvasActions } from "../modules";
 import { Canvas } from "../modules/canvas";
 import { RootState, ActionUnion as Actions, ActionTypes } from "../types";
-import { Alert } from "react-native";
 
 const createCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
