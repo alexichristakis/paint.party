@@ -10,6 +10,7 @@ import * as selectors from "../selectors";
 import { CanvasActions } from "../modules";
 import { Canvas } from "../modules/canvas";
 import { RootState, ActionUnion as Actions, ActionTypes } from "../types";
+import { Alert } from "react-native";
 
 const createCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
@@ -58,6 +59,20 @@ const joinCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
         .update({ authors: uniq([...canvasMetadata.authors, uid]) });
 
       return CanvasActions.joinSuccess({ ...canvasMetadata, id } as Canvas);
+    })
+  );
+
+const renameCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
+  action$.pipe(
+    filter(isOfType(ActionTypes.RENAME_CANVAS)),
+    switchMap(async ({ payload }) => {
+      const { id, name } = payload;
+
+      console.log(id, name);
+
+      await firestore().collection("canvases").doc(id).update({ name });
+
+      return CanvasActions.renameSuccess(id, name);
     })
   );
 
@@ -132,6 +147,7 @@ const fetchCanvases: Epic<Actions, Actions, RootState> = (action$, state$) =>
 
 export default [
   // closeCanvas,
+  renameCanvas,
   leaveCanvas,
   createCanvas,
   joinCanvas,

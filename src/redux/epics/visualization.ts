@@ -21,8 +21,9 @@ import { RootState, ActionUnion as Actions, ActionTypes } from "../types";
 import { Notifications } from "react-native-notifications";
 import { DRAW_INTERVAL, canvasUrl } from "@lib";
 
-import { captureRef } from "react-native-view-shot";
+import { captureRef, releaseCapture } from "react-native-view-shot";
 import storage from "@react-native-firebase/storage";
+import FastImage from "react-native-fast-image";
 
 const subscribeToCanvas: Epic<Actions, Actions, RootState> = (
   action$,
@@ -153,7 +154,13 @@ const capturePreview: Epic<Actions, Actions, RootState> = (action$, state$) =>
         storage()
           .ref(canvasId)
           .putFile(uri, { contentType: "image/png" })
-          .then((res) => console.log(res))
+          .then(async (res) => {
+            releaseCapture(uri);
+
+            const url = await res.ref.getDownloadURL();
+
+            FastImage.preload([{ uri: url }]);
+          })
           .catch((err) => console.log(err))
       );
     }),

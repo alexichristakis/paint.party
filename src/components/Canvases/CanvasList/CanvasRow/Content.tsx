@@ -17,14 +17,10 @@ import Pencil from "@assets/svg/pencil.svg";
 
 import Progress from "./Progress";
 
-export interface ContentProps {
-  canvas: Canvas;
-}
+export interface ContentProps extends Canvas {}
 
 const Content: React.FC<ContentProps> = React.memo(
-  ({
-    canvas: { id, name, backgroundColor, authors, nextDrawAt, expiresAt },
-  }) => (
+  ({ id, name, backgroundColor, authors, nextDrawAt, expiresAt }) => (
     <>
       <Progress time={nextDrawAt}>
         <CanvasPreview
@@ -47,8 +43,7 @@ const Content: React.FC<ContentProps> = React.memo(
       </View>
     </>
   ),
-  (p, n) =>
-    p.canvas.id === n.canvas.id && p.canvas.nextDrawAt === n.canvas.nextDrawAt
+  (p, n) => p.id === n.id && p.nextDrawAt === n.nextDrawAt && p.name === n.name
 );
 
 const styles = StyleSheet.create({

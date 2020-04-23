@@ -5,20 +5,26 @@ import { TextStyles, Colors } from "@lib";
 import { TouchableScale } from "@components/universal";
 
 export interface CanvasRowButtonsProps {
-  onPress: () => void;
+  onPressLeave: () => void;
+  onPressRename: () => void;
 }
 
-const Buttons: React.FC<CanvasRowButtonsProps> = ({ onPress }) => {
+const Buttons: React.FC<CanvasRowButtonsProps> = ({
+  onPressLeave,
+  onPressRename,
+}) => {
   return (
     <View style={styles.container}>
-      <TouchableScale onPress={onPress}>
-        <View style={styles.button}>
+      <TouchableScale onPress={onPressRename}>
+        <View style={{ ...styles.button, backgroundColor: Colors.blue }}>
+          <Text style={styles.label}>rename</Text>
+        </View>
+      </TouchableScale>
+      <TouchableScale onPress={onPressLeave}>
+        <View style={{ ...styles.button, backgroundColor: Colors.red }}>
           <Text style={styles.label}>leave</Text>
         </View>
       </TouchableScale>
-      {/* <View style={styles.button}>
-        <Text style={styles.label}>rename</Text>
-      </View> */}
     </View>
   );
 };
@@ -33,7 +39,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 10,
     borderWidth: 1,
-    backgroundColor: Colors.red,
     padding: 20,
   },
   label: {

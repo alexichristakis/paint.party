@@ -9,8 +9,7 @@ import { CanvasActions, ModalActions } from "@redux/modules";
 import { PhotoCarouselProvider } from "@hooks";
 
 import ActionButton from "@components/ActionButton";
-import Canvases from "@components/Canvases";
-import { Carousel } from "@components/Gallery";
+import Canvases, { Carousel } from "@components/Canvases";
 import { LoadingOverlay } from "@components/universal";
 
 import { StackParamList } from "../App";
@@ -18,7 +17,7 @@ import { StackParamList } from "../App";
 const connector = connect(
   (state: RootState) => ({
     activeCanvas: selectors.activeCanvas(state),
-    loadingCanvases: selectors.isFetchingCanvases(state),
+    isJoiningCanvas: selectors.isJoiningCanvas(state),
   }),
   {
     unsubscribe: CanvasActions.close,
@@ -36,7 +35,7 @@ export interface HomeProps {
 const Home: React.FC<HomeProps & HomeReduxProps> = ({
   fetchCanvases,
   activeCanvas,
-  loadingCanvases,
+  isJoiningCanvas,
   unsubscribe,
   openPalettes,
   openCanvasCreator,
@@ -59,7 +58,7 @@ const Home: React.FC<HomeProps & HomeReduxProps> = ({
         onPressAction1={openCanvasCreator}
         onPressAction2={openPalettes}
       />
-      <LoadingOverlay loading={loadingCanvases} />
+      <LoadingOverlay text={"joining canvas..."} loading={isJoiningCanvas} />
     </>
   );
 };

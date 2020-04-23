@@ -21,12 +21,14 @@ export type CanvasState = Readonly<{
   activeCanvas: string;
   canvases: { [canvasId: string]: Canvas };
   previews: { [canvasId: string]: string };
+  joiningCanvas: boolean;
   creatingCanvas: boolean;
   fetchingCanvases: boolean;
 }>;
 
 const initialState: CanvasState = {
   activeCanvas: "",
+  joiningCanvas: false,
   creatingCanvas: false,
   fetchingCanvases: false,
   canvases: {},
@@ -38,10 +40,14 @@ export default (
   action: ActionUnion
 ): CanvasState => {
   switch (action.type) {
-    case ActionTypes.JOIN_CANVAS:
+    case ActionTypes.RENAME_CANVAS:
     case ActionTypes.LEAVE_CANVAS:
     case ActionTypes.FETCH_CANVASES: {
       return { ...state, fetchingCanvases: true };
+    }
+
+    case ActionTypes.JOIN_CANVAS: {
+      return { ...state, joiningCanvas: true };
     }
 
     case ActionTypes.FETCH_CANVASES_SUCCESS: {
@@ -53,6 +59,16 @@ export default (
         draft.fetchingCanvases = false;
         draft.creatingCanvas = false;
         draft.canvases = newCanvases;
+      });
+    }
+
+    case ActionTypes.RENAME_CANVAS_SUCCESS: {
+      const { id, name } = action.payload;
+
+      return immer(state, (draft) => {
+        if (draft.canvases[id]) draft.canvases[id].name = name;
+
+        draft.fetchingCanvases = false;
       });
     }
 
@@ -83,6 +99,7 @@ export default (
         draft.activeCanvas = canvas.id;
         draft.canvases[canvas.id] = canvas;
         draft.creatingCanvas = false;
+        draft.joiningCanvas = false;
       });
     }
 
@@ -140,6 +157,12 @@ export const CanvasActions = {
   joinSuccess: (canvas: Canvas) =>
     createAction(ActionTypes.JOIN_CANVAS_SUCCESS, { canvas }),
   joinFailure: () => createAction(ActionTypes.JOIN_CANVAS_FAILURE),
+
+  rename: (id: string, name: string) =>
+    createAction(ActionTypes.RENAME_CANVAS, { id, name }),
+  renameSuccess: (id: string, name: string) =>
+    createAction(ActionTypes.RENAME_CANVAS_SUCCESS, { id, name }),
+  renameFailure: () => createAction(ActionTypes.RENAME_CANVAS_FAILURE),
 
   leave: (id: string) => createAction(ActionTypes.LEAVE_CANVAS, { id }),
   leaveSuccess: (id: string) =>
