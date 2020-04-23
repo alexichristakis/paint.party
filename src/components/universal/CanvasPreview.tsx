@@ -63,7 +63,7 @@ const CanvasPreview: React.FC<
       style,
     };
 
-    if (forceReload) return <Image {...(props as ImageProps)} />;
+    // if (forceReload) return <Image {...(props as ImageProps)} />;
 
     return <FastImage {...(props as FastImageProps)} />;
   }

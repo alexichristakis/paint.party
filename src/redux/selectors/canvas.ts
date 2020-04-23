@@ -59,6 +59,11 @@ export const canvasActiveAt = createSelector(
   (entity) => entity.nextDrawAt ?? 0
 );
 
+export const isJoiningCanvas = createSelector(
+  s,
+  (state) => state.joiningCanvas
+);
+
 export const isCreatingCanvas = createSelector(
   s,
   (state) => state.creatingCanvas

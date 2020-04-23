@@ -61,6 +61,20 @@ const joinCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
     })
   );
 
+const renameCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
+  action$.pipe(
+    filter(isOfType(ActionTypes.RENAME_CANVAS)),
+    switchMap(async ({ payload }) => {
+      const { id, name } = payload;
+
+      console.log(id, name);
+
+      await firestore().collection("canvases").doc(id).update({ name });
+
+      return CanvasActions.renameSuccess(id, name);
+    })
+  );
+
 const leaveCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>
   action$.pipe(
     filter(isOfType(ActionTypes.LEAVE_CANVAS)),
@@ -132,6 +146,7 @@ const fetchCanvases: Epic<Actions, Actions, RootState> = (action$, state$) =>
 
 export default [
   // closeCanvas,
+  renameCanvas,
   leaveCanvas,
   createCanvas,
   joinCanvas,
