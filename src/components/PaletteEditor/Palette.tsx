@@ -1,6 +1,11 @@
 import React from "react";
 import { StyleSheet, ScrollView, Text } from "react-native";
-import { useTransition, mixColor } from "react-native-redash";
+import {
+  useTransition,
+  mixColor,
+  useValues,
+  useValue,
+} from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
 import times from "lodash/times";
@@ -8,10 +13,11 @@ import times from "lodash/times";
 import * as selectors from "@redux/selectors";
 import { Palette as PaletteType, PaletteActions } from "@redux/modules";
 import { RootState } from "@redux/types";
-import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN } from "@lib";
+import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN, onPress } from "@lib";
 import { TouchableHighlight, HorizontalScroll } from "@components/universal";
 
 import Color from "./Color";
+import { useCode, call } from "react-native-reanimated";
 
 export interface PaletteProps {
   palette: PaletteType;
@@ -30,14 +36,24 @@ const mapDispatchToProps = {
 
 const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
   ({ enable, palette, active }) => {
+    const tapState = useValue(0, []);
+
     const { id: paletteId, name, colors } = palette;
 
     const numColors = colors.length;
 
-    const enablePalette = () => {
-      Haptics.trigger("impactMedium");
-      enable(paletteId);
-    };
+    useCode(
+      () => [
+        onPress(
+          tapState,
+          call([], () => {
+            Haptics.trigger("impactMedium");
+            enable(paletteId);
+          })
+        ),
+      ],
+      [paletteId]
+    );
 
     const activeTransition = useTransition(active);
     const backgroundColor = mixColor(
@@ -48,9 +64,9 @@ const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
 
     return (
       <TouchableHighlight
-        enabled={!active}
+        tapState={tapState}
         style={{ ...styles.container, backgroundColor }}
-        onPress={enablePalette}
+        showEffect={!active}
       >
         <Text style={styles.name}>{name}</Text>
         <ScrollView

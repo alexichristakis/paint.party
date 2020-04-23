@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { StyleProp, ViewStyle } from "react-native";
-import Animated, { useCode, onChange } from "react-native-reanimated";
+import Animated, { useCode, onChange, Value } from "react-native-reanimated";
 import {
   TapGestureHandler,
   LongPressGestureHandler,
@@ -15,6 +15,7 @@ import {
   withTransition,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
+import flatten from "lodash/flatten";
 
 import { Colors } from "@lib";
 import { useOnLayout } from "@hooks";
@@ -24,16 +25,18 @@ const { or, set, defined, eq, and, cond, call } = Animated;
 export interface TouchableHighlightProps {
   style?: StyleProp<Animated.AnimateStyle<ViewStyle>>;
   waitFor?: any;
-  enabled?: boolean;
-  onPress: () => void;
-  onLongPress?: () => void;
+  showEffect?: boolean;
+  simultaneousHandlers?: React.RefObject<any> | React.RefObject<any>[];
+  tapState: Animated.Value<State>;
+  longPressState?: Animated.Value<State>;
 }
 
 export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
-  enabled = true,
   waitFor,
-  onPress,
-  onLongPress,
+  showEffect = true,
+  simultaneousHandlers,
+  longPressState = new Value(State.UNDETERMINED),
+  tapState,
   style,
   children,
 }) => {
@@ -41,11 +44,6 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
 
   const longPressRef = useRef<LongPressGestureHandler>(null);
   const tapRef = useRef<TapGestureHandler>(null);
-
-  const [longPressState, tapState] = useValues(
-    [State.UNDETERMINED, State.UNDETERMINED],
-    []
-  );
 
   const [x, y] = useValues([0, 0], []);
 
@@ -57,29 +55,14 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
     []
   );
 
-  useCode(
-    () => [
-      onChange(tapState, cond(eq(tapState, State.END), [call([], onPress)])),
-      onChange(
-        longPressState,
-        cond(
-          eq(longPressState, State.ACTIVE),
-          call([], onLongPress ? onLongPress : onPress)
-        )
-      ),
-    ],
-    []
-  );
-
   const onPressIn = withTransition(
     and(
       or(
-        eq(tapState, State.ACTIVE),
         eq(tapState, State.BEGAN),
         eq(longPressState, State.ACTIVE),
         eq(longPressState, State.BEGAN)
       ),
-      bin(enabled)
+      bin(showEffect)
     )
   );
 
@@ -96,12 +79,13 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
     [width, height]
   );
 
+  const handlers = simultaneousHandlers ? flatten([simultaneousHandlers]) : [];
   return (
     <TapGestureHandler
       ref={tapRef}
       waitFor={waitFor}
-      maxDist={10}
-      simultaneousHandlers={longPressRef}
+      maxDist={5}
+      simultaneousHandlers={[longPressRef, ...handlers]}
       maxDurationMs={500}
       {...tapHandler}
     >
@@ -109,8 +93,8 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
         <Animated.View style={fill} />
         <LongPressGestureHandler
           ref={longPressRef}
-          simultaneousHandlers={[tapRef]}
-          maxDist={10}
+          simultaneousHandlers={[tapRef, ...handlers]}
+          maxDist={5}
           {...longPressHandler}
         >
           <Animated.View style={style}>{children}</Animated.View>

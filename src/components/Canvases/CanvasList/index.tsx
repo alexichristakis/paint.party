@@ -14,7 +14,6 @@ export interface CanvasListProps {
 }
 
 const CanvasList: React.FC<CanvasListProps> = ({ onPressCanvas, canvases }) => {
-  console.log("render canvaslist");
   return (
     <>
       {sortBy(canvases, (o) => o.nextDrawAt).map((canvas, i) => (

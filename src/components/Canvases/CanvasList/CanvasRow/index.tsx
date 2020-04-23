@@ -1,12 +1,18 @@
 import React, { useCallback } from "react";
 import { StyleSheet, Share, Alert } from "react-native";
-import Animated, { interpolate } from "react-native-reanimated";
+import Animated, {
+  interpolate,
+  useCode,
+  call,
+  Extrapolate,
+} from "react-native-reanimated";
 import Haptics from "react-native-haptic-feedback";
 import { PanGestureHandler, State } from "react-native-gesture-handler";
 import {
   useValues,
   useGestureHandler,
-  useValue,
+  spring,
+  useClock,
   withSpring,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
@@ -21,6 +27,8 @@ import { useOnLayout } from "@hooks";
 
 import Buttons from "./Buttons";
 import Content from "./Content";
+
+const { cond, set, eq, lessThan, onChange, clockRunning, not } = Animated;
 
 const connector = connect((state: RootState) => ({}), {
   leaveCanvas: CanvasActions.leave,
@@ -48,17 +56,22 @@ const CanvasRow: React.FC<
 > = React.memo(
   ({ onPress, renameCanvas, leaveCanvas, canvas }) => {
     const { onLayout, width } = useOnLayout();
-
-    console.log("render canvas row", canvas.name);
-
     const { name, id } = canvas;
 
-    const state = useValue(State.UNDETERMINED, []);
-    const [drag, velocity] = useValues<number>([0, 0], []);
+    const clock = useClock([]);
+
+    const [panState, tapState, longPressState] = useValues(
+      [State.UNDETERMINED, State.UNDETERMINED, State.UNDETERMINED],
+      []
+    );
+    const [drag, velocity, offset, shouldClose] = useValues<number>(
+      [0, 0, 0, 0, 0],
+      []
+    );
 
     const handler = useGestureHandler(
       {
-        state,
+        state: panState,
         translationX: drag,
         velocityX: velocity,
       },
@@ -86,22 +99,62 @@ const CanvasRow: React.FC<
       () =>
         withSpring({
           value: drag,
-          velocity,
-          state,
+          state: panState,
           snapPoints: [0, -width],
+          velocity,
+          offset,
           config,
         }),
       [width]
     );
 
+    useCode(
+      () => [
+        onChange(
+          tapState,
+          cond(
+            eq(tapState, State.END),
+            cond(
+              lessThan(translateX, -width / 2),
+              set(shouldClose, 1),
+              call([], handleOnPress)
+            )
+          )
+        ),
+        onChange(
+          longPressState,
+          cond(eq(longPressState, State.ACTIVE), [call([], handleOnLongPress)])
+        ),
+      ],
+      [width]
+    );
+
+    useCode(
+      () => [
+        cond(shouldClose, [
+          set(
+            offset,
+            spring({
+              clock,
+              from: offset,
+              to: 0,
+              config,
+            })
+          ),
+          cond(not(clockRunning(clock)), set(shouldClose, 0)),
+        ]),
+      ],
+      []
+    );
+
     const buttonContainer = useMemoOne(
       () => ({
-        right: 0,
-        position: "absolute",
-        opacity: interpolate(translateX, {
-          inputRange: [-width, 0],
-          outputRange: [1, 0],
-        }),
+        opacity: width
+          ? interpolate(translateX, {
+              inputRange: [-width, 0],
+              outputRange: [1, 0],
+            })
+          : 0,
         transform: [
           {
             translateX: interpolate(translateX, {
@@ -120,31 +173,31 @@ const CanvasRow: React.FC<
       [width]
     );
 
+    const contentContainer = {
+      flex: 1,
+      backgroundColor: Colors.background,
+      opacity: interpolate(translateX, {
+        inputRange: [-width, 0],
+        outputRange: [0.5, 1],
+        extrapolate: Extrapolate.CLAMP,
+      }),
+      transform: [{ translateX }],
+    };
+
     return (
       <PanGestureHandler {...handler} maxDeltaY={10} activeOffsetX={[-10, 10]}>
-        <Animated.View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Animated.View onLayout={onLayout} style={buttonContainer}>
-            <Buttons
-              onPressLeave={handleOnPressLeave}
-              onPressRename={handleOnPressRename}
-            />
-          </Animated.View>
-          <Animated.View
-            style={{
-              flex: 1,
-              backgroundColor: Colors.background,
-              transform: [{ translateX }],
-            }}
-          >
+        <Animated.View style={styles.container}>
+          <Buttons
+            onLayout={onLayout}
+            style={buttonContainer}
+            onPressLeave={handleOnPressLeave}
+            onPressRename={handleOnPressRename}
+          />
+          <Animated.View style={contentContainer}>
             <TouchableHighlight
-              style={styles.container}
-              onPress={handleOnPress}
-              onLongPress={handleOnLongPress}
+              tapState={tapState}
+              longPressState={longPressState}
+              style={styles.contentContainer}
             >
               <Content {...canvas} />
             </TouchableHighlight>
@@ -158,6 +211,10 @@ const CanvasRow: React.FC<
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  contentContainer: {
     flex: 1,
     justifyContent: "space-between",
     flexDirection: "row",
