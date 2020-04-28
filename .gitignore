@@ -26,7 +26,6 @@ GoogleService-Info.plist
 
 # Android/IntelliJ
 #
-build/
 .idea
 .gradle
 local.properties
@@ -48,6 +47,13 @@ buck-out/
 \.buckd/
 *.keystore
 !debug.keystore
+
+# next
+dist/
+.next/
+/.pnp
+.pnp.js
+.env*
 
 # fastlane
 #
