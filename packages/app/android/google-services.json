@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1051652325215",
+    "firebase_url": "https://canvus-1bcc2.firebaseio.com",
+    "project_id": "canvus-1bcc2",
+    "storage_bucket": "canvus-1bcc2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1051652325215:android:6f4489b3af9140f32d40ea",
+        "android_client_info": {
+          "package_name": "com.draw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1051652325215-58q3jgoekad0o24fqvulo9u6h5isbquv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZO96e8YiDaCrOW9jP3NP6piBvRZKPwUo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1051652325215-58q3jgoekad0o24fqvulo9u6h5isbquv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1051652325215-a15he5bhgn7bokbg3m36qfjmcccpgnuq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "christakis.draw"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

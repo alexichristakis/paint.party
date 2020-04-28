@@ -1472,10 +1472,10 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.2.tgz#690a1475b84f2a884fd07cd797c00f5f31356ea8"
   integrity sha512-ce5d3q03Ex0sy4R14722Rmt6MT07Ua+k4FwDfdcToYJcMKNtRVQvJ6JCAPdAmAnbRb6CsX6aYb9m96NGod9uTw==
 
-"@types/react-native@^0.62.3":
-  version "0.62.3"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.62.3.tgz#e95e6e2de14656e43280995fc260ef6b044ed1ea"
-  integrity sha512-IO4uYEkYQKgMwHGSo7mBcuGi5Li71aM2ddQ1i5JuzX/2jLzU8KwzOEXXbMvFnU/08eEPEyhSqq0mRECkdGT18A==
+"@types/react-native@^0.62.4":
+  version "0.62.4"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.62.4.tgz#0aea6619a19de1c6994ce8e4175fc4e44409bcdb"
+  integrity sha512-AKImyybUzqqPItKNuURkMe7y1X5cxuSJh5td8qbFSEXO58S5qjw01eZweWkKyTVCvrWGXkfm43u1zoYcZSGL6w==
   dependencies:
     "@types/react" "*"
 
@@ -1619,10 +1619,10 @@
     semver "^6.3.0"
     tsutils "^3.17.1"
 
-"@welldone-software/why-did-you-render@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@welldone-software/why-did-you-render/-/why-did-you-render-4.1.1.tgz#de048f5d2a29ace9082ac9018b134662be2bd8c4"
-  integrity sha512-wQzH3OyYCkz8eAixnM83v8/4yASjkjYBcP6FdS6uDWL1DVrNbgs8Y4rDnYjK2ovOX+nPp1w8tBzWD6oGW/fpzQ==
+"@welldone-software/why-did-you-render@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@welldone-software/why-did-you-render/-/why-did-you-render-4.1.2.tgz#d88f55b6d7eed11271a24ec949fd156b5789db8a"
+  integrity sha512-bYFOe9zPTNpr10XpP48xID93eiw3TrVyWEFKt4dnG35RghhtxetKfTSmt/bx+ZLV9NuSJQUxiig6VUGxWpUP4Q==
   dependencies:
     lodash "^4"
 
@@ -2842,11 +2842,6 @@ dayjs@^1.8.15:
   version "1.8.23"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.23.tgz#07b5a8e759c4d75ae07bdd0ad6977f851c01e510"
   integrity sha512-NmYHMFONftoZbeOhVz6jfiXI4zSiPN6NoVWJgC0aZQfYVwzy/ZpESPHuCcI0B8BUMpSJQ08zenHDbofOLKq8hQ==
-
-debounce@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/debounce/-/debounce-1.2.0.tgz#44a540abc0ea9943018dc0eaa95cce87f65cd131"
-  integrity sha512-mYtLl1xfZLi1m4RtQYlZgJUNQjl4ZxVnHzIR8nLLgi4q1YT8o/WM+MK/f8yfcc9s5Ir5zRaPZyZU6xs1Syoocg==
 
 debug@2, debug@2.6.9, debug@^2.1.3, debug@^2.2.0, debug@^2.3.3, debug@^2.6.9:
   version "2.6.9"
@@ -7040,22 +7035,20 @@ react-native-reanimated@^1.8.0:
   dependencies:
     fbjs "^1.0.0"
 
-react-native-redash@^12.5.1:
-  version "12.5.1"
-  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-12.5.1.tgz#53e617e21cc77480931585f59dcb75c99f763b54"
-  integrity sha512-PEIoAfcX4wPOi4/a0tIXoAt5Q62I4F6Ae+imodJcm65ntXEbsqL703B7zCdzWven5EmjlbVSDquoReSZnRbtqg==
+react-native-redash@^12.6.0:
+  version "12.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-12.6.0.tgz#a6edfff0ae432af330d021df3b03b85641ff77b6"
+  integrity sha512-pRpe5E0IAVnkqxfwyggH8Ovbskfe3WavilPCjBP456loDO7qr6+Roy1pg/OFiQ9jVvzSVsK55VqHoE8FXymGkA==
   dependencies:
     abs-svg-path "^0.1.1"
     normalize-svg-path "^1.0.1"
     parse-svg-path "^0.1.2"
     use-memo-one "^1.1.1"
 
-react-native-screens@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.5.0.tgz#2c5b5a56d3b8be64d459d53da154bde926021a50"
-  integrity sha512-5Ak/J41eZzvU2zvik8YH825ppFdKR4cootbAq9ETwdQoN0fu4GBdOpX7paKW2jFCTsh3OOoyRRW2xYvLczZqVw==
-  dependencies:
-    debounce "^1.2.0"
+react-native-screens@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.7.0.tgz#2d3cf3c39a665e9ca1c774264fccdb90e7944047"
+  integrity sha512-n/23IBOkrTKCfuUd6tFeRkn3lB2QZ3cmvoubRscR0JU/Zl4/ZyKmwnFmUv1/Fr+2GH/H8UTX59kEKDYYg3dMgA==
 
 react-native-svg-transformer@^0.14.3:
   version "0.14.3"

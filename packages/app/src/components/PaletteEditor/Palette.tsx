@@ -4,6 +4,7 @@ import { useTransition, mixColor, useValue } from "react-native-redash";
 import { ConnectedProps, connect } from "react-redux";
 import Haptics from "react-native-haptic-feedback";
 import times from "lodash/times";
+import { useCode, call } from "react-native-reanimated";
 
 import * as selectors from "@redux/selectors";
 import { Palette as PaletteType, PaletteActions } from "@redux/modules";
@@ -12,7 +13,6 @@ import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN, onPress } from "@lib";
 import { TouchableHighlight } from "@components/universal";
 
 import Color from "./Color";
-import { useCode, call } from "react-native-reanimated";
 
 export interface PaletteProps {
   palette: PaletteType;

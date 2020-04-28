@@ -40,10 +40,6 @@ export default (
       return { ...state, enabled: false };
     }
 
-    case ActionTypes.DRAW_SUCCESS: {
-      return { ...state, cell: -1, color: "" };
-    }
-
     default:
       return state;
   }
