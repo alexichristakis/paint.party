@@ -1,0 +1,13 @@
+@import "../../styles/global.scss";
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.canvas {
+  width: calc(#{$column-width} * 2);
+  height: calc(#{$column-width} * 2);
+  margin: 0 $gutter-width 0 0;
+}

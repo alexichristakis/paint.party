@@ -1,0 +1,43 @@
+@import "../../styles/global.scss";
+
+$color-size: calc(#{$column-width} / 5);
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  z-index: 1;
+  position: fixed;
+  top: $gutter-width;
+  right: $gutter-width;
+  width: $column-width;
+  height: $column-width;
+
+  animation: spin 60s 0s linear forwards infinite;
+}
+
+.wheel {
+  width: $column-width;
+  height: $column-width;
+  transition: all 200ms cubic-bezier(0.21, 0.94, 0.64, 0.99);
+  &:hover {
+    transform: scale(1.2);
+  }
+}
+
+.color {
+  transform: rotate(var(--rotate)) translate(0, calc(#{$column-width} / 2));
+  position: absolute;
+  left: calc((#{$column-width} - #{$color-size}) / 2);
+  top: calc((#{$column-width} - #{$color-size}) / 2);
+
+  width: $color-size;
+  height: $color-size;
+  border-radius: calc(#{$color-size} / 2);
+}

@@ -1,0 +1,26 @@
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.square {
+  animation: fadeOut 0.5s 3s linear forwards;
+}

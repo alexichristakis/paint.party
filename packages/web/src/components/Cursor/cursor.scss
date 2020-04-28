@@ -1,0 +1,25 @@
+@keyframes pulse {
+  from {
+    transform: scale(1) translate(-15px, -15px);
+  }
+  to {
+    transform: scale(1.1) translate(-15px, -15px);
+  }
+}
+
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.cursor {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  border: solid black 5px;
+  animation: pulse 0.75s 0s linear alternate infinite;
+}
