@@ -1,17 +1,14 @@
-import * as React from 'react';
-import { NextPage, NextPageContext } from 'next';
-import { NextSeo } from 'next-seo';
+import * as React from "react";
+import { NextPage, NextPageContext } from "next";
+import { NextSeo } from "next-seo";
 
-import Home from '../components/Home';
+import Home from "../components/Home";
 
 const IndexPage: React.FC<{}> & NextPage<{}> = () => (
-	<>
-		<NextSeo
-			title="Home"
-			description=""
-		/>
-		<Home/>
-	</>
+  <>
+    <NextSeo title="paint party" description="" />
+    <Home />
+  </>
 );
 
 IndexPage.getInitialProps = async (_ctx: NextPageContext) => ({});

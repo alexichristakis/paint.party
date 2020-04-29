@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import random from "lodash/random";
 import moment from "moment";
+import uuid from "uuid/v1";
 
 import styles from "./Background.scss";
-import { useWindowSize } from "../../hooks";
+import { useWindowSize, useInterval } from "../../hooks";
 import { FillColors } from "../ColorWheel";
 
 type Square = {
-  active: boolean;
   time: number;
   fill: string;
   i: number;
@@ -30,46 +30,61 @@ const Background: React.FC<BackgroundProps> = React.memo(
     const [prevSquare, setPrevSquare] = useState(-1);
     const [squares, setSquares] = useState<{ [id: number]: Square }>({});
 
+    useInterval(() => {
+      setSquares((squares) => {
+        const currentTime = moment().unix();
+        const filtered = Object.values(squares).filter(
+          ({ time }) => currentTime - time < 5
+        );
+
+        return filtered;
+      });
+    }, 1000);
+
     const dimension = Math.ceil(Math.max(width, height) / CELL_SIZE);
 
-    const coordinatesToIndex = (x: number, y: number) =>
-      Math.floor(y / CELL_SIZE) * dimension + Math.floor(x / CELL_SIZE);
+    const coordinatesToIndex = useCallback(
+      (x: number, y: number) =>
+        Math.floor(y / CELL_SIZE) * dimension + Math.floor(x / CELL_SIZE),
+      [dimension]
+    );
 
-    const indicesFromIndex = (index: number) => {
-      const i = Math.floor(index % dimension);
-      const j = Math.floor(index / dimension);
+    const indicesFromIndex = useCallback(
+      (index: number) => {
+        const i = Math.floor(index % dimension);
+        const j = Math.floor(index / dimension);
 
-      return { i, j };
-    };
+        return { i, j };
+      },
+      [dimension]
+    );
 
-    const coordinatesFromIndex = (index: number) => {
-      const { i, j } = indicesFromIndex(index);
+    const coordinatesFromIndex = useCallback(
+      (index: number) => {
+        const { i, j } = indicesFromIndex(index);
 
-      return { x: i * CELL_SIZE, y: j * CELL_SIZE };
-    };
+        return { x: i * CELL_SIZE, y: j * CELL_SIZE };
+      },
+      [dimension]
+    );
 
     useEffect(() => {
       const i = coordinatesToIndex(mouseX, mouseY);
       const { x, y } = coordinatesFromIndex(i);
 
-      const currentTime = moment().unix();
+      const time = moment().unix();
 
       if (i !== prevSquare) {
-        //   const filteredSquares = Object.values(squares).filter(
-        //     ({ time }) => currentTime - time < 5
-        //   );
-
-        setSquares({
-          ...squares,
+        setSquares((prevSquares) => ({
+          ...prevSquares,
           [i]: {
-            i,
+            i: uuid(),
             x,
             y,
-            time: currentTime,
-            active: true,
+            time,
             fill: FillColors[random(FillColors.length - 1)],
           },
-        });
+        }));
         setPrevSquare(i);
       }
     }, [dimension, mouseX, mouseY]);
