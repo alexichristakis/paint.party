@@ -13,6 +13,9 @@ $nearblack: rgb(10, 10, 10);
 $gutter-width: calc(100vw / 19);
 $column-width: calc(#{$gutter-width} * 2);
 
+$side-bar-margin-top: calc(100vh + 2 * #{$column-width});
+$content-offset: calc(-100vh - #{$side-bar-margin-top});
+
 * {
   margin: 0;
 }
@@ -33,5 +36,10 @@ body {
   h2 {
     font-weight: 300;
     font-size: 40pt;
+  }
+
+  h2 {
+    font-weight: 300;
+    font-size: 32pt;
   }
 }

@@ -1,0 +1,33 @@
+@import "../../styles/global.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  position: sticky;
+  align-self: flex-start;
+  pointer-events: none;
+  top: -35px;
+  height: calc(100vh + 35px);
+  margin-top: $side-bar-margin-top;
+}
+
+.section {
+  color: lightgray;
+  transform: rotate(-90deg);
+  transition: all 250ms ease;
+}
+
+.active {
+  color: $nearblack;
+  transform: rotate(0deg) translate(15px, 0);
+}
+
+.wrapper {
+  height: 60px;
+  margin: 0 auto;
+  display: flex;
+  position: relative;
+  cursor: pointer;
+  pointer-events: auto;
+}

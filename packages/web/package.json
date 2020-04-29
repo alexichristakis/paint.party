@@ -9,6 +9,7 @@
     "build": "next build",
     "build:analyze": "cross-env ANALYZE=true yarpm run build",
     "build:maxify": "cross-env ANALYZE=true MINIFY=false yarpm run build",
+    "deploy": "next build && next export && firebase deploy",
     "start": "next start",
     "test": "jest",
     "check": "tsc --noEmit",
@@ -25,7 +26,8 @@
     "next": "~9.3.6",
     "next-seo": "^4.4.0",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "react-scroll": "^1.7.16"
   },
   "devDependencies": {
     "@blunck/next-alias": "^1.0.0",
@@ -37,6 +39,7 @@
     "@types/moment": "^2.13.0",
     "@types/node": "^13.13.4",
     "@types/react": "^16.9.34",
+    "@types/react-scroll": "^1.5.4",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
     "@typescript-eslint/parser": "^2.30.0",
     "@zeit/next-css": "1.0.2-canary.2",

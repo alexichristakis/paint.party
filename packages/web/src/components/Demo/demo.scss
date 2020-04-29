@@ -1,0 +1,26 @@
+@import "../../styles/global.scss";
+
+.container {
+  display: flex;
+  padding: $gutter-width $gutter-width 0 0;
+  justify-content: space-between;
+  min-height: 100vh;
+}
+
+.description {
+  width: calc(2 *#{$column-width} + #{$gutter-width});
+}
+
+.screens {
+  display: flex;
+  background: #f1efe6;
+  margin-top: $gutter-width;
+  padding: 0 0 $gutter-width 0;
+  align-items: center;
+  justify-content: space-evenly;
+  width: calc(4 *#{$column-width} + 3 *#{$gutter-width});
+}
+
+.screenshot {
+  width: calc(2 *#{$column-width});
+}

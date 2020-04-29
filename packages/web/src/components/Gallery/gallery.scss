@@ -1,13 +1,17 @@
 @import "../../styles/global.scss";
 
 .container {
-  height: 100vh;
   display: flex;
-  flex-direction: row;
+  overflow-x: scroll;
+}
+
+.scroll {
+  display: flex;
+  overflow-x: scroll;
 }
 
 .canvas {
-  width: calc(#{$column-width} * 2);
-  height: calc(#{$column-width} * 2);
+  width: calc(#{$column-width} * 2 + #{$gutter-width});
+  height: calc(#{$column-width} * 2 + #{$gutter-width});
   margin: 0 $gutter-width 0 0;
 }

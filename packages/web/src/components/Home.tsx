@@ -2,26 +2,33 @@ import React from "react";
 
 import styles from "./Home.scss";
 
-import { useMousePosition, useScrollPosition } from "../hooks";
+import { usePointerPosition, useScrollPosition } from "../hooks";
 
 import ColorWheel from "./ColorWheel";
 import Cursor from "./Cursor";
 import Background from "./Background";
 import Landing from "./Landing";
 import Gallery from "./Gallery";
+import SideBar from "./Sidebar";
+import { Create, Draw, Share } from "./Demo";
 
 export const Home: React.FC = () => {
   const scroll = useScrollPosition();
-  const { position, handleMouseMove } = useMousePosition();
+  const { position, handler } = usePointerPosition();
 
   return (
-    <div className={styles.container} onMouseMove={handleMouseMove}>
+    <div className={styles.container} {...handler}>
       <Background {...position} />
+      <SideBar />
 
       <div className={styles.content}>
         <Landing />
-        <Gallery />
+        <Gallery scroll={scroll} />
+        <Create />
+        <Draw />
+        <Share />
       </div>
+
       <ColorWheel scroll={scroll} />
       <Cursor {...position} />
     </div>

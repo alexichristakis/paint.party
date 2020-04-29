@@ -2,13 +2,11 @@
 
 .container {
   display: flex;
-  height: 100vh;
+  flex-direction: column;
 }
 
 .content {
-  position: "absolute";
-  margin: 0 $gutter-width 0 $gutter-width;
-  top: 0;
-  left: 0;
-  right: 0;
+  margin-top: $content-offset;
+  margin-left: $gutter-width;
+  max-width: 100vw;
 }

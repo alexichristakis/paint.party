@@ -3,8 +3,6 @@ import times from "lodash/times";
 
 import styles from "./ColorWheel.scss";
 
-const NUM_COLORS = 12;
-
 export const Colors = {
   transGray: "rgba(0, 0, 0, 0.7)",
   nearBlack: "rgb(10, 10, 10)",
@@ -48,20 +46,27 @@ export interface ColorWheelProps {
 }
 
 const ColorWheel: React.FC<ColorWheelProps> = React.memo(({ scroll }) => {
+  const handleOnClick = () => {
+    window.alert("clicked");
+  };
+
   return (
-    <div className={styles.spin}>
-      <div className={styles.wheel}>
-        {times(NUM_COLORS, (i) => (
-          <div
-            style={{
-              backgroundColor: FillColors[i],
-              // @ts-ignore
-              "--rotate":
-                (i * 360) / (FillColors.length - 1) + scroll / 5 + "deg",
-            }}
-            className={styles.color}
-          />
-        ))}
+    <div className={styles.container}>
+      <h3 className={styles.download}>GET</h3>
+      <div onClick={handleOnClick} className={styles.spin}>
+        <div className={styles.wheel}>
+          {times(FillColors.length, (i) => (
+            <div
+              style={{
+                backgroundColor: FillColors[i],
+                // @ts-ignore
+                "--rotate":
+                  (i * 360) / (FillColors.length - 1) + scroll / 5 + "deg",
+              }}
+              className={styles.color}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -4,3 +4,18 @@
   flex-direction: column;
   justify-content: center;
 }
+
+@keyframes slide {
+  from {
+    opacity: 0;
+    margin-left: -200px;
+  }
+  to {
+    opacity: 1;
+    margin-left: 0px;
+  }
+}
+
+.intro {
+  animation: slide 500ms 0s ease forwards;
+}
