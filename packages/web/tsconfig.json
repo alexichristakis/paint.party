@@ -2,10 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": [
-      "es6",
-      "dom"
-    ],
+    "lib": ["es6", "dom"],
     "allowJs": true,
     "jsx": "preserve",
     "noEmit": true,
@@ -13,29 +10,6 @@
     "strict": true,
     "moduleResolution": "node",
     "baseUrl": "./src",
-    "paths": {
-      "@components/*": [
-        "components/*"
-      ],
-      "@redux/*": [
-        "redux/*"
-      ],
-      "@assets/*": [
-        "assets/*"
-      ],
-      "@screens/*": [
-        "screens/*"
-      ],
-      "@lib": [
-        "lib"
-      ],
-      "@api": [
-        "api"
-      ],
-      "@hooks": [
-        "hooks"
-      ]
-    },
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
@@ -44,9 +18,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "exclude": [
     "node_modules",
     "babel.config.js",

@@ -60,7 +60,6 @@
     "jest": "^25.4.0",
     "less": "^3.11.1",
     "next-compose-plugins": "^2.2.0",
-    "next-fonts": "^1.1.0",
     "next-images": "^1.4.0",
     "next-progressbar": "^1.0.0",
     "next-size": "^2.1.0",
@@ -69,7 +68,6 @@
     "postcss-fixes": "^2.0.1",
     "postcss-preset-env": "^6.7.0",
     "ts-jest": "^25.4.0",
-    "typescript": "^3.8.3",
     "webpack-bundle-analyzer": "^3.7.0",
     "yarpm": "^0.2.1"
   },
