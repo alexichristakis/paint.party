@@ -24,7 +24,7 @@ export interface CanvasProps {}
 
 const Canvas: React.FC<CanvasProps & CanvasReduxProps> = React.memo(
   ({ loadingCanvas, subscribe }) => {
-    const [positionsVisible, pickerVisible] = useValues<0 | 1>([0, 0], []);
+    const [positionsVisible, pickerVisible] = useValues<0 | 1>([0, 0]);
 
     useEffect(() => {
       subscribe();
@@ -35,7 +35,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = React.memo(
         <Header {...{ positionsVisible, pickerVisible }} />
         <Visualization {...{ pickerVisible, positionsVisible }} />
         <ColorPicker visible={pickerVisible} />
-        <LoadingOverlay loading={loadingCanvas} />
+        {/* <LoadingOverlay loading={loadingCanvas} /> */}
       </View>
     );
   }

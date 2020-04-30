@@ -59,17 +59,20 @@ const Editor: React.FC<EditorProps & EditorConnectedProps> = React.memo(
   ({ close, transition, color, x, y, scale }) => {
     const indicatorPanRef = useRef<PanGestureHandler>(null);
 
-    const [pan, undo, confirm] = useValues(
-      [State.UNDETERMINED, State.UNDETERMINED, State.UNDETERMINED],
-      []
-    );
+    const [pan, undo, confirm] = useValues([
+      State.UNDETERMINED,
+      State.UNDETERMINED,
+      State.UNDETERMINED,
+    ]);
     const [, setRenderKey] = useState(0);
 
-    const [interpolatedHue, cachedH, cachedS, cachedV] = useValues<number>(
-      [0, 0, 0, 0],
-      []
-    );
-    const indicatorPos = useVector(0, 0, []);
+    const [interpolatedHue, cachedH, cachedS, cachedV] = useValues<number>([
+      0,
+      0,
+      0,
+      0,
+    ]);
+    const indicatorPos = useVector(0, 0);
 
     const { h, s, v } = useMemoOne(() => tinycolor(color).toHsv(), [color]);
     useLayoutEffect(() => {

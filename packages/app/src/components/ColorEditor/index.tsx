@@ -9,9 +9,9 @@ import {
 import { StyleSheet } from "react-native";
 import {
   mix,
-  useValues,
   onGestureEvent,
   withTransition,
+  useValue,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 
@@ -41,7 +41,7 @@ const ColorEditor: React.FC<
   const indicatorPanRef = useRef<PanGestureHandler>(null);
   const tapRef = useRef<TapGestureHandler>(null);
 
-  const [tapState] = useValues([State.UNDETERMINED], []);
+  const tapState = useValue(State.UNDETERMINED);
 
   const pressInTransition = useMemoOne(
     () =>

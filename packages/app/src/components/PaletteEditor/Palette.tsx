@@ -13,6 +13,7 @@ import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN, onPress } from "@lib";
 import { TouchableHighlight } from "@components/universal";
 
 import Color from "./Color";
+import { State } from "react-native-gesture-handler";
 
 export interface PaletteProps {
   palette: PaletteType;
@@ -31,7 +32,7 @@ const mapDispatchToProps = {
 
 const Palette: React.FC<PaletteProps & PaletteConnectedProps> = React.memo(
   ({ enable, palette, active }) => {
-    const tapState = useValue(0, []);
+    const tapState = useValue(State.UNDETERMINED);
 
     const { id: paletteId, name, colors } = palette;
 

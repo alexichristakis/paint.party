@@ -50,8 +50,8 @@ const ZoomPanHandler: React.FC<ZoomPanHandlerProps> = React.memo(
       []
     );
 
-    const [scale, scaleOffset] = useValues([1, 1], []);
-    const [pinchState, panState] = useValues([UNDETERMINED, UNDETERMINED], []);
+    const [scale, scaleOffset] = useValues([1, 1]);
+    const [pinchState, panState] = useValues([UNDETERMINED, UNDETERMINED]);
 
     const pinchGestureHandler = onGestureEvent({
       scale,

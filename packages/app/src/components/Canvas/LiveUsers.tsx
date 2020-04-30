@@ -7,6 +7,7 @@ import {
   useClocks,
   mix,
   onGestureEvent,
+  useClock,
 } from "react-native-redash";
 import { connect, ConnectedProps } from "react-redux";
 
@@ -32,8 +33,8 @@ const LiveUsers: React.FC<
   LiveUsersProps & LiveUsersConnectedProps
 > = React.memo(
   ({ numUsers, onPress }) => {
-    const [clock] = useClocks(1, []);
-    const [value, state] = useValues([0, State.UNDETERMINED], []);
+    const clock = useClock();
+    const [value, state] = useValues([0, State.UNDETERMINED]);
 
     const handler = onGestureEvent({ state });
 

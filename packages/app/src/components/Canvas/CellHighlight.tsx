@@ -9,6 +9,7 @@ import {
   useValues,
   useClocks,
   mix,
+  useClock,
 } from "react-native-redash";
 import { connect } from "react-redux";
 
@@ -37,8 +38,8 @@ const BORDER_WIDTH = 3;
 
 export const CellHighlight: React.FC<CellHighlightProps> = React.memo(
   ({ borderColor = Colors.nearBlack, visible, cell }) => {
-    const [top, left] = useValues<number>([0, 0], []);
-    const [loopClock] = useClocks(1, []);
+    const [top, left] = useValues<number>([0, 0]);
+    const loopClock = useClock();
 
     const { x, y } = coordinatesFromIndex(cell);
     useCode(

@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import Animated from "react-native-reanimated";
 import { connect, ConnectedProps } from "react-redux";
 import { TapGestureHandler, State } from "react-native-gesture-handler";
-import { useValues, onGestureEvent } from "react-native-redash";
+import { useValues, onGestureEvent, useValue } from "react-native-redash";
 
 import * as selectors from "@redux/selectors";
 import { RootState } from "@redux/types";
@@ -30,7 +30,7 @@ const Color: React.FC<ColorProps & ColorConnectedProps> = ({
   color: backgroundColor,
 }) => {
   const ref = useRef<Animated.View>(null);
-  const [state] = useValues([State.UNDETERMINED], []);
+  const state = useValue(State.UNDETERMINED);
 
   const { opacity, editing } = useColorEditor(index, paletteId, ref, state);
   const handler = onGestureEvent({ state });

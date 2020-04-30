@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { TextInput, StyleSheet, Text } from "react-native";
 import { ConnectedProps, connect, useSelector } from "react-redux";
-import { useValues } from "react-native-redash";
+import { useValues, useValue } from "react-native-redash";
 import moment from "moment";
 
 import * as selectors from "@redux/selectors";
@@ -36,7 +36,7 @@ export type CreateCanvasConnectedProps = ConnectedProps<typeof connector>;
 const CreateCanvas: React.FC<CreateCanvasProps> = React.memo(({ onCreate }) => {
   const textInputRef = useRef<TextInput>(null);
 
-  const [sliderValue] = useValues([0], []);
+  const sliderValue = useValue(0);
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
   const [expiry, setExpiry] = useState(moment().add(1, "day"));
   const [name, setName] = useState("");

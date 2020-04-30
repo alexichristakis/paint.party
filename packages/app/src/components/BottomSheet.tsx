@@ -48,17 +48,20 @@ const CLOSED = SCREEN_HEIGHT;
 
 export const BottomSheet: React.FC<BottomSheetProps> = React.memo(
   ({ open, style, children, scrollRef, onClose }) => {
-    const [clock] = useClocks(1, []);
+    const [clock] = useClocks(1);
 
     const scrollHandlerRef = useRef<NativeViewGestureHandler>(null);
     const panRef = useRef<PanGestureHandler>(null);
 
-    const [drag, velocity, scroll, lastScroll, offset] = useValues(
-      [0, 0, 0, 0, SCREEN_HEIGHT],
-      []
-    );
-    const [shouldOpen, shouldClose] = useValues([bin(open), 0], []);
-    const panState = useValue(UNDETERMINED, []);
+    const [drag, velocity, scroll, lastScroll, offset] = useValues([
+      0,
+      0,
+      0,
+      0,
+      SCREEN_HEIGHT,
+    ]);
+    const [shouldOpen, shouldClose] = useValues([bin(open), 0]);
+    const panState = useValue(UNDETERMINED);
 
     const panHandler = onGestureEvent({
       state: panState,

@@ -655,9 +655,9 @@ PODS:
 
 DEPENDENCIES:
   - CodePush (from `../node_modules/react-native-code-push`)
-  - DoubleConversion (from `/Users/alexi/code/draw/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
-  - FBLazyVector (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/FBLazyVector`)
-  - FBReactNativeSpec (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/FBReactNativeSpec`)
+  - DoubleConversion (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - FBLazyVector (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/FBLazyVector`)
+  - FBReactNativeSpec (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/FBReactNativeSpec`)
   - Flipper (~> 0.33.1)
   - Flipper-DoubleConversion (= 1.1.7)
   - Flipper-Folly (~> 2.1)
@@ -677,32 +677,32 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitReactPlugin (~> 0.33.1)
   - FlipperKit/FlipperKitUserDefaultsPlugin (~> 0.33.1)
   - FlipperKit/SKIOSNetworkPlugin (~> 0.33.1)
-  - Folly (from `/Users/alexi/code/draw/node_modules/react-native/third-party-podspecs/Folly.podspec`)
-  - glog (from `/Users/alexi/code/draw/node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - RCTRequired (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/RCTRequired`)
-  - RCTTypeSafety (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/TypeSafety`)
-  - React (from `/Users/alexi/code/draw/node_modules/react-native/`)
-  - React-callinvoker (from `/Users/alexi/code/draw/node_modules/react-native/ReactCommon/callinvoker`)
-  - React-Core (from `/Users/alexi/code/draw/node_modules/react-native/`)
-  - React-Core/DevSupport (from `/Users/alexi/code/draw/node_modules/react-native/`)
-  - React-Core/RCTWebSocket (from `/Users/alexi/code/draw/node_modules/react-native/`)
-  - React-CoreModules (from `/Users/alexi/code/draw/node_modules/react-native/React/CoreModules`)
-  - React-cxxreact (from `/Users/alexi/code/draw/node_modules/react-native/ReactCommon/cxxreact`)
-  - React-jsi (from `/Users/alexi/code/draw/node_modules/react-native/ReactCommon/jsi`)
-  - React-jsiexecutor (from `/Users/alexi/code/draw/node_modules/react-native/ReactCommon/jsiexecutor`)
-  - React-jsinspector (from `/Users/alexi/code/draw/node_modules/react-native/ReactCommon/jsinspector`)
+  - Folly (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/third-party-podspecs/Folly.podspec`)
+  - glog (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - RCTRequired (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/RCTRequired`)
+  - RCTTypeSafety (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/TypeSafety`)
+  - React (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/`)
+  - React-callinvoker (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/callinvoker`)
+  - React-Core (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/`)
+  - React-Core/DevSupport (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/`)
+  - React-Core/RCTWebSocket (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/`)
+  - React-CoreModules (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/React/CoreModules`)
+  - React-cxxreact (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/cxxreact`)
+  - React-jsi (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/jsi`)
+  - React-jsiexecutor (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/jsiexecutor`)
+  - React-jsinspector (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-notifications (from `../node_modules/react-native-notifications`)
   - react-native-view-shot (from `../node_modules/react-native-view-shot`)
-  - React-RCTActionSheet (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/ActionSheetIOS`)
-  - React-RCTAnimation (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/NativeAnimation`)
-  - React-RCTBlob (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/Blob`)
-  - React-RCTImage (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/Image`)
-  - React-RCTLinking (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/LinkingIOS`)
-  - React-RCTNetwork (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/Network`)
-  - React-RCTSettings (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/Settings`)
-  - React-RCTText (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/Text`)
-  - React-RCTVibration (from `/Users/alexi/code/draw/node_modules/react-native/Libraries/Vibration`)
-  - ReactCommon/turbomodule/core (from `/Users/alexi/code/draw/node_modules/react-native/ReactCommon`)
+  - React-RCTActionSheet (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/ActionSheetIOS`)
+  - React-RCTAnimation (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/NativeAnimation`)
+  - React-RCTBlob (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Blob`)
+  - React-RCTImage (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Image`)
+  - React-RCTLinking (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/LinkingIOS`)
+  - React-RCTNetwork (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Network`)
+  - React-RCTSettings (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Settings`)
+  - React-RCTText (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Text`)
+  - React-RCTVibration (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Vibration`)
+  - ReactCommon/turbomodule/core (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
@@ -715,7 +715,7 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - Yoga (from `/Users/alexi/code/draw/node_modules/react-native/ReactCommon/yoga`)
+  - Yoga (from `/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
@@ -764,59 +764,59 @@ EXTERNAL SOURCES:
   CodePush:
     :path: "../node_modules/react-native-code-push"
   DoubleConversion:
-    :podspec: "/Users/alexi/code/draw/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+    :podspec: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/FBLazyVector"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/FBReactNativeSpec"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/FBReactNativeSpec"
   Folly:
-    :podspec: "/Users/alexi/code/draw/node_modules/react-native/third-party-podspecs/Folly.podspec"
+    :podspec: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/third-party-podspecs/Folly.podspec"
   glog:
-    :podspec: "/Users/alexi/code/draw/node_modules/react-native/third-party-podspecs/glog.podspec"
+    :podspec: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/third-party-podspecs/glog.podspec"
   RCTRequired:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/RCTRequired"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/RCTRequired"
   RCTTypeSafety:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/TypeSafety"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/TypeSafety"
   React:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/"
   React-callinvoker:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/ReactCommon/callinvoker"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/callinvoker"
   React-Core:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/"
   React-CoreModules:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/React/CoreModules"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/React/CoreModules"
   React-cxxreact:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/ReactCommon/cxxreact"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/cxxreact"
   React-jsi:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/ReactCommon/jsi"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/jsi"
   React-jsiexecutor:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/ReactCommon/jsiexecutor"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/ReactCommon/jsinspector"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/jsinspector"
   react-native-notifications:
     :path: "../node_modules/react-native-notifications"
   react-native-view-shot:
     :path: "../node_modules/react-native-view-shot"
   React-RCTActionSheet:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/ActionSheetIOS"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/NativeAnimation"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/NativeAnimation"
   React-RCTBlob:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/Blob"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Blob"
   React-RCTImage:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/Image"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Image"
   React-RCTLinking:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/LinkingIOS"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/LinkingIOS"
   React-RCTNetwork:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/Network"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Network"
   React-RCTSettings:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/Settings"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Settings"
   React-RCTText:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/Text"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Text"
   React-RCTVibration:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/Libraries/Vibration"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/Libraries/Vibration"
   ReactCommon:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/ReactCommon"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
   RNFastImage:
@@ -842,7 +842,7 @@ EXTERNAL SOURCES:
   RNSVG:
     :path: "../node_modules/react-native-svg"
   Yoga:
-    :path: "/Users/alexi/code/draw/node_modules/react-native/ReactCommon/yoga"
+    :path: "/Users/alexi/code/paint.party/packages/app/node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   abseil: 18063d773f5366ff8736a050fe035a28f635fd27

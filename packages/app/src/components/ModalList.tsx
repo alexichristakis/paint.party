@@ -15,6 +15,7 @@ import {
   spring,
   useValues,
   withSpring,
+  useValue,
 } from "react-native-redash";
 import isEqual from "lodash/isEqual";
 
@@ -87,13 +88,16 @@ export const ModalList: React.FC<ModalListProps> = React.memo(
     const scrollHandlerRef = useRef<NativeViewGestureHandler>(null);
     const panRef = useRef<PanGestureHandler>(null);
 
-    const [dragY, velocityY, scrollY, lastScrollY, offset] = useValues(
-      [0, 0, 0, 0, SCREEN_HEIGHT],
-      []
-    );
-    const [shouldOpen, shouldClose] = useValues([0, 0], []);
+    const [dragY, velocityY, scrollY, lastScrollY, offset] = useValues([
+      0,
+      0,
+      0,
+      0,
+      SCREEN_HEIGHT,
+    ]);
+    const [shouldOpen, shouldClose] = useValues<0 | 1>([0, 0]);
 
-    const [gestureState] = useValues([UNDETERMINED], []);
+    const gestureState = useValue(UNDETERMINED);
 
     const handleClose = () => {
       if (onClose) onClose();
