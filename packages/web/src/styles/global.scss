@@ -10,15 +10,18 @@ $darkgray: #70809a;
 $lightgray: #efefef;
 $nearblack: rgb(10, 10, 10);
 
-$gutter-width: calc(100vw / 19);
-$column-width: calc(#{$gutter-width} * 2);
+$margin: 30px;
+$margin-left: 170px;
+$num-columns: 8;
+$gutter-width: calc((100vw - #{$margin-left}) / 30);
+$column-width: calc(
+  (
+    (100vw - #{$margin-left} - ((#{$num-columns} - 1) * #{$gutter-width})) / #{$num-columns}
+  )
+);
 
 $side-bar-margin-top: calc(100vh + 2 * #{$column-width});
 $content-offset: calc(-100vh - #{$side-bar-margin-top});
-
-* {
-  margin: 0;
-}
 
 body {
   padding: 0;
@@ -31,15 +34,22 @@ body {
   h1 {
     font-weight: 300;
     font-size: 60pt;
-  }
-
-  h2 {
-    font-weight: 300;
-    font-size: 40pt;
+    margin: 0;
   }
 
   h2 {
     font-weight: 300;
     font-size: 32pt;
+    margin: 0;
   }
+
+  h3 {
+    font-weight: 300;
+    font-size: 20pt;
+    margin: 0;
+  }
+}
+
+.gutter {
+  width: $gutter-width;
 }

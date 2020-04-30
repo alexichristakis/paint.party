@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 
 import random from "lodash/random";
 import moment from "moment";
+
+// @ts-ignore
 import uuid from "uuid/v1";
 
 import styles from "./Background.scss";

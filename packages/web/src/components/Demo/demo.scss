@@ -2,25 +2,27 @@
 
 .container {
   display: flex;
-  padding: $gutter-width $gutter-width 0 0;
-  justify-content: space-between;
-  min-height: 100vh;
+  margin-left: $margin-left;
+  padding: calc(2 *#{$gutter-width}) $gutter-width 0 0;
+  // justify-content: space-between;
+  min-height: 80vh;
 }
 
 .description {
-  width: calc(2 *#{$column-width} + #{$gutter-width});
+  width: calc(3 *#{$column-width} + 2 * #{$gutter-width});
 }
 
 .screens {
   display: flex;
-  background: #f1efe6;
-  margin-top: $gutter-width;
-  padding: 0 0 $gutter-width 0;
-  align-items: center;
-  justify-content: space-evenly;
+  align-self: flex-start;
+  // background: #f1efe6;
+  // margin-top: $gutter-width;
+  justify-content: space-between;
   width: calc(4 *#{$column-width} + 3 *#{$gutter-width});
 }
 
 .screenshot {
-  width: calc(2 *#{$column-width});
+  display: flex;
+  height: auto;
+  width: calc(2 *#{$column-width} + #{$gutter-width});
 }

@@ -1,8 +1,11 @@
+@import "../../styles/global.scss";
+
 .container {
-  height: 100vh;
+  height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-left: calc(#{$margin} + #{$gutter-width});
 }
 
 @keyframes slide {

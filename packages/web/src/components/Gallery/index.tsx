@@ -13,6 +13,9 @@ const Gallery: React.FC<GalleryProps> = React.memo(({ scroll }) => {
         <img className={styles.canvas} src={"/jpg/canvases/tree.jpg"} />
         <img className={styles.canvas} src={"/jpg/canvases/sea.jpg"} />
         <img className={styles.canvas} src={"/jpg/canvases/rainbow.jpg"} />
+        <img className={styles.canvas} src={"/jpg/canvases/tree.jpg"} />
+        <img className={styles.canvas} src={"/jpg/canvases/sea.jpg"} />
+        <img className={styles.canvas} src={"/jpg/canvases/rainbow.jpg"} />
       </div>
     </div>
   );

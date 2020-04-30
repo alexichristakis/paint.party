@@ -7,6 +7,7 @@ import { usePointerPosition, useScrollPosition } from "../hooks";
 import ColorWheel from "./ColorWheel";
 import Cursor from "./Cursor";
 import Background from "./Background";
+import Footer from "./Footer";
 import Landing from "./Landing";
 import Gallery from "./Gallery";
 import SideBar from "./Sidebar";
@@ -17,21 +18,26 @@ export const Home: React.FC = () => {
   const { position, handler } = usePointerPosition();
 
   return (
-    <div className={styles.container} {...handler}>
+    <>
       <Background {...position} />
-      <SideBar />
+      <div className={styles.container} {...handler}>
+        <SideBar />
 
-      <div className={styles.content}>
-        <Landing />
-        <Gallery scroll={scroll} />
-        <Create />
-        <Draw />
-        <Share />
+        <div className={styles.content}>
+          <Landing />
+          <Gallery scroll={scroll} />
+          <Create />
+          <Gallery scroll={scroll} />
+          <Draw />
+          <Gallery scroll={scroll} />
+          <Share />
+          <Footer />
+        </div>
+
+        <ColorWheel scroll={scroll} />
+        <Cursor {...position} />
       </div>
-
-      <ColorWheel scroll={scroll} />
-      <Cursor {...position} />
-    </div>
+    </>
   );
 };
 

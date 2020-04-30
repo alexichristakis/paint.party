@@ -17,7 +17,7 @@ const SectionLink: React.FC<SectionLinkProps> = ({ to, title }) => (
     activeClass={styles.active}
     duration={500}
   >
-    <h3>{title}</h3>
+    <h2>{title}</h2>
   </Link>
 );
 
