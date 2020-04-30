@@ -24,5 +24,6 @@ export const useWindowSize = () => {
     };
   }, []); // Empty array ensures that effect is only run on mount and unmount
 
-  return windowSize;
+  const isMobile = windowSize.width ? windowSize.width < 700 : false;
+  return { ...windowSize, isMobile };
 };

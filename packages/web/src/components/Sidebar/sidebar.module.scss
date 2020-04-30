@@ -8,20 +8,32 @@
   align-self: flex-start;
   pointer-events: none;
   top: -35px;
-  width: $margin-left;
-  height: calc(100vh + 35px);
+  height: 100vh;
   margin-top: $side-bar-margin-top;
+
+  width: 100px;
+  @media only screen and (min-width: 992px) {
+    width: $margin-left;
+  }
 }
 
 .section {
-  color: lightgray;
-  transform: rotate(-90deg) translate(-15px, -20px);
+  color: $nearblack;
+  opacity: 0.2;
   transition: all 250ms ease;
+
+  transform: rotate(-90deg) translate(15px, -35px);
+  @media only screen and (min-width: 992px) {
+    transform: rotate(-90deg) translate(-15px, -20px);
+  }
 }
 
 .active {
-  color: $nearblack;
-  transform: rotate(0deg) translate(15px, 0);
+  opacity: 1;
+  transform: rotate(-90deg) translate(15px, -35px);
+  @media only screen and (min-width: 992px) {
+    transform: rotate(0deg) translate(15px, 0);
+  }
 }
 
 .wrapper {

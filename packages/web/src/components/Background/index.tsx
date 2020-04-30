@@ -18,17 +18,17 @@ type Square = {
   y: number;
 };
 
-const TAIL = 3;
 const CELL_SIZE = 30;
 
 export interface BackgroundProps {
   x: number;
   y: number;
+  width: number;
+  height: number;
 }
 
 const Background: React.FC<BackgroundProps> = React.memo(
-  ({ x: mouseX, y: mouseY }) => {
-    const { width = 0, height = 0 } = useWindowSize();
+  ({ x: mouseX, y: mouseY, width, height }) => {
     const [prevSquare, setPrevSquare] = useState(-1);
     const [squares, setSquares] = useState<{ [id: number]: Square }>({});
 

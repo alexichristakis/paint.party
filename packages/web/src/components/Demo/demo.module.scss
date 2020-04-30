@@ -2,26 +2,51 @@
 
 .container {
   display: flex;
-  margin-left: $margin-left;
   padding: calc(2 * #{$gutter-width}) $gutter-width 0 0;
+  justify-content: center;
   min-height: 80vh;
+
+  // }
+  // @media only screen and (min-width: 992px) {
+
+  flex-direction: column;
+  margin-left: 45px;
+  @media only screen and (min-width: 992px) {
+    flex-direction: row;
+    margin-left: 0;
+  }
 }
 
 .description {
-  width: $three-column;
+  @media only screen and (min-width: 992px) {
+    width: $three-column;
+  }
 }
 
 .screens {
   display: flex;
+  // flex-direction: column;
+  // @media only screen and (min-width: 992px) {
+  //   flex-direction: row;
+  // }
+
   align-self: flex-start;
   align-items: flex-start;
   justify-content: space-between;
-  width: $four-column;
+
+  width: 80%;
+  @media only screen and (min-width: 992px) {
+    width: $four-column;
+  }
 }
 
 .screenshot {
   display: flex;
   object-fit: contain;
   height: auto;
-  max-width: $two-column;
+
+  max-width: 45%;
+  @media only screen and (min-width: 992px) {
+    max-width: $two-column;
+  }
 }

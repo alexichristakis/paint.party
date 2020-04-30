@@ -57,6 +57,7 @@ const ColorWheel: React.FC<ColorWheelProps> = React.memo(({ scroll }) => {
         <div className={styles.wheel}>
           {times(FillColors.length, (i) => (
             <div
+              key={i}
               style={{
                 backgroundColor: FillColors[i],
                 // @ts-ignore

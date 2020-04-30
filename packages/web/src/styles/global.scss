@@ -5,25 +5,33 @@
   font-style: normal;
 }
 
-$turquoise: #afeeff;
-$darkgray: #70809a;
-$lightgray: #efefef;
-$nearblack: rgb(10, 10, 10);
-
-$margin: 30px;
 $margin-left: 170px;
+$margin: 30px;
 $num-columns: 8;
 $gutter-width: calc((100vw - #{$margin-left}) / 30);
 $column-width: calc(
-  (100vw - #{$margin-left} - ((#{$num-columns} - 1) * #{$gutter-width})) / #{$num-columns}
+  min(
+    calc(
+      (100vw - #{$margin-left} - ((#{$num-columns} - 1) * #{$gutter-width})) / #{$num-columns}
+    ),
+    125px
+  )
 );
 
 $two-column: calc(#{$column-width} * 2 + #{$gutter-width});
 $three-column: calc(#{$column-width} * 3 + 2 * #{$gutter-width});
 $four-column: calc(#{$column-width} * 4 + 3 * #{$gutter-width});
 
-$side-bar-margin-top: calc(100vh + 2 * #{$column-width});
+$side-bar-margin-top: calc(100vh + #{$column-width});
 $content-offset: calc(-100vh - #{$side-bar-margin-top});
+
+$mobile-width: 600px;
+// $
+
+$turquoise: #afeeff;
+$darkgray: #70809a;
+$lightgray: #efefef;
+$nearblack: rgb(10, 10, 10);
 
 body {
   padding: 0;
@@ -33,25 +41,76 @@ body {
   font-family: "SofiaPro";
 
   color: $nearblack;
-  h1 {
-    font-weight: 300;
-    font-size: 60pt;
-    margin: 0;
+
+  /* mobile */
+  @media only screen and (max-width: 600px) {
+    h1 {
+      font-weight: 300;
+      font-size: 30pt;
+      margin: 0;
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: 20pt;
+      margin: 0;
+    }
+
+    h3 {
+      font-weight: 300;
+      font-size: 12pt;
+      margin: 0;
+    }
   }
 
-  h2 {
-    font-weight: 300;
-    font-size: 32pt;
-    margin: 0;
+  /* Small devices (portrait tablets and large phones, 600px and up) */
+  @media only screen and (min-width: 600px) {
+    h1 {
+      font-weight: 300;
+      font-size: 60pt;
+      margin: 0;
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: 32pt;
+      margin: 0;
+    }
+
+    h3 {
+      font-weight: 300;
+      font-size: 20pt;
+      margin: 0;
+    }
   }
 
-  h3 {
-    font-weight: 300;
-    font-size: 20pt;
-    margin: 0;
+  /* Medium devices (landscape tablets, 768px and up) */
+  @media only screen and (min-width: 768px) {
+    h1 {
+      font-weight: 300;
+      font-size: 60pt;
+      margin: 0;
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: 32pt;
+      margin: 0;
+    }
+
+    h3 {
+      font-weight: 300;
+      font-size: 20pt;
+      margin: 0;
+    }
+  }
+
+  /* Large devices (laptops/desktops, 992px and up) */
+  @media only screen and (min-width: 992px) {
   }
 }
 
 .gutter {
   width: $gutter-width;
+  height: calc(4 * #{$gutter-width});
 }
