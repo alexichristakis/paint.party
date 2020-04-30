@@ -20,7 +20,7 @@ const Share: React.FC<ShareProps> = React.memo(({}) => {
           curate a gallery of your work.
         </h3>
       </div>
-      <Screens src={["/png/create_1.png", "/png/create_2.png"]} />
+      <Screens src={["/png/share_1.png", "/png/share_2.png"]} />
     </Element>
   );
 });

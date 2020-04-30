@@ -9,7 +9,7 @@ export interface DrawProps {}
 const Draw: React.FC<DrawProps> = React.memo(({}) => {
   return (
     <Element name="draw" className={styles.container}>
-      <Screens src={["/png/create_1.png", "/png/create_2.png"]} />
+      <Screens src={["/png/draw_1.png", "/png/draw_2.png"]} />
       <div className={"gutter"} />
       <div className={styles.description}>
         <h3>

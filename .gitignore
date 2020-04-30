@@ -49,11 +49,13 @@ buck-out/
 !debug.keystore
 
 # next
+out/
 dist/
 .next/
 /.pnp
 .pnp.js
 .env*
+.firebase/
 
 # fastlane
 #
