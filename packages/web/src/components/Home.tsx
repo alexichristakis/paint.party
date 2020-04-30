@@ -13,6 +13,18 @@ import Gallery from "./gallery";
 import SideBar from "./sidebar";
 import { Create, Draw, Share } from "./demo";
 
+const images = [
+  "/jpg/canvases/sea.jpg",
+  "/jpg/canvases/rainbow.jpg",
+  "/jpg/canvases/tree.jpg",
+];
+
+const images2 = [
+  "/jpg/canvases/sea.jpg",
+  "/jpg/canvases/otter.jpg",
+  "/jpg/canvases/cousins.jpg",
+];
+
 export const Home: React.FC = () => {
   const scroll = useScrollPosition();
   const { position, handler } = usePointerPosition();
@@ -25,11 +37,11 @@ export const Home: React.FC = () => {
 
         <div className={styles.content}>
           <Landing />
-          <Gallery scroll={scroll} />
+          <Gallery images={images} />
           <Create />
-          <Gallery backwards scroll={scroll} />
+          <Gallery backwards images={images2} />
           <Draw />
-          <Gallery scroll={scroll} />
+          <Gallery images={images} />
           <Share />
           <Footer />
         </div>

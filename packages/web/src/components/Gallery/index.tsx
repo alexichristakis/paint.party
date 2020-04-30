@@ -2,14 +2,15 @@ import React from "react";
 import classnames from "classnames";
 
 import styles from "./gallery.module.scss";
+import times from "lodash/times";
 
 export interface GalleryProps {
   backwards?: boolean;
-  scroll: number;
+  images: string[];
 }
 
 const Gallery: React.FC<GalleryProps> = React.memo(
-  ({ backwards = false, scroll }) => {
+  ({ backwards = false, images }) => {
     return (
       <div className={styles.container}>
         <div
@@ -17,12 +18,9 @@ const Gallery: React.FC<GalleryProps> = React.memo(
             [styles.backwards]: backwards,
           })}
         >
-          <img className={styles.canvas} src={"/jpg/canvases/tree.jpg"} />
-          <img className={styles.canvas} src={"/jpg/canvases/sea.jpg"} />
-          <img className={styles.canvas} src={"/jpg/canvases/rainbow.jpg"} />
-          <img className={styles.canvas} src={"/jpg/canvases/tree.jpg"} />
-          <img className={styles.canvas} src={"/jpg/canvases/sea.jpg"} />
-          <img className={styles.canvas} src={"/jpg/canvases/rainbow.jpg"} />
+          {times(2, () =>
+            images.map((src) => <img className={styles.canvas} {...{ src }} />)
+          )}
         </div>
       </div>
     );

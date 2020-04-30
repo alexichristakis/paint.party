@@ -1,6 +1,6 @@
 @import "../../styles/global.scss";
 
-@keyframes scrollLeft {
+@keyframes pan {
   from {
     transform: translate(0, 0);
   }
@@ -13,18 +13,15 @@
   display: flex;
   overflow-x: scroll;
   height: $three-column;
-
-  // transform: translate(-100%, 0);
 }
 
 .scroll {
-  position: absolute;
   display: flex;
-  animation: scrollLeft 30s 0s linear forwards infinite;
+  animation: pan 30s 0s linear forwards infinite;
 }
 
 .backwards {
-  animation: scrollLeft 30s 0s linear reverse infinite;
+  animation: pan 30s 0s linear reverse infinite;
 }
 
 .canvas {
