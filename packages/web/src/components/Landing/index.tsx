@@ -1,6 +1,6 @@
 import React from "react";
 
-import styles from "./Landing.scss";
+import styles from "./landing.module.scss";
 
 const Landing: React.FC = React.memo(() => {
   return (

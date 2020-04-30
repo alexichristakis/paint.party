@@ -6,9 +6,9 @@ import moment from "moment";
 // @ts-ignore
 import uuid from "uuid/v1";
 
-import styles from "./Background.scss";
+import styles from "./background.module.scss";
 import { useWindowSize, useInterval } from "../../hooks";
-import { FillColors } from "../ColorWheel";
+import { FillColors } from "../color-wheel";
 
 type Square = {
   time: number;

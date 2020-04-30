@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-scroll";
 
-import styles from "./sideBar.scss";
+import styles from "./sidebar.module.scss";
 
 export interface SectionLinkProps {
   to: string;

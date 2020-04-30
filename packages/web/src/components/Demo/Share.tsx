@@ -1,8 +1,8 @@
 import React from "react";
 import { Element } from "react-scroll";
 
-import styles from "./demo.scss";
-import Screens from "./Screens";
+import styles from "./demo.module.scss";
+import Screens from "./screens";
 
 export interface ShareProps {}
 
@@ -11,13 +11,13 @@ const Share: React.FC<ShareProps> = React.memo(({}) => {
     <Element name="share" className={styles.container}>
       <div className={styles.description}>
         <h3>
-          With paint party, you can draw pixel art with your friends in real
-          time.
+          Share your canvases with as many friends as you want! Anyone with the
+          unique canvas link can join.
         </h3>
         <br />
         <h3>
-          Every canvas offers a unique experience with customizeable size,
-          background color, duration, and draw interval.
+          You can watch your co-authors draw in real-time, share colors, and
+          curate a gallery of your work.
         </h3>
       </div>
       <Screens src={["/png/create_1.png", "/png/create_2.png"]} />

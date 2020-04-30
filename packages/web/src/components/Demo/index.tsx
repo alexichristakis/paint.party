@@ -1,3 +1,3 @@
-export { default as Create } from "./Create";
-export { default as Draw } from "./Draw";
-export { default as Share } from "./Share";
+export { default as Create } from "./create";
+export { default as Draw } from "./draw";
+export { default as Share } from "./share";

@@ -12,7 +12,7 @@
 .container {
   display: flex;
   overflow-x: scroll;
-  height: calc(#{$column-width} * 3 + 2 *#{$gutter-width});
+  height: $three-column;
 
   // transform: translate(-100%, 0);
 }
@@ -23,8 +23,12 @@
   animation: scrollLeft 30s 0s linear forwards infinite;
 }
 
+.backwards {
+  animation: scrollLeft 30s 0s linear reverse infinite;
+}
+
 .canvas {
-  width: calc(#{$column-width} * 3 + 2 *#{$gutter-width});
-  height: calc(#{$column-width} * 3 + 2 *#{$gutter-width});
+  max-width: $three-column;
+  max-height: $three-column;
   margin: 0 $gutter-width 0 0;
 }

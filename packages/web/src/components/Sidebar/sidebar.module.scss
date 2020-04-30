@@ -8,13 +8,14 @@
   align-self: flex-start;
   pointer-events: none;
   top: -35px;
+  width: $margin-left;
   height: calc(100vh + 35px);
   margin-top: $side-bar-margin-top;
 }
 
 .section {
   color: lightgray;
-  transform: rotate(-90deg);
+  transform: rotate(-90deg) translate(-15px, -20px);
   transition: all 250ms ease;
 }
 

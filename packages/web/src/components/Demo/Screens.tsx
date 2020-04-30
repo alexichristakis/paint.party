@@ -1,6 +1,6 @@
 import React from "react";
 
-import styles from "./demo.scss";
+import styles from "./demo.module.scss";
 
 export interface ScreensProps {
   src: [string, string];

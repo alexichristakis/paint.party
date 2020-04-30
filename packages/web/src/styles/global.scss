@@ -15,10 +15,12 @@ $margin-left: 170px;
 $num-columns: 8;
 $gutter-width: calc((100vw - #{$margin-left}) / 30);
 $column-width: calc(
-  (
-    (100vw - #{$margin-left} - ((#{$num-columns} - 1) * #{$gutter-width})) / #{$num-columns}
-  )
+  (100vw - #{$margin-left} - ((#{$num-columns} - 1) * #{$gutter-width})) / #{$num-columns}
 );
+
+$two-column: calc(#{$column-width} * 2 + #{$gutter-width});
+$three-column: calc(#{$column-width} * 3 + 2 * #{$gutter-width});
+$four-column: calc(#{$column-width} * 4 + 3 * #{$gutter-width});
 
 $side-bar-margin-top: calc(100vh + 2 * #{$column-width});
 $content-offset: calc(-100vh - #{$side-bar-margin-top});

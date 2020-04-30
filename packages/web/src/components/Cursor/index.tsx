@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import classnames from "classnames";
+import React from "react";
 
-import styles from "./cursor.scss";
+import styles from "./cursor.module.scss";
 
 export interface CursorProps {
   x: number;

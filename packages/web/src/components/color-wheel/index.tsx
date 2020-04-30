@@ -1,7 +1,7 @@
 import React from "react";
 import times from "lodash/times";
 
-import styles from "./ColorWheel.scss";
+import styles from "./color-wheel.module.scss";
 
 export const Colors = {
   transGray: "rgba(0, 0, 0, 0.7)",

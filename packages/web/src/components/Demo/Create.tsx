@@ -1,10 +1,8 @@
 import React from "react";
 import { Element } from "react-scroll";
 
-import globalStyles from "../../styles/global.scss";
-import styles from "./demo.scss";
-
-import Screens from "./Screens";
+import styles from "./demo.module.scss";
+import Screens from "./screens";
 
 export interface CreateProps {}
 
@@ -22,7 +20,7 @@ const Create: React.FC<CreateProps> = React.memo(({}) => {
           background color, duration, and draw interval.
         </h3>
       </div>
-      <div className={globalStyles.gutter} />
+      <div className={"gutter"} />
       <Screens src={["/png/create_1.png", "/png/create_2.png"]} />
     </Element>
   );
