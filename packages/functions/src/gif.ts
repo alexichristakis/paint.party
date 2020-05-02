@@ -17,7 +17,8 @@ export type CellUpdate = {
 
 const RESOLUTION = 6;
 
-export const compileCanvas = functions.https.onRequest(async (req, res) => {
+// generates and returns GIF of canvas
+export default functions.https.onRequest(async (req, res) => {
   const id = req.query.canvas.toString();
 
   const canvasRef = admin.database().ref(id);
