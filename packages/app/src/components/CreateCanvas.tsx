@@ -4,8 +4,8 @@ import { ConnectedProps, connect, useSelector } from "react-redux";
 import { useValues, useValue } from "react-native-redash";
 import moment from "moment";
 
+import { NewCanvas } from "@global";
 import * as selectors from "@redux/selectors";
-import { NewCanvas } from "@redux/modules/canvas";
 import { CanvasActions, ModalActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import {

@@ -6,14 +6,7 @@ import flatten from "lodash/flatten";
 import GIFEncoder from "gif-encoder-2";
 import { createCanvas } from "canvas";
 
-import { coordinatesFromIndex } from "@global";
-
-export type CellUpdate = {
-  id: string;
-  time: number;
-  author: string;
-  color: string;
-};
+import { CellUpdate, coordinatesFromIndex } from "@global";
 
 const RESOLUTION = 6;
 

@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import Animated, { Easing } from "react-native-reanimated";
 import { useValues, useTransition } from "react-native-redash";
 
-import { Canvas } from "@redux/modules";
+import { Canvas } from "@global";
 
 export type PhotoCarouselState = {
   canvas: Canvas;

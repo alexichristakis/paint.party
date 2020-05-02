@@ -6,8 +6,9 @@ import Haptics from "react-native-haptic-feedback";
 import times from "lodash/times";
 import { useCode, call } from "react-native-reanimated";
 
+import { Palette as PaletteType } from "@global";
 import * as selectors from "@redux/selectors";
-import { Palette as PaletteType, PaletteActions } from "@redux/modules";
+import { PaletteActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { TextStyles, Colors, COLOR_SIZE, COLOR_MARGIN, onPress } from "@lib";
 import { TouchableHighlight } from "@components/universal";

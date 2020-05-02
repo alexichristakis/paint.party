@@ -10,7 +10,7 @@ import { StyleSheet } from "react-native";
 import Haptics from "react-native-haptic-feedback";
 
 import { CanvasPreview } from "@components/universal";
-import { Canvas } from "@redux/modules";
+import { Canvas } from "@global";
 import { PhotoCarouselContext } from "@hooks";
 
 const { cond, eq } = Animated;

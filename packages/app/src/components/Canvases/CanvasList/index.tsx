@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import Animated from "react-native-reanimated";
 import sortBy from "lodash/sortBy";
 
-import { Canvas } from "@redux/modules/canvas";
+import { Canvas } from "@global";
 import { Colors } from "@lib";
 
 import CanvasRow from "./CanvasRow";

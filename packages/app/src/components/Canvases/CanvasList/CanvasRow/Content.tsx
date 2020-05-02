@@ -9,7 +9,7 @@ import {
   SCREEN_WIDTH,
   CANVAS_ROW_PREVIEW_SIZE,
 } from "@lib";
-import { Canvas } from "@redux/modules/canvas";
+import { Canvas } from "@global";
 import { CanvasPreview } from "@components/universal";
 
 import Clock from "@assets/svg/clock.svg";

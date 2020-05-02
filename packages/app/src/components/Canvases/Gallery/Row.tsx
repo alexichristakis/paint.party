@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import times from "lodash/times";
 
-import { Canvas } from "@redux/modules";
+import { Canvas } from "@global";
 import { CANVAS_PREVIEW_SIZE } from "@lib";
 
 import Item from "./Item";

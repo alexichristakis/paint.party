@@ -20,8 +20,9 @@ import { connect, ConnectedProps } from "react-redux";
 import isEqual from "lodash/isEqual";
 
 import { Colors, canvasUrl } from "@lib";
+import { Canvas } from "@global";
 import { RootState } from "@redux/types";
-import { Canvas, CanvasActions } from "@redux/modules/canvas";
+import { CanvasActions } from "@redux/modules/canvas";
 import { TouchableHighlight } from "@components/universal";
 import { useOnLayout } from "@hooks";
 

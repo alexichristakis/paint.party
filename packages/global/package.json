@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rm -rf ./dist && tsc",
-    "deploy": "yarn build && for i in ../web/src/global ../app/src/global ../functions/src/global; do cp -r ./dist $i; done; rm -rf dist"
+    "build": "tsc",
+    "deploy": "yarn build && node scripts/deploy.js"
   },
-  "dependencies": {}
+  "dependencies": {
+    "yargs": "^15.3.1"
+  }
 }
