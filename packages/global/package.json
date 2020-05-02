@@ -1,0 +1,10 @@
+{
+  "name": "@paint.party/global",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "firebase deploy"
+  },
+  "dependencies": {}
+}
