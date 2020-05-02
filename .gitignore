@@ -23,6 +23,7 @@ DerivedData
 project.xcworkspace
 Pods/
 GoogleService-Info.plist
+key.json
 
 # Android/IntelliJ
 #
