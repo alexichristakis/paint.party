@@ -3,8 +3,10 @@ import immer from "immer";
 // @ts-ignore
 import uuid from "uuid/v1";
 
-import { createAction, ActionTypes, ActionUnion } from "../types";
+import { Palettes } from "@global";
 import { Palette1, Palette2 } from "@lib";
+
+import { createAction, ActionTypes, ActionUnion } from "../types";
 
 export const DefaultPalettes: Palettes = {
   default: {
@@ -18,14 +20,6 @@ export const DefaultPalettes: Palettes = {
     colors: Palette2,
   },
 };
-
-export type Palette = {
-  id: string;
-  name: string;
-  colors: string[];
-};
-
-export type Palettes = { [id: string]: Palette };
 
 export type PaletteState = Readonly<{
   activePalette: string;

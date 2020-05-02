@@ -29,9 +29,9 @@ const ColorPicker: React.FC<
   ColorPickerProps & ColorPickerConnectedProps
 > = React.memo(
   ({ visible }) => {
-    const [popupDragState] = useValues<State>([State.UNDETERMINED], []);
-    const [rotation, activeIndex] = useValues<number>([0, -1], []);
-    const popupPosition = useVector(0, 0, []);
+    const [popupDragState] = useValues<State>([State.UNDETERMINED]);
+    const [rotation, activeIndex] = useValues<number>([0, -1]);
+    const popupPosition = useVector(0, 0);
 
     const openTransition = useMemoOne(
       () =>

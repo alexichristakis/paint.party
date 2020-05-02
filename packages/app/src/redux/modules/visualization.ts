@@ -1,19 +1,9 @@
 import { View } from "react-native";
 import immer from "immer";
 
+import { Cell, Cells, Positions, CellUpdate } from "@global";
+
 import { createAction, ActionUnion, ActionTypes } from "../types";
-
-export type CellUpdate = {
-  id: string;
-  time: number;
-  author: string;
-  color: string;
-};
-
-export type Cell = { [cellUpdateId: string]: CellUpdate };
-export type Cells = { [id: string]: Cell };
-
-export type Positions = { [uid: string]: number };
 
 export type VisualizationState = {
   id: string;

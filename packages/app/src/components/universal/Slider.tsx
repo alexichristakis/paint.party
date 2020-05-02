@@ -40,8 +40,8 @@ export const Slider: React.FC<SliderProps> = ({
   style,
 }) => {
   const { onLayout, width } = useOnLayout();
-  const [state] = useValues([State.UNDETERMINED], []);
-  const [sliderPosition] = useValues<number>([0], []);
+  const [state] = useValues([State.UNDETERMINED]);
+  const [sliderPosition] = useValues<number>([0]);
 
   const handler = onGestureEvent({
     state,

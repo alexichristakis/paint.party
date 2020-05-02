@@ -1,5 +1,5 @@
 {
-  "name": "functions",
+  "name": "@paint.party/functions",
   "version": "1.0.0",
   "main": "dist/index.js",
   "engines": {

@@ -1,0 +1,12 @@
+{
+  "name": "@paint.party/global",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "yarn build && node scripts/deploy.js"
+  },
+  "dependencies": {
+    "yargs": "^15.3.1"
+  }
+}

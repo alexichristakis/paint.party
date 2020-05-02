@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import Animated, { Easing } from "react-native-reanimated";
 import { useValues, useTransition } from "react-native-redash";
 
-import { Canvas } from "@redux/modules";
+import { Canvas } from "@global";
 
 export type PhotoCarouselState = {
   canvas: Canvas;
@@ -20,7 +20,7 @@ export const PhotoCarouselContext = React.createContext(
 );
 
 export const usePhotoCarouselState = (): PhotoCarouselState => {
-  const [x, y] = useValues<number>([-0, 0], []);
+  const [x, y] = useValues<number>([0, 0]);
   const [canvas, setCanvas] = useState<Canvas>({} as Canvas);
   const [visible, setVisible] = useState(false);
 

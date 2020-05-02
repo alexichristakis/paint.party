@@ -1,37 +1,14 @@
-import Animated, { Value } from "react-native-reanimated";
-import { State } from "react-native-gesture-handler";
-
-import { URL_PREFIX, CELL_SIZE, CANVAS_DIMENSIONS } from "./constants";
-import { Point, vec } from "react-native-redash";
 import { DependencyList } from "react";
+import Animated from "react-native-reanimated";
 import { useMemoOne } from "use-memo-one";
-import { Cell } from "@redux/modules";
+import { State } from "react-native-gesture-handler";
 import sortBy from "lodash/sortBy";
+import { vec } from "react-native-redash";
 
-const {
-  cond,
-  eq,
-  sqrt,
-  pow,
-  neq,
-  and,
-  call,
-  set,
-  proc,
-  block,
-  add,
-  multiply,
-  lessThan,
-  abs,
-  modulo,
-  round,
-  interpolate,
-  divide,
-  onChange,
-  sub,
-  color,
-  Extrapolate,
-} = Animated;
+import { Cell } from "@global";
+import { URL_PREFIX, CELL_SIZE, CANVAS_DIMENSIONS } from "./constants";
+
+const { cond, eq, sqrt, pow, neq, set, proc, block, add, onChange } = Animated;
 
 export const base64 = (data: string) => {
   let enc = "";

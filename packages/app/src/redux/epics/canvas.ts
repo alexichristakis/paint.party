@@ -3,12 +3,12 @@ import uniq from "lodash/uniq";
 import { filter, switchMap } from "rxjs/operators";
 import { isOfType } from "typesafe-actions";
 import { Epic } from "redux-observable";
-
 import firestore from "@react-native-firebase/firestore";
+
+import { Canvas } from "@global";
 
 import * as selectors from "../selectors";
 import { CanvasActions } from "../modules";
-import { Canvas } from "../modules/canvas";
 import { RootState, ActionUnion as Actions, ActionTypes } from "../types";
 
 const createCanvas: Epic<Actions, Actions, RootState> = (action$, state$) =>

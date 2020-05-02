@@ -1,7 +1,7 @@
 import React, { useMemo, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 
-import { Canvas } from "@redux/modules";
+import { Canvas } from "@global";
 
 import Row from "./Row";
 

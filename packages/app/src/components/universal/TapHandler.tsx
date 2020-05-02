@@ -20,10 +20,10 @@ interface TapHandlerProps {
 
 export const TapHandler: React.FC<TapHandlerProps> = React.memo(
   ({ onPress, children, value, disabled, dependencies = [], style }) => {
-    const [prevState, state] = useValues(
-      [State.UNDETERMINED, State.UNDETERMINED],
-      []
-    );
+    const [prevState, state] = useValues([
+      State.UNDETERMINED,
+      State.UNDETERMINED,
+    ]);
     const handler = useMemoOne(() => onGestureEvent({ state }), []);
 
     useCode(
@@ -32,7 +32,7 @@ export const TapHandler: React.FC<TapHandlerProps> = React.memo(
           value,
           withTransition(or(eq(state, State.BEGAN), eq(state, State.ACTIVE)), {
             duration: 200,
-            easing: Easing.inOut(Easing.ease)
+            easing: Easing.inOut(Easing.ease),
           })
         ),
         cond(eq(prevState, State.UNDETERMINED), set(prevState, state)),
@@ -41,8 +41,8 @@ export const TapHandler: React.FC<TapHandlerProps> = React.memo(
           cond(
             eq(state, State.END),
             call([], () => onPress())
-          )
-        ])
+          ),
+        ]),
       ],
       [...dependencies]
     );

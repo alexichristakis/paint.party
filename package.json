@@ -1,11 +1,27 @@
 {
-  "name": "root",
+  "name": "paint.party",
   "private": true,
-  "devDependencies": {
+  "scripts": {
+    "tsc-app": "tsc -p packages/app/tsconfig.json",
+    "tsc-web": "tsc -p packages/web/tsconfig.json",
+    "tsc-functions": "tsc -p packages/functions/tsconfig.json",
+    "tsc-global": "tsc -p packages/global/tsconfig.json",
+    "tsc": "yarn tsc-app; yarn tsc-web; yarn tsc-functions; yarn tsc-global"
+  },
+  "dependencies": {
     "@types/jest": "^25.2.1",
     "@types/lodash": "^4.14.150",
     "@types/tinycolor2": "^1.4.2",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "eslint": "^7.0.0-alpha.3",
+    "husky": "^4.2.5",
     "lerna": "^3.20.2",
     "typescript": "^3.8.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn tsc"
+    }
   }
 }

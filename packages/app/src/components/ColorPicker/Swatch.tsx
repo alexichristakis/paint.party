@@ -62,10 +62,10 @@ const Swatch: React.FC<SwatchProps & SwatchConnectedProps> = React.memo(
     const tapRef = useRef<TapGestureHandler>(null);
     const longPressRef = useRef<LongPressGestureHandler>(null);
 
-    const [longPressState, tapState] = useValues(
-      [State.UNDETERMINED, State.UNDETERMINED],
-      []
-    );
+    const [longPressState, tapState] = useValues([
+      State.UNDETERMINED,
+      State.UNDETERMINED,
+    ]);
 
     const activeTransition = useMemoOne(
       () =>
