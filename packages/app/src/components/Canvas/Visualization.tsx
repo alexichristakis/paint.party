@@ -37,12 +37,9 @@ const Visualization: React.FC<
   VisualizationProps & VisualizationReduxProps
 > = React.memo(
   ({ pickerVisible, positionsVisible, selectCell, backgroundColor }) => {
-    const tap = useVector(0, 0, []);
-    const tapState = useValue(UNDETERMINED, []);
-    const tapGestureHandler = useGestureHandler(
-      { state: tapState, ...tap },
-      []
-    );
+    const tap = useVector(0, 0);
+    const tapState = useValue(UNDETERMINED);
+    const tapGestureHandler = useGestureHandler({ state: tapState, ...tap });
 
     const handleOnPressCell = useCallback(
       ([x, y]: Readonly<number[]>) => selectCell(coordinatesToIndex(x, y)),

@@ -38,7 +38,7 @@ export const ColorEditorContext = React.createContext<ColorEditorState>(
 );
 
 export const useColorEditorState = (): ColorEditorState => {
-  const [x, y, scale] = useValues<number>([0, 0, 1], []);
+  const [x, y, scale] = useValues<number>([0, 0, 1]);
   const [{ visible, paletteId, index }, setState] = useState<EditorState>({
     visible: false,
     paletteId: "",

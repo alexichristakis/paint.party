@@ -9,6 +9,7 @@ import {
   withSpringTransition,
   mix,
   withTransition,
+  useValue,
 } from "react-native-redash";
 import { useMemoOne } from "use-memo-one";
 
@@ -34,11 +35,12 @@ export interface ActionButtonProps {
 
 const ActionButton: React.FC<ActionButtonProps> = React.memo(
   ({ onPressAction1, onPressAction2 }) => {
-    const [state, action1State, action2State] = useValues(
-      [State.UNDETERMINED, State.UNDETERMINED, State.UNDETERMINED],
-      []
-    );
-    const [active] = useValues([0], []);
+    const [state, action1State, action2State] = useValues([
+      State.UNDETERMINED,
+      State.UNDETERMINED,
+      State.UNDETERMINED,
+    ]);
+    const active = useValue<0 | 1>(0);
 
     const handler = onGestureEvent({ state });
     const action1Handler = onGestureEvent({ state: action1State });

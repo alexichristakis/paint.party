@@ -7,6 +7,7 @@ import {
   translate,
   pinchBegan,
   vec,
+  useValue,
 } from "react-native-redash";
 import { State, PinchGestureHandler } from "react-native-gesture-handler";
 
@@ -34,8 +35,8 @@ const ZoomHandler: React.FC<ZoomHandlerProps> = React.memo(
       []
     );
 
-    const [scale, scaleOffset] = useValues([1, 1], []);
-    const [pinchState] = useValues([UNDETERMINED], []);
+    const [scale, scaleOffset] = useValues([1, 1]);
+    const pinchState = useValue(UNDETERMINED);
 
     const pinchGestureHandler = onGestureEvent({
       scale,
