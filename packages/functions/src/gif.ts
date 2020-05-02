@@ -17,7 +17,8 @@ export type CellUpdate = {
 
 const RESOLUTION = 6;
 
-export const compileCanvas = functions.https.onRequest(async (req, res) => {
+// generates and returns GIF of canvas
+export default functions.https.onRequest(async (req, res) => {
   const id = req.query.canvas.toString();
 
   const canvasRef = admin.database().ref(id);
@@ -39,19 +40,21 @@ export const compileCanvas = functions.https.onRequest(async (req, res) => {
 
   const gifSize = size * RESOLUTION;
 
-  const frame = createCanvas(gifSize, gifSize);
-  const encoder = new GIFEncoder(gifSize, gifSize, "octree");
+  // create frame
+  const frame = createCanvas(gifSize, gifSize).getContext("2d");
 
-  const ctx = frame.getContext("2d");
+  // set up gif encoder
+  const encoder = new GIFEncoder(gifSize, gifSize, "octree");
   encoder.setDelay(250);
   encoder.start();
 
-  ctx.fillStyle = backgroundColor;
-  ctx.fillRect(0, 0, gifSize, gifSize);
+  // draw background color
+  frame.fillStyle = backgroundColor;
+  frame.fillRect(0, 0, gifSize, gifSize);
 
-  encoder.addFrame(ctx);
+  encoder.addFrame(frame);
 
-  // iterate through board updates
+  // reduce and sort all board updates
   const updates = flatten(
     Object.keys(cells)
       .filter((id) => id !== "live")
@@ -66,15 +69,17 @@ export const compileCanvas = functions.https.onRequest(async (req, res) => {
       })
   ).sort((a, b) => a.time - b.time);
 
+  // iterate through board updates adding each frame
   updates.forEach(({ color, cell }) => {
     const { x, y } = coordinatesFromIndex(cell, size, RESOLUTION);
 
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, RESOLUTION, RESOLUTION);
+    frame.fillStyle = color;
+    frame.fillRect(x, y, RESOLUTION, RESOLUTION);
 
-    encoder.addFrame(ctx);
+    encoder.addFrame(frame);
   });
 
+  // finish encoding, get buffer, send to client
   encoder.finish();
 
   const buffer = encoder.out.getData();
