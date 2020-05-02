@@ -84,13 +84,6 @@ export const compileCanvas = functions.https.onRequest(async (req, res) => {
 
   const buffer = encoder.out.getData();
 
-  writeFile(path.join(__dirname, "../output", "test.gif"), buffer, (error) => {
-    // gif drawn or error
-    console.log(error);
-  });
-
-  //   console.log(id);
-
   res.contentType("image/gif");
   res.end(buffer, "binary");
 });
