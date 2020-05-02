@@ -39,7 +39,7 @@ export type ButtonConnectedProps = ConnectedProps<typeof connector>;
 
 const Button: React.FC<ButtonProps & ButtonConnectedProps> = React.memo(
   ({ visible, openTransition, draw, color }) => {
-    const state = useValue(State.UNDETERMINED, []);
+    const state = useValue(State.UNDETERMINED);
 
     const pressInTransition = useMemoOne(
       () =>
@@ -55,7 +55,7 @@ const Button: React.FC<ButtonProps & ButtonConnectedProps> = React.memo(
       easing: Easing.inOut(Easing.ease),
     });
 
-    const tapHandler = useGestureHandler({ state }, []);
+    const tapHandler = useGestureHandler({ state });
     const openPalettes = useReduxAction(ModalActions.openPaletteEditor);
 
     useCode(

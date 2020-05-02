@@ -22,7 +22,7 @@ export const TouchableScale: React.FC<TouchableScaleProps> = ({
   enabled = true,
   onPress,
 }) => {
-  const [value] = useValues([0], []);
+  const [value] = useValues([0]);
   const scale = mix(value, 1, toScale);
 
   const handleOnPress = () => (onPress && enabled ? onPress() : null);

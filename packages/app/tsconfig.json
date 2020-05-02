@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "outDir": "dist",
     "module": "commonjs",
     "lib": ["es6"],
     "jsx": "react-native",
@@ -15,7 +16,8 @@
       "@screens/*": ["screens/*"],
       "@lib": ["lib"],
       "@api": ["api"],
-      "@hooks": ["hooks"]
+      "@hooks": ["hooks"],
+      "@global": ["global"]
     },
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,

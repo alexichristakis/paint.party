@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "dist",
     "paths": {
       "@paint.party/*": ["./packages/*/src"]
     },
+    "noEmit": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
@@ -19,14 +19,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext",
-    "composite": true
+    "target": "esnext"
   },
-  "references": [
-    { "path": "packages/app" },
-    { "path": "packages/web" },
-    { "path": "packages/functions" },
-    { "path": "packages/global" }
-  ],
   "exclude": ["node_modules"]
 }

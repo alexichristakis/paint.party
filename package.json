@@ -2,7 +2,11 @@
   "name": "paint.party",
   "private": true,
   "scripts": {
-    "tsc": "tsc"
+    "tsc-app": "tsc -p packages/app/tsconfig.json",
+    "tsc-web": "tsc -p packages/web/tsconfig.json",
+    "tsc-functions": "tsc -p packages/functions/tsconfig.json",
+    "tsc-global": "tsc -p packages/global/tsconfig.json",
+    "tsc": "yarn tsc-app; yarn tsc-web; yarn tsc-functions; yarn tsc-global"
   },
   "dependencies": {
     "@types/jest": "^25.2.1",

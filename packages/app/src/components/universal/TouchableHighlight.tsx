@@ -45,7 +45,7 @@ export const TouchableHighlight: React.FC<TouchableHighlightProps> = ({
   const longPressRef = useRef<LongPressGestureHandler>(null);
   const tapRef = useRef<TapGestureHandler>(null);
 
-  const [x, y] = useValues([0, 0], []);
+  const [x, y] = useValues([0, 0]);
 
   const [longPressHandler, tapHandler] = useMemoOne(
     () => [

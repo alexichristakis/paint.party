@@ -6,7 +6,7 @@ import flatten from "lodash/flatten";
 import GIFEncoder from "gif-encoder-2";
 import { createCanvas } from "canvas";
 
-import { coordinatesFromIndex } from "./util";
+import { coordinatesFromIndex } from "@global";
 
 export type CellUpdate = {
   id: string;

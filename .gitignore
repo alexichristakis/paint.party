@@ -24,6 +24,7 @@ project.xcworkspace
 Pods/
 GoogleService-Info.plist
 key.json
+**/*/src/global
 
 # Android/IntelliJ
 #

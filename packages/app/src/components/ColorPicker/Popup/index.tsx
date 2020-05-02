@@ -92,16 +92,13 @@ const Popup: React.FC<PopupProps & PopupConnectedProps> = React.memo(
       []
     );
 
-    const handler = useGestureHandler(
-      {
-        absoluteX: position.x,
-        absoluteY: position.y,
-        translationX: drag.x,
-        translationY: drag.y,
-        state,
-      },
-      []
-    );
+    const handler = useGestureHandler({
+      absoluteX: position.x,
+      absoluteY: position.y,
+      translationX: drag.x,
+      translationY: drag.y,
+      state,
+    });
 
     const active = eq(state, State.ACTIVE);
     const transition = useMemoOne(() => withTransition(active), []);

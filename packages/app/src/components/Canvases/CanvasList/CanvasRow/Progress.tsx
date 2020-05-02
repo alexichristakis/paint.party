@@ -23,11 +23,8 @@ const Progress: React.FC<ProgressProps> = React.memo(
   ({ time = 0, children }) => {
     const currentTime = moment().unix();
 
-    const clock = useClock([]);
-    const [loopValue, delta] = useValues(
-      [1, Math.max(time - currentTime, 0)],
-      [time]
-    );
+    const clock = useClock();
+    const [loopValue, delta] = useValues([1, Math.max(time - currentTime, 0)]);
 
     const value = timing({
       to: 1,

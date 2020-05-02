@@ -21,6 +21,8 @@ export const cellColor = createSelector(
 
       return sorted[updates.length - 1].color;
     }
+
+    return undefined;
   }
 );
 export const live = createSelector(s, (canvas) => canvas.live);

@@ -20,7 +20,7 @@ export const PhotoCarouselContext = React.createContext(
 );
 
 export const usePhotoCarouselState = (): PhotoCarouselState => {
-  const [x, y] = useValues<number>([-0, 0], []);
+  const [x, y] = useValues<number>([0, 0]);
   const [canvas, setCanvas] = useState<Canvas>({} as Canvas);
   const [visible, setVisible] = useState(false);
 

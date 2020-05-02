@@ -58,25 +58,26 @@ const CanvasRow: React.FC<
     const { onLayout, width } = useOnLayout();
     const { name, id } = canvas;
 
-    const clock = useClock([]);
+    const clock = useClock();
 
-    const [panState, tapState, longPressState] = useValues(
-      [State.UNDETERMINED, State.UNDETERMINED, State.UNDETERMINED],
-      []
-    );
-    const [drag, velocity, offset, shouldClose] = useValues<number>(
-      [0, 0, 0, 0, 0],
-      []
-    );
+    const [panState, tapState, longPressState] = useValues([
+      State.UNDETERMINED,
+      State.UNDETERMINED,
+      State.UNDETERMINED,
+    ]);
+    const [drag, velocity, offset, shouldClose] = useValues<number>([
+      0,
+      0,
+      0,
+      0,
+      0,
+    ]);
 
-    const handler = useGestureHandler(
-      {
-        state: panState,
-        translationX: drag,
-        velocityX: velocity,
-      },
-      []
-    );
+    const handler = useGestureHandler({
+      state: panState,
+      translationX: drag,
+      velocityX: velocity,
+    });
 
     const handleOnLongPress = useCallback(() => {
       Haptics.trigger("impactMedium");

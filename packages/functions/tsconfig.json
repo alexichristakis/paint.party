@@ -7,8 +7,11 @@
     "esModuleInterop": true,
     "noUnusedLocals": true,
     "outDir": "dist",
-    "sourceMap": true
+    "sourceMap": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@global": ["global"]
+    }
   },
-  "compileOnSave": true,
-  "include": ["src"]
+  "compileOnSave": true
 }

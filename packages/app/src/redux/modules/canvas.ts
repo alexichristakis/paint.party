@@ -2,20 +2,9 @@ import immer from "immer";
 import { Alert } from "react-native";
 import keyBy from "lodash/keyBy";
 
+import { Canvas, NewCanvas } from "@global";
+
 import { createAction, ActionUnion, ActionTypes } from "../types";
-
-export type Canvas = {
-  id: string;
-  name: string;
-  creator: string;
-  authors: string[];
-  backgroundColor: string;
-  nextDrawAt: number;
-  createdAt: number;
-  expiresAt: number;
-};
-
-export type NewCanvas = Pick<Canvas, "name" | "backgroundColor" | "expiresAt">;
 
 export type CanvasState = Readonly<{
   activeCanvas: string;
