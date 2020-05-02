@@ -6,6 +6,10 @@
       {
         "source": "**",
         "destination": "/index.html"
+      },
+      {
+        "source": "/gif",
+        "function": "compileCanvas"
       }
     ]
   }

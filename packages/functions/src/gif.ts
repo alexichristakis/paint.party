@@ -5,8 +5,6 @@ import flatten from "lodash/flatten";
 // @ts-ignore
 import GIFEncoder from "gif-encoder-2";
 import { createCanvas } from "canvas";
-import { writeFile } from "fs";
-import path from "path";
 
 import { coordinatesFromIndex } from "./util";
 
@@ -17,7 +15,7 @@ export type CellUpdate = {
   color: string;
 };
 
-const RESOLUTION = 5;
+const RESOLUTION = 6;
 
 export const compileCanvas = functions.https.onRequest(async (req, res) => {
   const id = req.query.canvas.toString();
@@ -38,21 +36,18 @@ export const compileCanvas = functions.https.onRequest(async (req, res) => {
   const canvas = canvasSnap.data();
 
   const { size = 20, backgroundColor = "#FFFFFF" } = canvas as any;
-  //   const  } = canvas;
-  //   console.log(cells);
 
-  const GIF_SIZE = size * RESOLUTION;
-  const CELL_SIZE = RESOLUTION;
+  const gifSize = size * RESOLUTION;
 
-  const frame = createCanvas(GIF_SIZE, GIF_SIZE);
-  const encoder = new GIFEncoder(GIF_SIZE, GIF_SIZE, "octree");
+  const frame = createCanvas(gifSize, gifSize);
+  const encoder = new GIFEncoder(gifSize, gifSize, "octree");
 
   const ctx = frame.getContext("2d");
   encoder.setDelay(250);
   encoder.start();
 
   ctx.fillStyle = backgroundColor;
-  ctx.fillRect(0, 0, GIF_SIZE, GIF_SIZE);
+  ctx.fillRect(0, 0, gifSize, gifSize);
 
   encoder.addFrame(ctx);
 
@@ -72,10 +67,10 @@ export const compileCanvas = functions.https.onRequest(async (req, res) => {
   ).sort((a, b) => a.time - b.time);
 
   updates.forEach(({ color, cell }) => {
-    const { x, y } = coordinatesFromIndex(cell, size, CELL_SIZE);
+    const { x, y } = coordinatesFromIndex(cell, size, RESOLUTION);
 
     ctx.fillStyle = color;
-    ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+    ctx.fillRect(x, y, RESOLUTION, RESOLUTION);
 
     encoder.addFrame(ctx);
   });
