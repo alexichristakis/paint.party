@@ -1,7 +1,9 @@
 {
+  // "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "noImplicitReturns": true,
+    "esModuleInterop": true,
     "noUnusedLocals": true,
     "outDir": "dist",
     "sourceMap": true,
