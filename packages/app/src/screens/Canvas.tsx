@@ -35,7 +35,7 @@ const Canvas: React.FC<CanvasProps & CanvasReduxProps> = React.memo(
         <Header {...{ positionsVisible, pickerVisible }} />
         <Visualization {...{ pickerVisible, positionsVisible }} />
         <ColorPicker visible={pickerVisible} />
-        {/* <LoadingOverlay loading={loadingCanvas} /> */}
+        <LoadingOverlay loading={loadingCanvas} />
       </View>
     );
   }
