@@ -6,7 +6,7 @@
     "node": "10"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf ./dist && tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "serve": "source .env && npm run build && firebase serve",
     "shell": "npm run build && firebase functions:shell",
     "start": "shell",
@@ -20,5 +20,8 @@
     "gif-encoder-2": "^1.0.5",
     "lodash": "^4.17.15",
     "node-gif": "^1.0.5"
+  },
+  "devDependencies": {
+    "tscpaths": "0.0.9"
   }
 }

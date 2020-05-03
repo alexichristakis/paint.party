@@ -3,12 +3,15 @@
   "compilerOptions": {
     "target": "es2017",
     "module": "commonjs",
+    "noEmit": false,
     "noImplicitReturns": true,
     "esModuleInterop": true,
     "noUnusedLocals": true,
     "outDir": "dist",
     "sourceMap": true,
     "baseUrl": "./src",
+    "allowJs": true,
+
     "paths": {
       "@global": ["global"]
     }

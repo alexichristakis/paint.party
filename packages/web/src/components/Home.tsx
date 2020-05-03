@@ -27,29 +27,24 @@ const images2 = [
 
 export const Home: React.FC = () => {
   const scroll = useScrollPosition();
-  const { position, handler } = usePointerPosition();
 
   return (
-    <>
-      <Background {...position} />
-      <div className={styles.container} {...handler}>
-        <SideBar />
+    <div className={styles.container}>
+      <SideBar />
 
-        <div className={styles.content}>
-          <Landing />
-          <Gallery images={images} />
-          <Create />
-          <Gallery backwards images={images2} />
-          <Draw />
-          <Gallery images={images} />
-          <Share />
-          <Footer />
-        </div>
-
-        <ColorWheel scroll={scroll} />
-        <Cursor {...position} />
+      <div className={styles.content}>
+        <Landing />
+        <Gallery images={images} />
+        <Create />
+        <Gallery backwards images={images2} />
+        <Draw />
+        <Gallery images={images} />
+        <Share />
+        <Footer />
       </div>
-    </>
+
+      <ColorWheel scroll={scroll} />
+    </div>
   );
 };
 

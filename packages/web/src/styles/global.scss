@@ -55,3 +55,16 @@ body {
 .gutter {
   width: $gutter-width;
 }
+
+@keyframes breathe {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.breathe {
+  animation: breathe 750ms 0s ease alternate infinite;
+}

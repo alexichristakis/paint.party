@@ -9,11 +9,10 @@
       }
 
       const references = files
-        .filter((file) => file !== "global")
+        .filter((file) => file !== "global" && file !== ".DS_Store")
         .map((package) => "../" + package + "/src/global");
 
       references.forEach(async (package) => {
-        //
         await exec(`rm -rf ${package}`);
         await exec(`cp -r ./dist ${package}`);
       });

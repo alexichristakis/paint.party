@@ -1,0 +1,19 @@
+@import "../../styles/global.scss";
+
+.button {
+  z-index: 1;
+  width: calc(100vw - 95px);
+  max-width: 340px;
+  padding: 15px 0;
+  border: 3px solid black;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+
+  transition: all 250ms ease;
+}
+
+.button:hover,
+.button:active {
+  transform: scale(1.2);
+}
