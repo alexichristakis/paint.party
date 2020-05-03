@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 
 import { getCanvas } from "@firebase";
 import {
@@ -7,7 +6,6 @@ import {
   appStoreUrl,
   gifURL,
   localURL,
-  validCanvasId,
   pluralize,
 } from "@global";
 import { Button } from "./universal";
@@ -15,17 +13,10 @@ import { Button } from "./universal";
 import styles from "./Canvas.module.scss";
 
 export interface CanvasProps {
-  id?: string;
+  id: string;
 }
 
-const Canvas: React.FC<CanvasProps> = React.memo((props) => {
-  const route = useRouter();
-
-  let id = "";
-  if (validCanvasId(route.query.id)) {
-    id = route.query.id as string;
-  }
-
+const Canvas: React.FC<CanvasProps> = React.memo(({ id }) => {
   const [canvasExists, setCanvasExists] = useState(true);
   const [canvas, setCanvas] = useState<CanvasType | null>(null);
 
@@ -49,7 +40,6 @@ const Canvas: React.FC<CanvasProps> = React.memo((props) => {
   }, [id]);
 
   const handleClickJoin = () => window.open(localURL(id));
-
   const handleClickAppStore = () => window.open(appStoreUrl);
 
   if (canvasExists)
