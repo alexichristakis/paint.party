@@ -8,7 +8,7 @@ import { usePointerPosition } from "../hooks";
 import Cursor from "../components/cursor";
 import Background from "../components/background";
 
-import "../styles/global.scss";
+import "../styles/styles.scss";
 
 class App extends NextApp {
   static async getInitialProps({ Component, ctx }) {
