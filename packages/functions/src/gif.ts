@@ -12,6 +12,8 @@ const RESOLUTION = 6;
 
 // generates and returns GIF of canvas
 export default functions.https.onRequest(async (req, res) => {
+  // res.set("Access-Control-Allow-Origin", "*");
+
   const id = req.query.canvas.toString();
 
   const canvasRef = admin.database().ref(id);

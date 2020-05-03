@@ -21,3 +21,7 @@ export const coordinatesFromIndex = (
 
   return { x: i * cellSize, y: j * cellSize };
 };
+
+export const validCanvasId = (canvasId: any) => {
+  return typeof canvasId === "string";
+};

@@ -14,7 +14,12 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "paths": {
+      "@firebase": ["firebase"],
+      "@global": ["global"]
+    }
   },
   "include": ["src"],
   "exclude": [
