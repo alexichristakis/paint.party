@@ -20,7 +20,6 @@ type Square = {
   y: number;
 };
 
-const TAIL = 3;
 const CELL_SIZE = 30;
 
 export interface BackgroundProps {
