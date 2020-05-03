@@ -2,7 +2,9 @@
   // "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "esnext",
+    "target": "esnext",
     "lib": ["es6", "dom"],
+    "strict": true,
     "jsx": "preserve",
     "noEmit": true,
     "isolatedModules": true,
