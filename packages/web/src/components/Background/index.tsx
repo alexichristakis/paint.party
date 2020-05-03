@@ -6,6 +6,8 @@ import moment from "moment";
 // @ts-ignore
 import uuid from "uuid/v1";
 
+import { coordinatesFromIndex, coordinatesToIndex } from "@global";
+
 import styles from "./background.module.scss";
 import { useWindowSize, useInterval } from "../../hooks";
 import { FillColors } from "../color-wheel";
@@ -45,34 +47,9 @@ const Background: React.FC<BackgroundProps> = React.memo(
 
     const dimension = Math.ceil(Math.max(width, height) / CELL_SIZE);
 
-    const coordinatesToIndex = useCallback(
-      (x: number, y: number) =>
-        Math.floor(y / CELL_SIZE) * dimension + Math.floor(x / CELL_SIZE),
-      [dimension]
-    );
-
-    const indicesFromIndex = useCallback(
-      (index: number) => {
-        const i = Math.floor(index % dimension);
-        const j = Math.floor(index / dimension);
-
-        return { i, j };
-      },
-      [dimension]
-    );
-
-    const coordinatesFromIndex = useCallback(
-      (index: number) => {
-        const { i, j } = indicesFromIndex(index);
-
-        return { x: i * CELL_SIZE, y: j * CELL_SIZE };
-      },
-      [dimension]
-    );
-
     useEffect(() => {
-      const i = coordinatesToIndex(mouseX, mouseY);
-      const { x, y } = coordinatesFromIndex(i);
+      const i = coordinatesToIndex(mouseX, mouseY, dimension, CELL_SIZE);
+      const { x, y } = coordinatesFromIndex(i, dimension, CELL_SIZE);
 
       const time = moment().unix();
 
