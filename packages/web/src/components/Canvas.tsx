@@ -14,49 +14,58 @@ import { Button } from "./universal";
 
 import styles from "./Canvas.module.scss";
 
-const Canvas: React.FC = () => {
+export interface CanvasProps {
+  id?: string;
+}
+
+const Canvas: React.FC<CanvasProps> = React.memo((props) => {
   const route = useRouter();
 
-  let canvasId = "";
-  if (validCanvasId(route.query.c)) {
-    canvasId = route.query.c as string;
+  // console.log("id", props);
+  console.log("route", route);
+
+  let id = "";
+  // let canvasId = "";
+  if (validCanvasId(route.query.id)) {
+    id = route.query.id as string;
   }
 
-  const [canvasExists, setCanvasExists] = useState(!!canvasId.length);
+  const [canvasExists, setCanvasExists] = useState(true);
   const [canvas, setCanvas] = useState<CanvasType | null>(null);
 
   useEffect(() => {
-    getCanvas(canvasId).then(
-      (val) => {
-        if (val.exists) {
-          const data = val.data();
+    if (!id) return;
+    getCanvas(id)
+      .then(
+        (val) => {
+          if (val.exists) {
+            const data = val.data();
 
-          if (data) {
-            setCanvas(data as CanvasType);
+            if (data) {
+              setCanvas(data as CanvasType);
+            }
+          } else {
+            setCanvasExists(false);
           }
-        } else {
+        },
+        (err) => {
           setCanvasExists(false);
         }
-      },
-      (err) => {
+      )
+      .catch((err) => {
         setCanvasExists(false);
-      }
-    );
-  }, [canvasId]);
+      });
+  }, [id]);
 
-  const handleClickJoin = () => {
-    window.open(localURL(canvasId));
-  };
+  const handleClickJoin = () => window.open(localURL(id));
 
-  const handleClickAppStore = () => {
-    window.open(appStoreUrl);
-  };
+  const handleClickAppStore = () => window.open(appStoreUrl);
 
   if (canvasExists)
     return (
       <div className={styles.container}>
         <h2 className={styles.header}>{canvas?.name ?? "loading..."}</h2>
-        <img className={styles.gif} src={gifURL(canvasId)} />
+        <img className={styles.gif} src={gifURL(id)} />
         <Button
           className={styles.joinButton}
           onClick={handleClickJoin}
@@ -78,6 +87,6 @@ const Canvas: React.FC = () => {
       <h2>whoops! that canvas doesn't appear to exist</h2>
     </div>
   );
-};
+});
 
 export default Canvas;
