@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 
 import random from "lodash/random";
 import moment from "moment";
 
 // @ts-ignore
-import uuid from "uuid/v1";
+import { v1 as uuid } from "uuid";
 
 import { coordinatesFromIndex, coordinatesToIndex } from "@global";
 
@@ -33,6 +33,7 @@ const Background: React.FC<BackgroundProps> = React.memo(
     const [prevSquare, setPrevSquare] = useState(-1);
     const [squares, setSquares] = useState<{ [id: number]: Square }>({});
 
+    // clear squares every second
     useInterval(() => {
       setSquares((squares) => {
         const currentTime = moment().unix();
