@@ -4,7 +4,7 @@ import random from "lodash/random";
 import moment from "moment";
 
 // @ts-ignore
-import uuid from "uuid/v1";
+// import uuid from "uuid/v1";
 
 import { coordinatesFromIndex, coordinatesToIndex } from "@global";
 
@@ -56,7 +56,7 @@ const Background: React.FC<BackgroundProps> = React.memo(
         setSquares((prevSquares) => ({
           ...prevSquares,
           [i]: {
-            i: uuid(),
+            i,
             x,
             y,
             time,

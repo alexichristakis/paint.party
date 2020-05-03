@@ -7,9 +7,8 @@
     "dev": "next",
     "dev-config": "cross-env DEBUG_CONFIG=true next ./src",
     "build": "next build",
-    "build:analyze": "cross-env ANALYZE=true yarpm run build",
-    "build:maxify": "cross-env ANALYZE=true MINIFY=false yarpm run build",
-    "export": "next export"
+    "export": "next export",
+    "deploy": "now"
   },
   "dependencies": {
     "classnames": "^2.2.6",
