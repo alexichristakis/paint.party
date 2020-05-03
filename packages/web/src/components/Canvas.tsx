@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-import firebase from "@firebase";
-import { Canvas as CanvasType, gifURL, validCanvasId } from "@global";
+import { getCanvas } from "@firebase";
+import {
+  Canvas as CanvasType,
+  appStoreUrl,
+  gifURL,
+  localURL,
+  validCanvasId,
+  pluralize,
+} from "@global";
+import { Button } from "./universal";
 
 import styles from "./Canvas.module.scss";
 
@@ -18,34 +26,50 @@ const Canvas: React.FC = () => {
   const [canvas, setCanvas] = useState<CanvasType | null>(null);
 
   useEffect(() => {
-    if (validCanvasId(canvasId)) {
-      firebase
-        .firestore()
-        .collection("canvases")
-        .doc(canvasId)
-        .get()
-        .then(
-          (val) => {
-            if (val.exists) {
-              const data = val.data();
+    getCanvas(canvasId).then(
+      (val) => {
+        if (val.exists) {
+          const data = val.data();
 
-              if (data) {
-                setCanvas(data as CanvasType);
-              }
-            } else {
-              setCanvasExists(false);
-            }
-          },
-          (err) => console.log(err)
-        );
-    }
+          if (data) {
+            setCanvas(data as CanvasType);
+          }
+        } else {
+          setCanvasExists(false);
+        }
+      },
+      (err) => {
+        setCanvasExists(false);
+      }
+    );
   }, [canvasId]);
+
+  const handleClickJoin = () => {
+    window.open(localURL(canvasId));
+  };
+
+  const handleClickAppStore = () => {
+    window.open(appStoreUrl);
+  };
 
   if (canvasExists)
     return (
       <div className={styles.container}>
-        {!!canvas ? <h2 className={styles.header}>{canvas.name}</h2> : null}
+        <h2 className={styles.header}>{canvas?.name ?? "loading..."}</h2>
         <img className={styles.gif} src={gifURL(canvasId)} />
+        <Button
+          className={styles.joinButton}
+          onClick={handleClickJoin}
+          title={"join now"}
+        />
+        <h4 className={"breathe"}>
+          {pluralize("other", canvas?.authors.length)} drawing right now
+        </h4>
+        <img
+          onClick={handleClickAppStore}
+          className={styles.appstore}
+          src={"svg/download-on-appstore.svg"}
+        />
       </div>
     );
 

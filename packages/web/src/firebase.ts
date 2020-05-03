@@ -24,7 +24,9 @@ try {
   }
 }
 
+const instance = firebase.app();
 // const instance = firebase.initializeApp(config);
-
-const instance = firebase;
 export default instance;
+
+export const getCanvas = (id: string) =>
+  instance.firestore().collection("canvases").doc(id).get();
