@@ -2,26 +2,38 @@
 
 .container {
   display: flex;
-  margin-left: $margin-left;
-  padding: calc(2 * #{$gutter-width}) $gutter-width 0 0;
-  min-height: 80vh;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 20px;
+  justify-content: center;
+  // min-height: 80vh;
+  // width: 100vw;
+}
+
+.reverse {
+  flex-wrap: wrap-reverse;
 }
 
 .description {
-  width: $three-column;
+  width: 100%;
+  min-width: 300px;
+  max-width: 500px;
 }
 
 .screens {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   align-self: flex-start;
   align-items: flex-start;
   justify-content: space-between;
-  width: $four-column;
+  margin-top: 25px;
+  max-width: 700px;
 }
 
 .screenshot {
   display: flex;
   object-fit: contain;
   height: auto;
-  max-width: $two-column;
+  max-width: 45%;
 }

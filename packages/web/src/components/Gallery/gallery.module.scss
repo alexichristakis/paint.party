@@ -12,7 +12,7 @@
 .container {
   display: flex;
   overflow-x: scroll;
-  height: $three-column;
+  margin: 50px 0;
 }
 
 .scroll {
@@ -25,7 +25,10 @@
 }
 
 .canvas {
-  max-width: $three-column;
-  max-height: $three-column;
+  width: $three-column;
+  height: $three-column;
+  max-width: 350px;
+  max-height: 350px;
+
   margin: 0 $gutter-width 0 0;
 }

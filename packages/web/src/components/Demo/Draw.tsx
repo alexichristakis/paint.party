@@ -1,5 +1,5 @@
 import React from "react";
-import { Element } from "react-scroll";
+import classNames from "classnames";
 
 import styles from "./demo.module.scss";
 import Screens from "./screens";
@@ -8,7 +8,7 @@ export interface DrawProps {}
 
 const Draw: React.FC<DrawProps> = React.memo(({}) => {
   return (
-    <Element name="draw" className={styles.container}>
+    <div className={classNames(styles.container, styles.reverse)}>
       <Screens src={["/png/draw_1.png", "/png/draw_2.png"]} />
       <div className={"gutter"} />
       <div className={styles.description}>
@@ -23,7 +23,7 @@ const Draw: React.FC<DrawProps> = React.memo(({}) => {
           customizable.
         </h3>
       </div>
-    </Element>
+    </div>
   );
 });
 

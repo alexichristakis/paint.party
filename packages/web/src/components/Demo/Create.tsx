@@ -1,5 +1,4 @@
 import React from "react";
-import { Element } from "react-scroll";
 
 import styles from "./demo.module.scss";
 import Screens from "./screens";
@@ -8,7 +7,7 @@ export interface CreateProps {}
 
 const Create: React.FC<CreateProps> = React.memo(({}) => {
   return (
-    <Element name="create" className={styles.container}>
+    <div className={styles.container}>
       <div className={styles.description}>
         <h3>
           With paint party, you can draw pixel art with your friends in real
@@ -22,7 +21,7 @@ const Create: React.FC<CreateProps> = React.memo(({}) => {
       </div>
       <div className={"gutter"} />
       <Screens src={["/png/create_1.png", "/png/create_2.png"]} />
-    </Element>
+    </div>
   );
 });
 

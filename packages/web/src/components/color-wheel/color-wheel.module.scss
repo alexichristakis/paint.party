@@ -1,6 +1,6 @@
 @import "../../styles/global.scss";
 
-$color-size: calc(#{$column-width} / 5);
+$color-size: 20%;
 
 @keyframes spin {
   from {
@@ -28,8 +28,8 @@ $color-size: calc(#{$column-width} / 5);
   justify-content: center;
   top: $margin;
   right: $margin;
-  width: $column-width;
-  height: $column-width;
+  width: 150px;
+  height: 150px;
   animation: entrance 500ms 0s ease forwards;
 }
 
@@ -49,14 +49,15 @@ $color-size: calc(#{$column-width} / 5);
 }
 
 .color {
-  transform: rotate(var(--rotate)) translate(0, calc(#{$column-width} / 2));
+  transform: rotate(var(--rotate)) translate(0, 75px);
   position: absolute;
-  left: calc((#{$column-width} - #{$color-size}) / 2);
-  top: calc((#{$column-width} - #{$color-size}) / 2);
+  left: calc((150px - #{$color-size}) / 2);
+  top: calc((150px - #{$color-size}) / 2);
 
-  width: $color-size;
-  height: $color-size;
-  border-radius: calc(#{$color-size} / 2);
+  border: solid 2px $nearblack;
+  width: 20%;
+  height: 20%;
+  border-radius: 20px;
 }
 
 .download {

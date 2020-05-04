@@ -1,5 +1,4 @@
 import React from "react";
-import { Element } from "react-scroll";
 
 import styles from "./demo.module.scss";
 import Screens from "./screens";
@@ -8,7 +7,7 @@ export interface ShareProps {}
 
 const Share: React.FC<ShareProps> = React.memo(({}) => {
   return (
-    <Element name="share" className={styles.container}>
+    <div className={styles.container}>
       <div className={styles.description}>
         <h3>
           Share your canvases with as many friends as you want! Anyone with the
@@ -21,7 +20,7 @@ const Share: React.FC<ShareProps> = React.memo(({}) => {
         </h3>
       </div>
       <Screens src={["/png/share_1.png", "/png/share_2.png"]} />
-    </Element>
+    </div>
   );
 });
 

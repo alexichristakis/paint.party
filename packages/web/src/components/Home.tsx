@@ -2,11 +2,9 @@ import React from "react";
 
 import styles from "./Home.module.scss";
 
-import { usePointerPosition, useScrollPosition } from "../hooks";
+import { useScrollPosition } from "../hooks";
 
 import ColorWheel from "./color-wheel";
-import Cursor from "./cursor";
-import Background from "./background";
 import Footer from "./footer";
 import Landing from "./landing";
 import Gallery from "./gallery";
@@ -30,16 +28,17 @@ export const Home: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <SideBar />
+      {/* <SideBar /> */}
 
       <div className={styles.content}>
         <Landing />
         <Gallery images={images} />
         <Create />
-        <Gallery backwards images={images2} />
+        <Gallery images={images} />
         <Draw />
         <Gallery images={images} />
         <Share />
+
         <Footer />
       </div>
 
