@@ -12,10 +12,10 @@ const Footer: React.FC = React.memo(() => {
 
   return (
     <div className={styles.container}>
-      <h3 onClick={handleOnClickFeedback} className={styles.intro}>
+      <h3 onClick={handleOnClickFeedback} className={styles.link}>
         feedback
       </h3>
-      <h3 onClick={handleOnClickPrivacy} className={styles.intro}>
+      <h3 onClick={handleOnClickPrivacy} className={styles.link}>
         privacy
       </h3>
     </div>

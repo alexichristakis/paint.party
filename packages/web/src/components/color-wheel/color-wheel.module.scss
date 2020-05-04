@@ -1,6 +1,6 @@
 @import "../../styles/global.scss";
 
-$color-wheel-diameter: calc(min(max(20vw, 100px), 300px));
+$color-wheel-diameter: calc(min(max(20vw, 100px), 200px));
 $color-wheel-radius: calc(#{$color-wheel-diameter} / 2);
 $color-size: calc(#{$color-wheel-diameter} / 5);
 $color-offset: calc((#{$color-wheel-diameter} - #{$color-size}) / 2);

@@ -48,9 +48,7 @@ export interface ColorWheelProps {
 }
 
 const ColorWheel: React.FC<ColorWheelProps> = React.memo(({ scroll }) => {
-  const handleOnClick = () => {
-    window.open(appStoreUrl);
-  };
+  const handleOnClick = () => window.open(appStoreUrl);
 
   return (
     <div className={styles.container}>
@@ -63,7 +61,7 @@ const ColorWheel: React.FC<ColorWheelProps> = React.memo(({ scroll }) => {
                 backgroundColor: FillColors[i],
                 // @ts-ignore
                 "--rotate":
-                  (i * 360) / (FillColors.length - 1) + scroll / 5 + "deg",
+                  (i * 360) / (FillColors.length - 1) + scroll / 10 + "deg",
               }}
               className={styles.color}
             />
