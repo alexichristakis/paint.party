@@ -38,10 +38,8 @@ export const Home: React.FC = () => {
         <Draw />
         <Gallery images={images} />
         <Share />
-
-        <Footer />
       </div>
-
+      <Footer />
       <ColorWheel scroll={scroll} />
     </div>
   );

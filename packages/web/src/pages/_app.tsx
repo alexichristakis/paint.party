@@ -13,11 +13,11 @@ const App: React.FC = ({ Component, pageProps }) => {
 
   return (
     <>
-      {/* <Background {...position} /> */}
+      <Background {...position} />
       <div {...handler}>
         <DefaultSeo titleTemplate="%s" />
         <Component {...pageProps} />
-        {/* <Cursor {...position} /> */}
+        <Cursor {...position} />
       </div>
     </>
   );
