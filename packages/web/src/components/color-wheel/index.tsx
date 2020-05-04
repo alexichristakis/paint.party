@@ -1,6 +1,8 @@
 import React from "react";
 import times from "lodash/times";
 
+import { appStoreUrl } from "@global";
+
 import styles from "./color-wheel.module.scss";
 
 export const Colors = {
@@ -47,7 +49,7 @@ export interface ColorWheelProps {
 
 const ColorWheel: React.FC<ColorWheelProps> = React.memo(({ scroll }) => {
   const handleOnClick = () => {
-    window.alert("clicked");
+    window.open(appStoreUrl);
   };
 
   return (

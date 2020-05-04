@@ -1,6 +1,9 @@
 @import "../../styles/global.scss";
 
-$color-size: 20%;
+$color-wheel-diameter: calc(min(max(20vw, 100px), 300px));
+$color-wheel-radius: calc(#{$color-wheel-diameter} / 2);
+$color-size: calc(#{$color-wheel-diameter} / 5);
+$color-offset: calc((#{$color-wheel-diameter} - #{$color-size}) / 2);
 
 @keyframes spin {
   from {
@@ -26,10 +29,10 @@ $color-size: 20%;
   display: flex;
   align-items: center;
   justify-content: center;
-  top: $margin;
-  right: $margin;
-  width: 150px;
-  height: 150px;
+  top: $color-size;
+  right: $color-size;
+  width: $color-wheel-diameter;
+  height: $color-wheel-diameter;
   animation: entrance 500ms 0s ease forwards;
 }
 
@@ -49,15 +52,15 @@ $color-size: 20%;
 }
 
 .color {
-  transform: rotate(var(--rotate)) translate(0, 75px);
+  transform: rotate(var(--rotate)) translate(0, $color-wheel-radius);
   position: absolute;
-  left: calc((150px - #{$color-size}) / 2);
-  top: calc((150px - #{$color-size}) / 2);
+  left: $color-offset;
+  top: $color-offset;
 
   border: solid 2px $nearblack;
-  width: 20%;
-  height: 20%;
-  border-radius: 20px;
+  width: $color-size;
+  height: $color-size;
+  border-radius: $color-size;
 }
 
 .download {
