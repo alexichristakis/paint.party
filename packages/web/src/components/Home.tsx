@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import styles from "./Home.module.scss";
 
@@ -23,26 +23,28 @@ const images2 = [
   "/jpg/canvases/cousins.jpg",
 ];
 
-export const Home: React.FC = () => {
+export const Home: React.FC = React.memo(() => {
+  // const [activeSection, setActiveSection] = useState("");
   const scroll = useScrollPosition();
 
   return (
     <div className={styles.container}>
-      {/* <SideBar /> */}
+      {/* <SideBar active={activeSection} /> */}
 
       <div className={styles.content}>
         <Landing />
         <Gallery images={images} />
         <Create />
-        <Gallery images={images} />
+        <Gallery backwards images={images2} />
         <Draw />
         <Gallery images={images} />
         <Share />
       </div>
+
       <Footer />
       <ColorWheel scroll={scroll} />
     </div>
   );
-};
+});
 
 export default Home;

@@ -1,12 +1,17 @@
 import React from "react";
 
-import Base from "./base";
+import Base, { BaseProps } from "./base";
 
-export interface CreateProps {}
-export const Create: React.FC<CreateProps> = React.memo(({}) => {
+export interface DemoProps {
+  onEnter?: (section: string) => void;
+}
+
+export interface CreateProps extends DemoProps {}
+export const Create: React.FC<CreateProps> = React.memo(({ onEnter }) => {
   return (
     <Base
       title="Create"
+      onEnter={onEnter}
       text={[
         "With paint party, you can draw pixel art with your friends in real time.",
         "Every canvas offers a unique experience with customizeable size, background color, duration, and draw interval.",
@@ -16,11 +21,12 @@ export const Create: React.FC<CreateProps> = React.memo(({}) => {
   );
 });
 
-export interface DrawProps {}
-export const Draw: React.FC<DrawProps> = React.memo(({}) => {
+export interface DrawProps extends DemoProps {}
+export const Draw: React.FC<DrawProps> = React.memo(({ onEnter }) => {
   return (
     <Base
       reverse
+      onEnter={onEnter}
       title="Draw"
       text={[
         "Drawing fills in a single pixel. Each canvas can limit how frequently authors draw, so it helps to communicate a plan to your fellow drawers!",
@@ -31,11 +37,12 @@ export const Draw: React.FC<DrawProps> = React.memo(({}) => {
   );
 });
 
-export interface ShareProps {}
-export const Share: React.FC<ShareProps> = React.memo(({}) => {
+export interface ShareProps extends DemoProps {}
+export const Share: React.FC<ShareProps> = React.memo(({ onEnter }) => {
   return (
     <Base
       title="Share"
+      onEnter={onEnter}
       text={[
         "Share your canvases with as many friends as you want! Anyone with the unique canvas link can join.",
         "You can watch your co-authors draw in real-time, share colors, and curate a gallery of your work.",

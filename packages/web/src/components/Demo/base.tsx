@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useEffect, useLayoutEffect } from "react";
 import useInview from "react-cool-inview";
 import classNames from "classnames";
 
@@ -6,6 +6,7 @@ import styles from "./demo.module.scss";
 import Screens from "./screens";
 
 export interface BaseProps {
+  onEnter?: (section: string) => void;
   title: string;
   text: string[];
   screenshots: [string, string];
@@ -13,41 +14,40 @@ export interface BaseProps {
 }
 
 const Base: React.FC<BaseProps> = React.memo(
-  ({ title, text, screenshots, reverse = false }) => {
+  ({ title, text, screenshots, reverse = false, onEnter }) => {
     const ref = useRef<HTMLDivElement>(null);
 
-    const { inView } = useInview(ref, {});
-
-    const content = useMemo(
-      () => [
-        <div className={styles.description}>
-          {text.map((s) => (
-            <>
-              <br />
-              <h3>{s}</h3>
-            </>
-          ))}
-        </div>,
-        <div className={"gutter"} />,
-        <Screens src={screenshots} />,
-      ],
-      []
-    );
-
-    if (reverse) content.reverse();
+    const { inView } = useInview(ref, {
+      onEnter: () => (onEnter ? onEnter(title) : null),
+    });
 
     return (
       <>
-        <div className={classNames(styles.header, { [styles.inView]: inView })}>
+        <div
+          ref={ref}
+          className={classNames(styles.header, { [styles.inView]: inView })}
+        >
           <h2>{title}</h2>
         </div>
         <div
-          ref={ref}
           className={classNames(styles.container, {
             [styles.reverse]: reverse,
           })}
         >
-          {content.map((e) => e)}
+          <div className={styles.description}>
+            {text.map((s) => (
+              <>
+                <br />
+                <h3>{s}</h3>
+              </>
+            ))}
+          </div>
+          ,
+          <div className={"gutter"} />,
+          <Screens
+            className={classNames({ [styles.inView]: inView })}
+            src={screenshots}
+          />
         </div>
       </>
     );

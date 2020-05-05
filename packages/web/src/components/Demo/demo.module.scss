@@ -11,6 +11,10 @@
   transition: all 500ms ease;
   padding-left: 20px;
   transform: translate(-100%, 0);
+
+  &.inView {
+    transform: translate(0, 0%);
+  }
 }
 
 @media only screen and (min-width: 600px) {
@@ -20,13 +24,11 @@
   }
 }
 
-.inView {
-  transform: translate(0, 0%);
-  // animation: _inView 500ms 500ms ease forwards;
-}
-
 .reverse {
-  flex-wrap: wrap-reverse;
+  align-self: flex-end;
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+  // flex-wrap: wrap-reverse;
 }
 
 .description {
