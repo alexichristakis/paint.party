@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useEffect, useLayoutEffect } from "react";
+import React, { useRef } from "react";
 import useInview from "react-cool-inview";
 import classNames from "classnames";
 
