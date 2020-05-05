@@ -1,8 +1,6 @@
 {
   "name": "@paint.party/web",
   "version": "1.0.0",
-  "description": "",
-  "author": "alexichristakis",
   "scripts": {
     "dev": "next",
     "dev-config": "cross-env DEBUG_CONFIG=true next ./src",
@@ -15,12 +13,12 @@
     "classnames": "^2.2.6",
     "firebase": "^7.14.2",
     "lodash": "^4.17.15",
-    "moment": "2.24.0",
+    "moment": "2.25.3",
     "next": "~9.3.7-canary.6",
     "next-seo": "^4.4.0",
     "react": "^16.13.1",
+    "react-cool-inview": "^0.5.13",
     "react-dom": "^16.13.1",
-    "react-scroll": "^1.7.16",
     "sass": "^1.26.5",
     "uuid": "^8.0.0"
   },
@@ -29,19 +27,6 @@
     "@types/lodash": "^4.14.150",
     "@types/node": "^13.13.4",
     "@types/react": "^16.9.34",
-    "@types/react-scroll": "^1.5.4",
     "typescript": "^3.8.3"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }

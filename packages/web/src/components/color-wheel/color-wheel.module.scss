@@ -1,6 +1,9 @@
 @import "../../styles/global.scss";
 
-$color-size: calc(#{$column-width} / 5);
+$color-wheel-diameter: calc(min(max(20vw, 100px), 200px));
+$color-wheel-radius: calc(#{$color-wheel-diameter} / 2);
+$color-size: calc(#{$color-wheel-diameter} / 5);
+$color-offset: calc((#{$color-wheel-diameter} - #{$color-size}) / 2);
 
 @keyframes spin {
   from {
@@ -26,10 +29,10 @@ $color-size: calc(#{$column-width} / 5);
   display: flex;
   align-items: center;
   justify-content: center;
-  top: $margin;
-  right: $margin;
-  width: $column-width;
-  height: $column-width;
+  top: $color-size;
+  right: $color-size;
+  width: $color-wheel-diameter;
+  height: $color-wheel-diameter;
   animation: entrance 500ms 0s ease forwards;
 }
 
@@ -49,14 +52,15 @@ $color-size: calc(#{$column-width} / 5);
 }
 
 .color {
-  transform: rotate(var(--rotate)) translate(0, calc(#{$column-width} / 2));
+  transform: rotate(var(--rotate)) translate(0, $color-wheel-radius);
   position: absolute;
-  left: calc((#{$column-width} - #{$color-size}) / 2);
-  top: calc((#{$column-width} - #{$color-size}) / 2);
+  left: $color-offset;
+  top: $color-offset;
 
+  border: solid 2px $nearblack;
   width: $color-size;
   height: $color-size;
-  border-radius: calc(#{$color-size} / 2);
+  border-radius: $color-size;
 }
 
 .download {

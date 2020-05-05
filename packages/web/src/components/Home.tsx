@@ -1,16 +1,13 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import styles from "./Home.module.scss";
 
-import { usePointerPosition, useScrollPosition } from "../hooks";
+import { useScrollPosition } from "../hooks";
 
 import ColorWheel from "./color-wheel";
-import Cursor from "./cursor";
-import Background from "./background";
 import Footer from "./footer";
 import Landing from "./landing";
 import Gallery from "./gallery";
-import SideBar from "./sidebar";
 import { Create, Draw, Share } from "./demo";
 
 const images = [
@@ -25,13 +22,12 @@ const images2 = [
   "/jpg/canvases/cousins.jpg",
 ];
 
-export const Home: React.FC = () => {
+export const Home: React.FC = React.memo(() => {
+  // const [activeSection, setActiveSection] = useState("");
   const scroll = useScrollPosition();
 
-  return (
-    <div className={styles.container}>
-      <SideBar />
-
+  const content = useMemo(
+    () => (
       <div className={styles.content}>
         <Landing />
         <Gallery images={images} />
@@ -40,12 +36,21 @@ export const Home: React.FC = () => {
         <Draw />
         <Gallery images={images} />
         <Share />
-        <Footer />
       </div>
+    ),
+    []
+  );
 
+  return (
+    <div className={styles.container}>
+      {/* <SideBar active={activeSection} /> */}
+
+      {content}
+
+      <Footer />
       <ColorWheel scroll={scroll} />
     </div>
   );
-};
+});
 
 export default Home;

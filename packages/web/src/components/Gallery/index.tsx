@@ -18,13 +18,16 @@ const Gallery: React.FC<GalleryProps> = React.memo(
             [styles.backwards]: backwards,
           })}
         >
-          {times(2, () =>
-            images.map((src) => <img className={styles.canvas} {...{ src }} />)
+          {times(3, (i) =>
+            images.map((src, j) => (
+              <img key={`${i}-${j}`} className={styles.canvas} {...{ src }} />
+            ))
           )}
         </div>
       </div>
     );
-  }
+  },
+  (p, n) => p.backwards === n.backwards
 );
 
 export default Gallery;

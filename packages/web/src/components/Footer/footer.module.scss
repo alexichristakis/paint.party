@@ -3,7 +3,16 @@
 .container {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   align-items: flex-end;
-  margin-right: calc(#{$column-width} + #{$gutter-width} + #{$margin});
-  margin-bottom: $column-width;
+  margin: $margin;
+  padding-top: $column-width;
+  z-index: 1;
+}
+
+.link {
+  transition: all 250ms ease;
+  &:hover {
+    transform: scale(1.2);
+  }
 }

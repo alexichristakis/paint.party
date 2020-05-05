@@ -12,29 +12,43 @@ body {
   margin: 0;
   background-color: #f8f4ea;
   cursor: none;
-  font-family: "SofiaPro";
 
-  color: $nearblack;
+  h1,
+  h2,
+  h3,
+  h4,
+  p {
+    color: $nearblack;
+    font-family: "SofiaPro";
+    font-weight: 300;
+    margin: 0;
+  }
+
   h1 {
-    font-weight: 300;
-    font-size: 60pt;
-    margin: 0;
+    font-size: 40pt;
   }
-
   h2 {
-    font-weight: 300;
-    font-size: 32pt;
-    margin: 0;
+    font-size: 20pt;
+  }
+  h3 {
+    font-size: 16pt;
   }
 
-  h3 {
-    font-weight: 300;
-    font-size: 20pt;
-    margin: 0;
+  @media only screen and (min-width: 600px) {
+    h1 {
+      font-size: 60pt;
+    }
+    h2 {
+      font-size: 32pt;
+    }
+    h3 {
+      font-size: 20pt;
+    }
   }
 }
 
 .gutter {
+  height: $gutter-width;
   width: $gutter-width;
 }
 

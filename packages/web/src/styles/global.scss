@@ -4,11 +4,10 @@ $lightgray: #efefef;
 $nearblack: rgb(10, 10, 10);
 
 $margin: 30px;
-$margin-left: 170px;
 $num-columns: 8;
-$gutter-width: calc((100vw - #{$margin-left}) / 30);
+$gutter-width: calc((100vw - #{$margin}) / 30);
 $column-width: calc(
-  (100vw - #{$margin-left} - ((#{$num-columns} - 1) * #{$gutter-width})) / #{$num-columns}
+  (100vw - #{$margin} - ((#{$num-columns} - 1) * #{$gutter-width})) / #{$num-columns}
 );
 
 $two-column: calc(#{$column-width} * 2 + #{$gutter-width});
