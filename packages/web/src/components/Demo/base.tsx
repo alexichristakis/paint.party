@@ -42,8 +42,7 @@ const Base: React.FC<BaseProps> = React.memo(
               </>
             ))}
           </div>
-          ,
-          <div className={"gutter"} />,
+          <div className={"gutter"} />
           <Screens
             className={classNames({ [styles.inView]: inView })}
             src={screenshots}
