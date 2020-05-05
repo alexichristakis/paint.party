@@ -26,7 +26,8 @@ const Gallery: React.FC<GalleryProps> = React.memo(
         </div>
       </div>
     );
-  }
+  },
+  (p, n) => p.backwards === n.backwards
 );
 
 export default Gallery;

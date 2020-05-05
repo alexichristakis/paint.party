@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 
 import styles from "./Home.module.scss";
 
@@ -8,7 +8,6 @@ import ColorWheel from "./color-wheel";
 import Footer from "./footer";
 import Landing from "./landing";
 import Gallery from "./gallery";
-import SideBar from "./sidebar";
 import { Create, Draw, Share } from "./demo";
 
 const images = [
@@ -27,10 +26,8 @@ export const Home: React.FC = React.memo(() => {
   // const [activeSection, setActiveSection] = useState("");
   const scroll = useScrollPosition();
 
-  return (
-    <div className={styles.container}>
-      {/* <SideBar active={activeSection} /> */}
-
+  const content = useMemo(
+    () => (
       <div className={styles.content}>
         <Landing />
         <Gallery images={images} />
@@ -40,6 +37,15 @@ export const Home: React.FC = React.memo(() => {
         <Gallery images={images} />
         <Share />
       </div>
+    ),
+    []
+  );
+
+  return (
+    <div className={styles.container}>
+      {/* <SideBar active={activeSection} /> */}
+
+      {content}
 
       <Footer />
       <ColorWheel scroll={scroll} />
