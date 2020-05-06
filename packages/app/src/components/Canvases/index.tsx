@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { connect, ConnectedProps } from "react-redux";
 
@@ -31,10 +31,18 @@ const Canvases: React.FC<CanvasesProps & CanvasesReduxProps> = ({
   expiredCanvases,
 }) => {
   if (!activeCanvases.length && !expiredCanvases.length) {
-    return <Text style={styles.emptyState}>Welcome to PaintParty</Text>;
+    return (
+      <View style={styles.emptyStateContainer}>
+        <Text
+          allowFontScaling={false}
+          style={{ ...TextStyles.title, fontSize: 50 }}
+        >
+          Welcome to paint party
+        </Text>
+        <Text style={TextStyles.large}>Start by creating a canvas</Text>
+      </View>
+    );
   }
-
-  console.log("render canvases");
 
   return (
     <>
@@ -73,11 +81,12 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     textTransform: "uppercase",
   },
-  emptyState: {
-    ...TextStyles.title,
-    marginTop: 30,
-    marginHorizontal: 10,
-    fontSize: 50,
+  emptyStateContainer: {
+    flex: 1,
+    marginTop: SB_HEIGHT + 10,
+    marginBottom: 65,
+    marginHorizontal: 20,
+    justifyContent: "space-between",
   },
   contentContainer: {
     paddingBottom: 100,

@@ -19,8 +19,8 @@ import { useMemoOne } from "use-memo-one";
 import { connect, ConnectedProps } from "react-redux";
 import isEqual from "lodash/isEqual";
 
-import { Colors, canvasUrl } from "@lib";
-import { Canvas } from "@global";
+import { Colors } from "@lib";
+import { Canvas, canvasURL } from "@global";
 import { RootState } from "@redux/types";
 import { CanvasActions } from "@redux/modules/canvas";
 import { TouchableHighlight } from "@components/universal";
@@ -84,7 +84,7 @@ const CanvasRow: React.FC<
       Haptics.trigger("impactMedium");
       Share.share({
         title: `share ${name}`,
-        message: canvasUrl(id),
+        message: canvasURL(id),
       });
     }, [name, id]);
 

@@ -8,7 +8,8 @@ import * as selectors from "@redux/selectors";
 import { CanvasActions, DrawActions } from "@redux/modules";
 import { RootState } from "@redux/types";
 import { Countdown } from "@components/universal";
-import { SB_HEIGHT, canvasUrl } from "@lib";
+import { canvasURL } from "@global";
+import { SB_HEIGHT } from "@lib";
 
 import LiveUsers from "./LiveUsers";
 
@@ -43,7 +44,7 @@ const Header: React.FC<HeaderProps & HeaderReduxProps> = ({
   const handleOnPressShare = () =>
     Share.share({
       title: `share ${canvas.name}`,
-      message: canvasUrl(activeCanvas),
+      message: canvasURL(activeCanvas),
     });
 
   const handleOnPressUsers = useCallback(() => {
