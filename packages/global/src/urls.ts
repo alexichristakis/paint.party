@@ -8,8 +8,7 @@ export const gifURL = (canvasId: string) =>
 export const pngURL = (canvasId: string) =>
   `${cloudFunction}/png?canvas=${canvasId}`;
 
-export const canvasURL = (canvasId: string) =>
-  `${baseURL}/canvas?c=${canvasId}`;
+export const canvasURL = (canvasId: string) => `${baseURL}/canvas/${canvasId}`;
 
 export const localURL = (canvasId: string) =>
   linkingBase + "canvas/" + canvasId;
