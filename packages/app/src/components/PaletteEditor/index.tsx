@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { connect, ConnectedProps } from "react-redux";
+import { connect, ConnectedProps, useSelector } from "react-redux";
 
 import { ModalActions } from "@redux/modules";
 import * as selectors from "@redux/selectors";
@@ -16,7 +16,6 @@ export interface PaletteEditorProps {}
 export type PaletteEditorConnectedProps = ConnectedProps<typeof connector>;
 
 const mapStateToProps = (state: RootState) => ({
-  palettes: Object.values(selectors.palettes(state)),
   showPalettes: selectors.showPaletteEditor(state),
 });
 const mapDispatchToProps = {
@@ -24,22 +23,30 @@ const mapDispatchToProps = {
 };
 
 type Props = PaletteEditorProps & PaletteEditorConnectedProps;
+
+const Palettes: React.FC = React.memo(() => {
+  const palettes = useSelector(selectors.palettes);
+
+  return (
+    <>
+      {Object.values(palettes).map((palette, index) => (
+        <React.Fragment key={index}>
+          {index ? <View style={styles.separator} /> : null}
+          <Palette palette={palette} />
+        </React.Fragment>
+      ))}
+    </>
+  );
+});
+
 const PaletteEditor: React.FC<Props> = React.memo(
-  ({ palettes, showPalettes, close }) => {
-    return (
-      <BottomSheet open={showPalettes} onClose={close} style={styles.container}>
-        <CreatePalette />
-        {palettes.map((palette, index) => (
-          <React.Fragment key={index}>
-            {index ? <View style={styles.separator} /> : null}
-            <Palette palette={palette} />
-          </React.Fragment>
-        ))}
-      </BottomSheet>
-    );
-  },
-  (p, n) =>
-    p.palettes.length === n.palettes.length && p.showPalettes === n.showPalettes
+  ({ showPalettes, close }) => (
+    <BottomSheet open={showPalettes} onClose={close} style={styles.container}>
+      <CreatePalette />
+      <Palettes />
+    </BottomSheet>
+  ),
+  (p, n) => p.showPalettes === n.showPalettes
 );
 
 const styles = StyleSheet.create({
