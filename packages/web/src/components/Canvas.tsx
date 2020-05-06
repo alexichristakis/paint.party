@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { getCanvas } from "@firebase";
 import {
   Canvas as CanvasType,
-  appStoreUrl,
+  appStoreURl,
   gifURL,
   localURL,
   pluralize,
@@ -40,7 +40,7 @@ const Canvas: React.FC<CanvasProps> = React.memo(({ id }) => {
   }, [id]);
 
   const handleClickJoin = () => window.open(localURL(id));
-  const handleClickAppStore = () => window.open(appStoreUrl);
+  const handleClickAppStore = () => window.open(appStoreURl);
 
   if (canvasExists)
     return (

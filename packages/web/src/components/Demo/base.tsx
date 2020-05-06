@@ -35,11 +35,11 @@ const Base: React.FC<BaseProps> = React.memo(
           })}
         >
           <div className={styles.description}>
-            {text.map((s) => (
-              <>
+            {text.map((s, i) => (
+              <React.Fragment key={i}>
                 <br />
                 <h3>{s}</h3>
-              </>
+              </React.Fragment>
             ))}
           </div>
           <div className={"gutter"} />
